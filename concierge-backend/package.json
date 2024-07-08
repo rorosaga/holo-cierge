@@ -1,14 +1,13 @@
 {
-  "name": "r3f-virtual-girlfriend-backend",
+  "name": "concierge-backend",
   "version": "1.0.0",
-  "description": "Backend for the virtual girlfriend app",
+  "description": "Backend for holo-cierge app",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js --ext js"
   },
-  "author": "Wawa SENSEI <contact@wawasensei.dev>",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
