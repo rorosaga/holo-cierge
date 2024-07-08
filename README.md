@@ -2,6 +2,9 @@
 
 ![holo-cierge](image.png)
 
+## Notes
+- Token limit for GPT and ElevenLabs APIs can be modified. Very short by default.
+
 ## Installation
 
 1. Clone this repository with `git clone`.
