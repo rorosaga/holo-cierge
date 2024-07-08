@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import voice from "elevenlabs-node";
 import express from "express";
 import { promises as fs } from "fs";
-import OpenAI from "openai";
+import OpenAI from "openai/index.mjs";
 dotenv.config();
 
 const openai = new OpenAI({
@@ -12,7 +12,9 @@ const openai = new OpenAI({
 });
 
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
-const voiceID = "69cPH0Ypmuc48Y3Ty25o";
+const voiceID = "94zOad0g7T7K4oa7zhDq";
+
+const rhubarbPath = process.env.RHUBARB_PATH;
 
 const app = express();
 app.use(express.json());
@@ -45,7 +47,7 @@ const lipSyncMessage = async (message) => {
   );
   console.log(`Conversion done in ${new Date().getTime() - time}ms`);
   await execCommand(
-    `C:/Users/roros/Documents/Triops/holo-cierge/r3f-virtual-girlfriend-backend/bin/rhubarb.exe -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
+    `${rhubarbPath} -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
   );
   // -r phonetic is faster but less accurate
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
@@ -53,48 +55,12 @@ const lipSyncMessage = async (message) => {
 
 app.post("/chat", async (req, res) => {
   const userMessage = req.body.message;
-  if (!userMessage) {
-    res.send({
-      messages: [
-        {
-          text: "Hey dear... How was your day?",
-          audio: await audioFileToBase64("audios/intro_0.wav"),
-          lipsync: await readJsonTranscript("audios/intro_0.json"),
-          facialExpression: "smile",
-          animation: "Idle",
-        },
-        {
-          text: "I missed you so much... Please don't go for so long!",
-          audio: await audioFileToBase64("audios/intro_1.wav"),
-          lipsync: await readJsonTranscript("audios/intro_1.json"),
-          facialExpression: "sad",
-          animation: "Idle",
-        },
-      ],
-    });
-    return;
-  }
-  if (!elevenLabsApiKey || openai.apiKey === "-") {
-    res.send({
-      messages: [
-        {
-          text: "Please my dear, don't forget to add your API keys!",
-          audio: await audioFileToBase64("audios/api_0.wav"),
-          lipsync: await readJsonTranscript("audios/api_0.json"),
-          facialExpression: "angry",
-          animation: "Angry",
-        },
-        {
-          text: "You don't want to ruin Wawa Sensei with a crazy ChatGPT and ElevenLabs bill, right?",
-          audio: await audioFileToBase64("audios/api_1.wav"),
-          lipsync: await readJsonTranscript("audios/api_1.json"),
-          facialExpression: "smile",
-          animation: "Laughing",
-        },
-      ],
-    });
-    return;
-  }
+
+  // The followind does: 
+// 1. Send a message to the OpenAI API
+// 2. Generate audio files for each message
+// 3. Generate lipsync files for each message
+// 4. Send back the messages with the audio and lipsync files
 
   const completion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
@@ -153,5 +119,5 @@ const audioFileToBase64 = async (file) => {
 };
 
 app.listen(port, () => {
-  console.log(`Virtual Girlfriend listening on port ${port}`);
+  console.log(`Concierge listening on port ${port}`);
 });
