@@ -21,7 +21,7 @@ function App() {
       <Loader />
       <Leva />
       <UI />
-      <Canvas shadows camera={{ position: [0, 0, 1], fov: 30 }}>
+      <Canvas shadows camera={{ position: [0, 0, 3], fov: 45 }}>
         <XR>
           <Experience />
         </XR>
