@@ -26,7 +26,10 @@ export const UI = ({ hidden, ...props }) => {
         <div className="w-full flex flex-col items-end justify-center gap-4">
           <button
             onClick={() => setCameraZoomed(!cameraZoomed)}
-            className="pointer-events-auto bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-md"
+            className="pointer-events-auto text-white p-4 rounded-md"
+            style={{ backgroundColor: '#43270F', transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2B1700')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#43270F')}
           >
             {cameraZoomed ? (
               <svg
@@ -69,7 +72,10 @@ export const UI = ({ hidden, ...props }) => {
                 body.classList.add("greenScreen");
               }
             }}
-            className="pointer-events-auto bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-md"
+            className="pointer-events-auto text-white p-4 rounded-md"
+            style={{ backgroundColor: '#43270F', transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2B1700')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#43270F')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -100,9 +106,12 @@ export const UI = ({ hidden, ...props }) => {
           <button
             disabled={loading || message}
             onClick={sendMessage}
-            className={`bg-blue-500 hover:bg-blue-600 text-white p-4 px-10 font-semibold uppercase rounded-md ${
+            className={`text-white p-4 px-10 font-semibold uppercase rounded-md ${
               loading || message ? "cursor-not-allowed opacity-30" : ""
             }`}
+            style={{ backgroundColor: '#43270F', transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2B1700')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#43270F')}
           >
             Send
           </button>
