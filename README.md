@@ -1,6 +1,6 @@
 # Holo-cierge
 
-![holo-cierge](image.png)
+![holo-cierge](image-1.png)
 
 ## Notes
 - Token limit for GPT and ElevenLabs APIs can be modified. Very short by default.
