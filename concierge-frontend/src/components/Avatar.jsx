@@ -120,7 +120,7 @@ export function Avatar(props) {
   useEffect(() => {
     console.log(message);
     if (!message) {
-      setAnimation("Idle");
+      setAnimation("WheelbarrowIdle");
       return;
     }
     setAnimation(message.animation);
@@ -137,7 +137,7 @@ export function Avatar(props) {
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "Idle") ? "Idle" : animations[0].name // Check if Idle animation exists otherwise use first animation
+    animations.find((a) => a.name === "WheelbarrowIdle") ? "WheelbarrowIdle" : animations[0].name // Check if Idle animation exists otherwise use first animation
   );
   useEffect(() => {
     actions[animation]
