@@ -110,7 +110,7 @@ let setupMode = false;
 
 export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF(
-    "/models/concierge_m2.glb"
+    "/models/concierge_m3.glb"
   );
 
   const { message, onMessagePlayed, chat } = useChat();
@@ -376,5 +376,5 @@ export function Avatar(props) {
   );
 }
 
-useGLTF.preload("/models/concierge_m2.glb");
+useGLTF.preload("/models/concierge_m3.glb");
 useGLTF.preload("/models/animations.glb");

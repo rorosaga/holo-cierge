@@ -3,17 +3,21 @@ import { Canvas } from "@react-three/fiber";
 import { Leva } from "leva";
 import { Experience } from "./components/Experience";
 import { UI } from "./components/UI";
-import { LookingGlassWebXRPolyfill } from "@lookingglass/webxr";
+import { LookingGlassWebXRPolyfill, LookingGlassConfig } from "@lookingglass/webxr";
 import { XR, VRButton } from '@react-three/xr'
 
-new LookingGlassWebXRPolyfill({
-  tileHeight: 512,
-  numViews: 45,
-  targetY: 0,
-  targetZ: 0,
-  targetDiam: 3,
-  fovy: (14 * Math.PI) / 180
-})
+const config = LookingGlassConfig
+config.tileHeight = 1024
+config.numViews = 45
+config.targetX = -0.2
+config.trackballX = 0
+config.trackballY = 0.4
+config.targetX = 0.2
+config.targetY = 0.3
+config.targetZ = 0.79
+config.targetDiam = 3
+config.fovy = (13 * Math.PI) / 180
+new LookingGlassWebXRPolyfill()
 
 function App() {
   return (
@@ -21,7 +25,7 @@ function App() {
       <Loader />
       <Leva hidden/>
       <UI />
-      <Canvas shadows camera={{ position: [0, 0, 3], fov: 45 }}>
+      <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 3], fov: 45 }}>
         <XR>
           <Experience />
         </XR>

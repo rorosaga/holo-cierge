@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@lookingglass/webxr": "^0.4.0",
+    "@lookingglass/webxr": "0.2.1",
     "@react-three/drei": "9.75.0",
     "@react-three/fiber": "8.13.3",
-    "@react-three/xr": "^5.7.1",
+    "@react-three/xr": "5.7.1",
     "@types/three": "0.152.1",
     "leva": "^0.9.35",
     "react": "^18.2.0",

@@ -21,7 +21,7 @@
 body {
   margin: 0;
   background-color: #4169E1;
-  background-image: url('/textures/lobby-background.jpg'), linear-gradient(19deg, #2a49a5 0%, #d3e4ff 100%);
+  background-image: url('/textures/tama-frontdesk.jpg'), linear-gradient(19deg, #2a49a5 0%, #d3e4ff 100%);
   background-size: cover;
   background-position: center;
 }
