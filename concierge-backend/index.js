@@ -95,7 +95,7 @@ app.post("/chat", async (req, res) => {
         lipsync: await readJsonTranscript("audios/message_3.json"),
       },
       {
-        text: "Informale de eventos locales...",
+        text: "Informarle de eventos locales...",
         facialExpression: "smile",
         animation: "PointingOtherSideUp",
         audio: await audioFileToBase64("audios/message_4.wav"),
