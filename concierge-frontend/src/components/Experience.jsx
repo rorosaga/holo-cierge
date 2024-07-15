@@ -58,7 +58,7 @@ export const Experience = () => {
       <Environment preset="sunset" />
       {/* Wrapping Dots into Suspense to prevent Blink when Troika/Font is loaded */}
       <Suspense>
-        <Dots position-y={1.84} position-x={-0.085} />
+        <Dots position-y={1.85} position-x={-0.045} />
       </Suspense>
       <Avatar />
       <ContactShadows opacity={0.7} />

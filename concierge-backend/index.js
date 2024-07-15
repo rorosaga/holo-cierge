@@ -3,7 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import voice from "elevenlabs-node";
 import express from "express";
-import { promises as fs } from "fs";
+import { promises } from "fs";
+import fs from "fs";
 import OpenAI from "openai/index.mjs";
 
 dotenv.config();
@@ -70,77 +71,68 @@ app.post("/chat", async (req, res) => {
         text: "Hola! Soy Rodrigo, estoy aquí para atenderlo y hacer de su visita una experiencia única y agradable. Gracias a mi tecnología basada en inteligencia artificial, puedo ofrecer",
         facialExpression: "smile",
         animation: "WheelbarrowIdle",
-        // audio: await audioFileToBase64("audios/message_0.wav"), // Playing already generated audio files
-        // lipsync: await readJsonTranscript("audios/message_0.json"),
       },
       {
         text: "información turística interesantes de su localidad...",
         facialExpression: "smile",
         animation: "TalkingTwoHands",
-        // audio: await audioFileToBase64("audios/message_1.wav"),
-        // lipsync: await readJsonTranscript("audios/message_1.json"),
       },
       {
         text: "... también, puedo tomar y  gestionar sus requerimientos, anticipandome a sus preferencias, tal y como:",
         facialExpression: "smile",
         animation: "WheelbarrowIdle",
-        // audio: await audioFileToBase64("audios/message_2.wav"),
-        // lipsync: await readJsonTranscript("audios/message_2.json"),
       },
       {
         text: "... Preparar su habitación con su temperatura ideal...",
         facialExpression: "smile",
         animation: "PointingSideDown1",
-        // audio: await audioFileToBase64("audios/message_3.wav"),
-        // lipsync: await readJsonTranscript("audios/message_3.json"),
       },
       {
         text: "Informarle de eventos locales...",
         facialExpression: "smile",
         animation: "PointingOtherSideUp",
-        // audio: await audioFileToBase64("audios/message_4.wav"),
-        // lipsync: await readJsonTranscript("audios/message_4.json"),
       },
       {
         text: "Recomendar y reservar restaurantes...",
         facialExpression: "smile",
         animation: "PointingSideUp1",
-        // audio: await audioFileToBase64("audios/message_5.wav"),
-        // lipsync: await readJsonTranscript("audios/message_5.json"),
       },
       {
         text: "Solicitar servicios y productos del hotel...",
         facialExpression: "smile",
         animation: "PointingOtherSideDown",
-        // audio: await audioFileToBase64("audios/message_6.wav"),
-        // lipsync: await readJsonTranscript("audios/message_6.json"),
       },
       {
         text: "...y hasta recordar datos valiosos sobre usted, como sus gustos, preferencias y comportamientos, para atenderle con excelencia en cada una de sus visitas.",
         facialExpression: "smile",
         animation: "WheelbarrowIdle",
-        // audio: await audioFileToBase64("audios/message_7.wav"),
-        // lipsync: await readJsonTranscript("audios/message_7.json"),
       },
       {
         text: "Estaré en todo momento a su disposición, para hacer de su estancia una experiencia inolvidable.",
         facialExpression: "smile",
         animation: "WheelbarrowIdle",
-        // audio: await audioFileToBase64("audios/message_8.wav"),
-        // lipsync: await readJsonTranscript("audios/message_8.json"),
       }
     ];
 
-      // The following code generates the audio and lipsync files for hardcoded messages
-
+    // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
     for (let i = 0; i < hardcodedMessages.length; i++) {
-      const message = hardcodedMessages[i];
       const fileName = `audios/message_${i}.mp3`; // The name of the audio file
+      const message = hardcodedMessages[i];
+
+      if (fs.existsSync(`audios/message_${i}.mp3`) && fs.existsSync(`audios/message_${i}.json`)) {
+        message.audio = await audioFileToBase64(`audios/message_${i}.mp3`);
+        message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+        console.log(`Audio and lipsync files already exist for message ${i}`);
+      } else {
+      
       const textInput = message.text; // The text you wish to convert to speech
       await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
       await lipSyncMessage(i);
       message.audio = await audioFileToBase64(fileName);
       message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+      console.log(`Generated audio and lipsync for message ${i}`);
+      }
+
     }
 
     res.send({ messages: hardcodedMessages });
@@ -202,12 +194,12 @@ app.post("/chat", async (req, res) => {
 });
 
 const readJsonTranscript = async (file) => {
-  const data = await fs.readFile(file, "utf8");
+  const data = await promises.readFile(file, "utf8");
   return JSON.parse(data);
 };
 
 const audioFileToBase64 = async (file) => {
-  const data = await fs.readFile(file);
+  const data = await promises.readFile(file);
   return data.toString("base64");
 };
 
