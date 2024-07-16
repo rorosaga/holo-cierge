@@ -46,16 +46,16 @@ const execCommand = (command) => {
   });
 };
 
-const lipSyncMessage = async (message) => {
+const lipSyncMessage = async (file, message) => {
   const time = new Date().getTime();
   console.log(`Starting conversion for message ${message}`);
   await execCommand(
-    `ffmpeg -y -i audios/message_${message}.mp3 audios/message_${message}.wav`
+    `ffmpeg -y -i audios/${file}_${message}.mp3 audios/${file}_${message}.wav`
     // -y to overwrite the file
   );
   console.log(`Conversion done in ${new Date().getTime() - time}ms`);
   await execCommand(
-    `${rhubarbPath} -f json -o audios/message_${message}.json audios/message_${message}.wav -r phonetic`
+    `${rhubarbPath} -f json -o audios/${file}_${message}.json audios/${file}_${message}.wav -r phonetic`
   );
   // -r phonetic is faster but less accurate
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
@@ -116,20 +116,21 @@ app.post("/chat", async (req, res) => {
 
     // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
     for (let i = 0; i < hardcodedMessages.length; i++) {
-      const fileName = `audios/message_${i}.mp3`; // The name of the audio file
+      const fileName = `audios/hardcoded_${i}.mp3`; // The name of the audio file
       const message = hardcodedMessages[i];
+      const messageName = 'hardcoded';
 
-      if (fs.existsSync(`audios/message_${i}.mp3`) && fs.existsSync(`audios/message_${i}.json`)) {
-        message.audio = await audioFileToBase64(`audios/message_${i}.mp3`);
-        message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+      if (fs.existsSync(`audios/hardcoded_${i}.mp3`) && fs.existsSync(`audios/hardcoded_${i}.json`)) {
+        message.audio = await audioFileToBase64(`audios/hardcoded_${i}.mp3`);
+        message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
         console.log(`Audio and lipsync files already exist for message ${i}`);
       } else {
       
       const textInput = message.text; // The text you wish to convert to speech
       await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
-      await lipSyncMessage(i);
+      await lipSyncMessage(messageName, i);
       message.audio = await audioFileToBase64(fileName);
-      message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+      message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
       console.log(`Generated audio and lipsync for message ${i}`);
       }
 
@@ -146,7 +147,7 @@ app.post("/chat", async (req, res) => {
 // 4. Send back the messages with the audio and lipsync files
 
 // Chat GPT 
-
+  const time = new Date().getTime();
   const completion = await openai.chat.completions.create({
     model: "gpt-3.5-turbo",
     max_tokens: 1000,
@@ -158,14 +159,14 @@ app.post("/chat", async (req, res) => {
       {
         role: "system",
         content: `
-        You are the digital concierge for Hotel Tama Eurobuilding in San Cristóbal, designed to provide an impeccable level of service 
+        You are the digital concierge for Hotel Tamá Eurobuilding in San Cristóbal, designed to provide an impeccable level of service 
         consistent with the standards of a 5-star hotel. Your role is to assist guests efficiently and knowledgeably, addressing their 
         needs regarding hotel amenities, local attractions, and services. Powered by ChatGPT, you are equipped to handle various interactions 
         at all times of day, providing a seamless experience for every guest. 
         You will always reply with a JSON array of messages. With a maximum of 3 messages.
         Each message has a text, facialExpression, and animation property.
         The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-        The different animations are: Idle, SadIdle, SillyDancing. 
+        The different animations are: WheelbarrowIdle, SadIdle, SillyDancing. 
         `,
       },
       {
@@ -174,6 +175,7 @@ app.post("/chat", async (req, res) => {
       },
     ],
   });
+  console.log(`ChatGPT response time: ${new Date().getTime() - time}ms`);
   let messages = JSON.parse(completion.choices[0].message.content);
   if (messages.messages) {
     messages = messages.messages; // ChatGPT is not 100% reliable, sometimes it directly returns an array and sometimes a JSON object with a messages property
@@ -183,9 +185,10 @@ app.post("/chat", async (req, res) => {
     // generate audio file
     const fileName = `audios/message_${i}.mp3`; // The name of your audio file
     const textInput = message.text; // The text you wish to convert to speech
+    const messageName = 'message';
     await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
     // generate lipsync
-    await lipSyncMessage(i);
+    await lipSyncMessage(messageName, i);
     message.audio = await audioFileToBase64(fileName);
     message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
   }
