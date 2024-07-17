@@ -3,7 +3,7 @@ import { useChat } from "../hooks/useChat";
 
 export const UI = ({ hidden, ...props }) => {
   const input = useRef();
-  const { chat, loading, cameraZoomed, setCameraZoomed, message } = useChat();
+  const { chat, loading, cameraZoomed, setCameraZoomed, message, startRecording, stopRecording, isRecording } = useChat();
 
   const sendMessage = () => {
     const text = input.current.value;
@@ -12,9 +12,13 @@ export const UI = ({ hidden, ...props }) => {
       input.current.value = "";
     }
   };
+
   if (hidden) {
     return null;
   }
+
+  const hoverColor = '#2B1700';
+  const defaultColor = '#43270F';
 
   return (
     <>
@@ -23,13 +27,17 @@ export const UI = ({ hidden, ...props }) => {
           <h1 className="font-black text-xl">Digital Concierge 🤵‍♂️</h1>
           <p>At your service!</p>
         </div>
+
+
         <div className="w-full flex flex-col items-end justify-center gap-4">
+
+          {/* Zoom Camera Button */}
           <button
             onClick={() => setCameraZoomed(!cameraZoomed)}
             className="pointer-events-auto text-white p-4 rounded-md"
-            style={{ backgroundColor: '#43270F', transition: 'background-color 0.3s' }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2B1700')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#43270F')}
+            style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = defaultColor)}
           >
             {cameraZoomed ? (
               <svg
@@ -63,6 +71,8 @@ export const UI = ({ hidden, ...props }) => {
               </svg>
             )}
           </button>
+
+          {/* Green Screen Button */}
           <button
             onClick={() => {
               const body = document.querySelector("body");
@@ -73,9 +83,9 @@ export const UI = ({ hidden, ...props }) => {
               }
             }}
             className="pointer-events-auto text-white p-4 rounded-md"
-            style={{ backgroundColor: '#43270F', transition: 'background-color 0.3s' }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2B1700')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#43270F')}
+            style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = defaultColor)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,6 +101,8 @@ export const UI = ({ hidden, ...props }) => {
               />
             </svg>
           </button>
+
+
         </div>
         <div className="flex items-center gap-2 pointer-events-auto max-w-screen-sm w-full mx-auto">
           <input
@@ -103,17 +115,52 @@ export const UI = ({ hidden, ...props }) => {
               }
             }}
           />
+
+          {/* Send Message Button */}
           <button
             disabled={loading || message}
             onClick={sendMessage}
             className={`text-white p-4 px-10 font-semibold uppercase rounded-md ${
-              loading || message ? "cursor-not-allowed opacity-30" : ""
+              loading || message ? "cursor-not-allowed" : ""
             }`}
-            style={{ backgroundColor: '#43270F', transition: 'background-color 0.3s' }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#2B1700')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#43270F')}
+            style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = defaultColor)}
           >
             Send
+          </button>
+
+          {/* Record Audio Button */}
+          <button
+            onClick={() => {
+              if (!isRecording) {
+                startRecording();
+              } else {
+                stopRecording();
+              }
+            }}
+            className={`pointer-events-auto text-white p-4 rounded-md relative ${
+              loading || message ? "cursor-not-allowed" : ""
+            }`}
+            style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = defaultColor)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 18.75a6 6 0 0 0 6-6v-1.5m-6 7.5a6 6 0 0 1-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 0 1-3-3V4.5a3 3 0 1 1 6 0v8.25a3 3 0 0 1-3 3Z"
+              />
+            </svg>
+            {isRecording && <div className="blinking-dot" style={{ position: 'absolute', top: '6px', right: '6px' }}></div>}
           </button>
         </div>
       </div>

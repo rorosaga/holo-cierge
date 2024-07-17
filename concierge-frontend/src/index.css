@@ -30,3 +30,26 @@ body.greenScreen {
   background-color: #00ff00;
   background-image: none;
 }
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.blinking-dot {
+  width: 8px;
+  height: 8px;
+  background-color: white;
+  border-radius: 50%;
+  animation: blink 1s infinite;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
