@@ -19,7 +19,13 @@
 
 6. Create a `.env` file in the `./concierge-backend` directory and add your **OpenAI API Key**, **ElevenLabs API Keys**, and **rhubarb.exe path**. Refer to `.env.example` for the environment variable names.
 
-7. Start the development server in both terminal windows with `yarn dev`.
+7. Create a python virtual environment in the `./concierge-backend` directory with `python -m venv venv`.
+
+8. Activate the virtual environment with `source venv/bin/activate` for MacOS or `.\venv\Scripts\activate` for Windows.
+
+9. Download the python dependencies with `pip install -r requirements.txt`.
+
+10. Start the development server in both terminal windows with `yarn dev`.
 
 ## Credits
 

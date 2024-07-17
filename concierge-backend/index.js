@@ -6,6 +6,7 @@ import express from "express";
 import { promises } from "fs";
 import fs from "fs";
 import OpenAI from "openai/index.mjs";
+import multer from "multer";
 
 dotenv.config();
 
@@ -28,6 +29,17 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 const port = 3000;
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, 'audio.wav');
+  }
+});
+
+const upload = multer({ storage: storage });
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
@@ -61,8 +73,30 @@ const lipSyncMessage = async (file, message) => {
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
 };
 
-app.post("/chat", async (req, res) => {
+app.post("/chat", upload.single('audioInput'), async (req, res) => {
   const userMessage = req.body.message;
+  const audioFile = req.file;
+
+  if (audioFile) {
+    const filePath = audioFile.path;
+    console.log(`Received audio file: ${filePath}`);
+
+    try {
+      const fileExists = fs.existsSync(filePath);
+      console.log(`File exists: ${fileExists}`);
+    } catch (error) {
+      console.error(`Error checking file existence: ${error}`);
+    }
+
+    try {
+      const stats = fs.statSync(filePath);
+      console.log(`File size: ${stats.size} bytes`);
+    } catch (error) {
+      console.error(`Error getting file stats: ${error}`);
+    }
+// Add whisper transcription here
+// then delete audio.wav
+  }
 
 // Hardcoded messages
   if (!userMessage) {

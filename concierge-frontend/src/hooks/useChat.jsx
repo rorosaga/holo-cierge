@@ -23,7 +23,7 @@ export const ChatProvider = ({ children }) => {
     const body = audioBlob ? new FormData() : JSON.stringify({ message });
 
     if (audioBlob) {
-      body.append("audio", audioBlob, "audio.wav");
+      body.append("audioInput", audioBlob, "audio.wav");
     }
 
     try {
@@ -62,6 +62,7 @@ export const ChatProvider = ({ children }) => {
 
       mediaRecorder.current.start();
       setIsRecording(true);
+      console.log("Listening...");
 
     } catch (error) {
       console.error("Error accessing microphone:", error);
@@ -72,6 +73,7 @@ export const ChatProvider = ({ children }) => {
     if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
       mediaRecorder.current.stop();
       setIsRecording(false);
+      console.log("Stopped listening...");
     }
     if (mediaStream.current) {
       mediaStream.current.getTracks().forEach((track) => {
