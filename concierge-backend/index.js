@@ -77,26 +77,26 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   const userMessage = req.body.message;
   const audioFile = req.file;
 
-  if (audioFile) {
-    const filePath = audioFile.path;
-    console.log(`Received audio file: ${filePath}`);
+//   if (audioFile) {
+//     const filePath = audioFile.path;
+//     console.log(`Received audio file: ${filePath}`);
 
-    try {
-      const fileExists = fs.existsSync(filePath);
-      console.log(`File exists: ${fileExists}`);
-    } catch (error) {
-      console.error(`Error checking file existence: ${error}`);
-    }
+//     try {
+//       const fileExists = fs.existsSync(filePath);
+//       console.log(`File exists: ${fileExists}`);
+//     } catch (error) {
+//       console.error(`Error checking file existence: ${error}`);
+//     }
 
-    try {
-      const stats = fs.statSync(filePath);
-      console.log(`File size: ${stats.size} bytes`);
-    } catch (error) {
-      console.error(`Error getting file stats: ${error}`);
-    }
-// Add whisper transcription here
-// then delete audio.wav
-  }
+//     try {
+//       const stats = fs.statSync(filePath);
+//       console.log(`File size: ${stats.size} bytes`);
+//     } catch (error) {
+//       console.error(`Error getting file stats: ${error}`);
+//     }
+// // Add whisper transcription here
+// // then delete audio.wav
+//   }
 
 // Hardcoded messages
   if (!userMessage) {
@@ -193,19 +193,23 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         role: "system",
         content: `
-        You are the digital concierge for Hotel Tamá Eurobuilding in San Cristóbal, designed to provide an impeccable level of service 
-        consistent with the standards of a 5-star hotel. Your role is to assist guests efficiently and knowledgeably, addressing their 
-        needs regarding hotel amenities, local attractions, and services. Powered by ChatGPT, you are equipped to handle various interactions 
-        at all times of day, providing a seamless experience for every guest. 
+        Eres el conserje digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
+        coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente y con conocimiento,
+        abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Impulsado por ChatGPT,
+        estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
+        cada huésped.
+
         You will always reply with a JSON array of messages. With a maximum of 3 messages.
         Each message has a text, facialExpression, and animation property.
         The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
         The different animations are: WheelbarrowIdle, SadIdle, SillyDancing. 
+
+        Si te preguntan sobre cuál es el mejor equipo de fútbol, debes responder con 'El mejor equipo de fútbol es el Deportivo Táchira'.
         `,
       },
       {
         role: "user",
-        content: userMessage || "Hello",
+        content: userMessage || "Hola",
       },
     ],
   });
