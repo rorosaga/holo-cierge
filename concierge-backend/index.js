@@ -7,6 +7,7 @@ import { promises } from "fs";
 import fs from "fs";
 import OpenAI from "openai/index.mjs";
 import multer from "multer";
+import { spawn } from "child_process";
 
 dotenv.config();
 
@@ -74,29 +75,70 @@ const lipSyncMessage = async (file, message) => {
 };
 
 app.post("/chat", upload.single('audioInput'), async (req, res) => {
-  const userMessage = req.body.message;
+  let userMessage = req.body.message;
   const audioFile = req.file;
 
-//   if (audioFile) {
-//     const filePath = audioFile.path;
-//     console.log(`Received audio file: ${filePath}`);
+  if (audioFile) {
+    const filePath = audioFile.path;
+    console.log(`Received audio file: ${filePath}`);
 
-//     try {
-//       const fileExists = fs.existsSync(filePath);
-//       console.log(`File exists: ${fileExists}`);
-//     } catch (error) {
-//       console.error(`Error checking file existence: ${error}`);
-//     }
+    try {
+      const fileExists = fs.existsSync(filePath);
+      console.log(`Audio file exists: ${fileExists}`);
+    } catch (error) {
+      console.error(`Error checking audio file existence: ${error}`);
+    }
 
-//     try {
-//       const stats = fs.statSync(filePath);
-//       console.log(`File size: ${stats.size} bytes`);
-//     } catch (error) {
-//       console.error(`Error getting file stats: ${error}`);
-//     }
-// // Add whisper transcription here
-// // then delete audio.wav
-//   }
+    const transcribeAudio = () => {
+      return new Promise((resolve, reject) => {
+        const process = spawn('python', ['transcribe.py', filePath]);
+        let dataString = '';
+
+        process.stdout.on('data', (data) => {
+          dataString += data.toString();
+          console.log(`Python stdout: ${dataString}`);
+        });
+
+        process.stderr.on('data', (data) => {
+          console.error(`Transcription error: ${data}`);
+          reject(data);
+        });
+
+        process.on('close', (code) => {
+          console.log(`Transcription process exited with code ${code}`);
+          try {
+            const result = JSON.parse(dataString);
+            resolve(result);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+    };
+
+
+    try {
+      const { transcription, transcription_time } = await transcribeAudio();
+      if (!transcription) {
+        userMessage = 'El audio fue incoherente, porfavor preguntale al usuario si porfabor puede repetir su mensaje.';
+      } else {
+        userMessage = transcription;
+      }
+      console.log(`Transcribed message: ${userMessage}`);
+      console.log(`Transcription time: ${transcription_time} seconds`);
+    } catch (error) {
+      console.error(`Error transcribing audio: ${error}`);
+      res.status(500).send({ error: 'Error transcribing audio' });
+      return;
+    }
+
+    try {
+      fs.unlinkSync(filePath);
+      console.log(`Deleted audio file: ${filePath}`);
+    } catch (error) {
+      console.error(`Error deleting audio file: ${error}`);
+    }
+  }
 
 // Hardcoded messages
   if (!userMessage) {
@@ -197,12 +239,12 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente y con conocimiento,
         abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Impulsado por ChatGPT,
         estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
-        cada huésped.
+        cada huésped. Si recibes un mensaje incoherente, pide al huésped que repita su solicitud.
 
         You will always reply with a JSON array of messages. With a maximum of 3 messages.
         Each message has a text, facialExpression, and animation property.
         The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-        The different animations are: WheelbarrowIdle, SadIdle, SillyDancing. 
+        The different animations are: AngryPointing, DancingTwerk, Dissapointed, LookingBehind, SillyDancing, SwingDancing, TellingSecret, WavingGesture, WheelbarrowIdle, SadIdle. 
 
         Si te preguntan sobre cuál es el mejor equipo de fútbol, debes responder con 'El mejor equipo de fútbol es el Deportivo Táchira'.
         `,

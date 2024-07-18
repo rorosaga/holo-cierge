@@ -110,18 +110,19 @@ export const UI = ({ hidden, ...props }) => {
             placeholder="Type a message..."
             ref={input}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === "Enter" || !isRecording) {
                 sendMessage();
               }
             }}
+            disabled={isRecording}
           />
 
           {/* Send Message Button */}
           <button
-            disabled={loading || message}
+            disabled={loading || message || isRecording}
             onClick={sendMessage}
             className={`text-white p-4 px-10 font-semibold uppercase rounded-md ${
-              loading || message ? "cursor-not-allowed" : ""
+              loading || message || isRecording ? "cursor-not-allowed" : ""
             }`}
             style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
             onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
