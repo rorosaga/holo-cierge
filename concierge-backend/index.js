@@ -120,7 +120,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     try {
       const { transcription, transcription_time } = await transcribeAudio();
       if (!transcription) {
-        userMessage = 'El audio fue incoherente, porfavor preguntale al usuario si porfabor puede repetir su mensaje.';
+        userMessage = 'El audio fue incoherente, porfavor preguntale al usuario si puede repetir su mensaje.';
       } else {
         userMessage = transcription;
       }
@@ -225,7 +225,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 // Chat GPT 
   const time = new Date().getTime();
   const completion = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o-mini",
     max_tokens: 1000,
     temperature: 0.6,
     response_format: {
@@ -235,7 +235,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         role: "system",
         content: `
-        Eres el conserje digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
+        Eres el concierge digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
         coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente y con conocimiento,
         abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Impulsado por ChatGPT,
         estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
@@ -244,7 +244,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         You will always reply with a JSON array of messages. With a maximum of 3 messages.
         Each message has a text, facialExpression, and animation property.
         The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-        The different animations are: AngryPointing, DancingTwerk, Dissapointed, LookingBehind, SillyDancing, SwingDancing, TellingSecret, WavingGesture, WheelbarrowIdle, SadIdle. 
+        The different animations are: WheelbarrowIdle, SadIdle. 
 
         Si te preguntan sobre cuál es el mejor equipo de fútbol, debes responder con 'El mejor equipo de fútbol es el Deportivo Táchira'.
         `,

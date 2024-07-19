@@ -110,7 +110,7 @@ export const UI = ({ hidden, ...props }) => {
             placeholder="Type a message..."
             ref={input}
             onKeyDown={(e) => {
-              if (e.key === "Enter" || !isRecording) {
+              if (e.key === "Enter" || isRecording) {
                 sendMessage();
               }
             }}
