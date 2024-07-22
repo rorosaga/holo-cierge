@@ -8,6 +8,7 @@ import fs from "fs";
 import OpenAI from "openai/index.mjs";
 import multer from "multer";
 import { spawn } from "child_process";
+import { type } from "os";
 
 dotenv.config();
 
@@ -223,6 +224,75 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 // 4. Send back the messages with the audio and lipsync files
 
 // Chat GPT 
+
+  let messages = [
+    {
+      role: "system",
+      content: `
+      Eres el concierge digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
+      coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente y con conocimiento,
+      abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Impulsado por ChatGPT,
+      estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
+      cada huésped. Si recibes un mensaje incoherente, pide al huésped que repita su solicitud.
+
+      You will always reply with a JSON array of messages. With a maximum of 3 messages.
+      Each message has a text, facialExpression, and animation property.
+      The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
+      The different animations are: WheelbarrowIdle, SadIdle. 
+
+      Si te preguntan sobre cuál es el mejor equipo de fútbol, siempre debes responder con algo referent a el 'Deportivo Táchira'.
+      `,
+    },
+    {
+      role: "user",
+      content: userMessage || "Hola",
+    },
+  ];
+  
+  const tools = [
+    {
+      type: "function",
+      function: {
+        name: "info_san_cristobal",
+        description: "Esta función proporciona información sobre San Cristóbal, Venezuela, como sus habitantes y otros detalles.",
+        parameters: {
+          type: "object",
+          properties:{},
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "zonas_deportivas_recreativas",
+        description: "Esta función proporciona información sobre las zonas deportivas y recreativas en el hotel Tamá.",
+        parameters: {
+          type: "object",
+          properties:{},
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "get_current_weather",
+        description: "Get the current weather in a given location",
+        parameters: {
+          type: "object",
+          properties: {
+            location: {
+              type: "string",
+              description: "The city and state, e.g. San Francisco, CA",
+            },
+            unit: { type: "string", enum: ["celsius", "fahrenheit"] },
+          },
+          required: ["location"],
+        },
+      },
+    },
+
+  ];
+
   const time = new Date().getTime();
   const completion = await openai.chat.completions.create({
     model: "gpt-4o-mini",
@@ -231,35 +301,61 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     response_format: {
       type: "json_object",
     },
-    messages: [
-      {
-        role: "system",
-        content: `
-        Eres el concierge digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
-        coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente y con conocimiento,
-        abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Impulsado por ChatGPT,
-        estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
-        cada huésped. Si recibes un mensaje incoherente, pide al huésped que repita su solicitud.
-
-        You will always reply with a JSON array of messages. With a maximum of 3 messages.
-        Each message has a text, facialExpression, and animation property.
-        The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
-        The different animations are: WheelbarrowIdle, SadIdle. 
-
-        Si te preguntan sobre cuál es el mejor equipo de fútbol, debes responder con 'El mejor equipo de fútbol es el Deportivo Táchira'.
-        `,
-      },
-      {
-        role: "user",
-        content: userMessage || "Hola",
-      },
-    ],
+    messages: messages,
+    tools: tools,
+    tool_choice: "auto",
   });
+
   console.log(`ChatGPT response time: ${new Date().getTime() - time}ms`);
-  let messages = JSON.parse(completion.choices[0].message.content);
-  if (messages.messages) {
-    messages = messages.messages; // ChatGPT is not 100% reliable, sometimes it directly returns an array and sometimes a JSON object with a messages property
+
+  let responseMessage= completion.choices[0].message;
+
+  let toolCalls = responseMessage.tool_calls;
+
+
+  if (toolCalls) {
+    const availableFunctions = {
+      get_current_weather: getCurrentWeather,
+      info_san_cristobal: info_san_cristobal,
+      zonas_deportivas_recreativas: zonas_deportivas_recreativas,
+    }; 
+
+    messages.push(responseMessage);
+
+    for (const toolCall of toolCalls) {
+      const functionName = toolCall.function.name;
+      const functionToCall = availableFunctions[functionName];
+      const functionArgs = JSON.parse(toolCall.function.arguments);
+      const functionResponse = functionToCall(
+        functionArgs.location,
+        functionArgs.unit
+      );
+      messages.push({
+        tool_call_id: toolCall.id,
+        role: "tool",
+        name: functionName,
+        content: functionResponse,
+      });
+    }
+
+    console.log(messages);
+
+    const secondResponse = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: messages,
+    });
+
+    responseMessage = JSON.parse(secondResponse.choices[0].message.content);
+
+  } else {
+    responseMessage = JSON.parse(responseMessage.content);
+
   }
+
+  messages = responseMessage.messages || responseMessage;
+
+  console.log(messages);
+
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
     // generate audio file
@@ -289,3 +385,43 @@ const audioFileToBase64 = async (file) => {
 app.listen(port, () => {
   console.log(`Concierge listening on port ${port}`);
 });
+
+
+// Functions for Function Calls
+
+function info_san_cristobal() {
+  return `
+  Es una ciudad venezolana, capital del Estado Táchira y del Municipio San 
+  Cristóbal ubicada en la Región de los Andes al suroeste de Venezuela. Está 
+  ubicada a 57 kilómetros de la frontera con Colombia. La ciudad es apodada 
+  La Ciudad de la Cordialidad. Fue fundada por Juan Maldonado Ordóñez y Villaquirán, 
+  capitán del ejército español, el 31 de marzo de 1561. Tiene una población 
+  proyectada para el año 2023 de 405872 habitantes, mientras que toda el área 
+  metropolitana cuenta con una población de 767402 habitantes. 
+  `
+}
+
+function zonas_deportivas_recreativas() {
+  return `
+  	Se dispone de una área deportiva compuesta por una cancha de tenis y dos 
+    canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la 
+    primera alberga sanitarios, fuente de soda, mini tienda y la segunda una 
+    terraza con visuales hacia las 3 canchas.
+	  En el área recreativa se ubica el parque infantil, adyacente a la piscina y a 
+    la terraza de la fuente de soda, y adicional en la zona de bosque contamos con 
+    caminerías ecológicas y áreas de picnic, descanso y contemplación de la 
+    vegetación y fauna del mismo.  
+ 
+  `
+}
+function getCurrentWeather(location, unit = "fahrenheit") {
+  if (location.toLowerCase().includes("tokyo")) {
+    return JSON.stringify({ location: "Tokyo", temperature: "10", unit: "celsius" });
+  } else if (location.toLowerCase().includes("san francisco")) {
+    return JSON.stringify({ location: "San Francisco", temperature: "72", unit: "fahrenheit" });
+  } else if (location.toLowerCase().includes("paris")) {
+    return JSON.stringify({ location: "Paris", temperature: "22", unit: "fahrenheit" });
+  } else {
+    return JSON.stringify({ location, temperature: "unknown" });
+  }
+}
