@@ -3,6 +3,10 @@ import os
 import whisper
 import time
 import json
+import ssl
+
+# Ignore SSL certificate verification       
+ssl._create_default_https_context = ssl._create_unverified_context
 
 def transcribe(audio_path):
     model = whisper.load_model("tiny")

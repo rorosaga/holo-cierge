@@ -435,42 +435,6 @@ app.listen(port, () => {
 
 // Functions for Function Calls
 
-function info_san_cristobal() {
-  return `
-  Es una ciudad venezolana, capital del Estado Táchira y del Municipio San 
-  Cristóbal ubicada en la Región de los Andes al suroeste de Venezuela. Está 
-  ubicada a 57 kilómetros de la frontera con Colombia. La ciudad es apodada 
-  La Ciudad de la Cordialidad. Fue fundada por Juan Maldonado Ordóñez y Villaquirán, 
-  capitán del ejército español, el 31 de marzo de 1561. Tiene una población 
-  proyectada para el año 2023 de 405872 habitantes, mientras que toda el área 
-  metropolitana cuenta con una población de 767402 habitantes. 
-  `
-}
-
-function zonas_deportivas_recreativas() {
-  return `
-  	Se dispone de una área deportiva compuesta por una cancha de tenis y dos 
-    canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la 
-    primera alberga sanitarios, fuente de soda, mini tienda y la segunda una 
-    terraza con visuales hacia las 3 canchas.
-	  En el área recreativa se ubica el parque infantil, adyacente a la piscina y a 
-    la terraza de la fuente de soda, y adicional en la zona de bosque contamos con 
-    caminerías ecológicas y áreas de picnic, descanso y contemplación de la 
-    vegetación y fauna del mismo.  
- 
-  `
-}
-function getCurrentWeather(location, unit = "fahrenheit") {
-  if (location.toLowerCase().includes("tokyo")) {
-    return JSON.stringify({ location: "Tokyo", temperature: "10", unit: "celsius" });
-  } else if (location.toLowerCase().includes("san francisco")) {
-    return JSON.stringify({ location: "San Francisco", temperature: "72", unit: "fahrenheit" });
-  } else if (location.toLowerCase().includes("paris")) {
-    return JSON.stringify({ location: "Paris", temperature: "22", unit: "fahrenheit" });
-  } else {
-    return JSON.stringify({ location, temperature: "unknown" });
-  }
-}
 async function ticket_hotel_tama(requestText) {
   const url = 'https://reservations-api.properties.guesthub.io/properties/89/request';
   const queryParams = { 
@@ -494,4 +458,49 @@ async function ticket_hotel_tama(requestText) {
     console.error('Error making request:', error);
     return JSON.stringify({ error: 'Error making request' });
   }
-}
+};
+
+function getCurrentLocation() {
+  // This function should return the current location of the user
+};
+
+function getCurrentWeather(location, unit = "fahrenheit") {
+  if (location.toLowerCase().includes("tokyo")) {
+    return JSON.stringify({ location: "Tokyo", temperature: "10", unit: "celsius" });
+  } else if (location.toLowerCase().includes("san francisco")) {
+    return JSON.stringify({ location: "San Francisco", temperature: "72", unit: "fahrenheit" });
+  } else if (location.toLowerCase().includes("paris")) {
+    return JSON.stringify({ location: "Paris", temperature: "22", unit: "fahrenheit" });
+  } else {
+    return JSON.stringify({ location, temperature: "unknown" });
+  }
+};
+
+function info_san_cristobal() {
+  return JSON.stringify({ text:
+  `
+  Es una ciudad venezolana, capital del Estado Táchira y del Municipio San 
+  Cristóbal ubicada en la Región de los Andes al suroeste de Venezuela. Está 
+  ubicada a 57 kilómetros de la frontera con Colombia. La ciudad es apodada 
+  La Ciudad de la Cordialidad. Fue fundada por Juan Maldonado Ordóñez y Villaquirán, 
+  capitán del ejército español, el 31 de marzo de 1561. Tiene una población 
+  proyectada para el año 2023 de 405872 habitantes, mientras que toda el área 
+  metropolitana cuenta con una población de 767402 habitantes. 
+  `
+  });
+};
+
+function zonas_deportivas_recreativas() {
+  return JSON.stringify({ text:
+    `
+  	Se dispone de una área deportiva compuesta por una cancha de tenis y dos 
+    canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la 
+    primera alberga sanitarios, fuente de soda, mini tienda y la segunda una 
+    terraza con visuales hacia las 3 canchas.
+	  En el área recreativa se ubica el parque infantil, adyacente a la piscina y a 
+    la terraza de la fuente de soda, y adicional en la zona de bosque contamos con 
+    caminerías ecológicas y áreas de picnic, descanso y contemplación de la 
+    vegetación y fauna del mismo.  
+    `
+  });
+};
