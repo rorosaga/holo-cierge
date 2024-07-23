@@ -281,7 +281,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       type: "function",
       function: {
         name: "get_current_weather",
-        description: "Clima en cualquier ubicacion",
+        description: "Obten el clima de cualquier ubicacion especificada.",
         parameters: {
           type: "object",
           properties: {
@@ -315,9 +315,11 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     },
 
   ];
+  console.log("Conversation before sending to ChatGPT");  
+  console.log(messages);
 
   const time = new Date().getTime();
-  const completion = await openai.chat.completions.create({
+  const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
     max_tokens: 1000,
     temperature: 0.6,
@@ -331,12 +333,15 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
   console.log(`ChatGPT response time: ${new Date().getTime() - time}ms`);
 
-  let responseMessage= completion.choices[0].message;
+  const responseMessage= response.choices[0].message;
 
-  let toolCalls = responseMessage.tool_calls;
+  const toolCalls = responseMessage.tool_calls;
 
+  let finalMessage = responseMessage;
 
-  if (toolCalls) {
+  if (responseMessage.tool_calls) {
+    console.log("Tool calls found in the response");
+
     const availableFunctions = {
       get_current_weather: getCurrentWeather,
       info_san_cristobal: info_san_cristobal,
@@ -346,40 +351,56 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
     messages.push(responseMessage);
 
+    console.log("Messages before function calls");
+    console.log(messages);
+
     for (const toolCall of toolCalls) {
       const functionName = toolCall.function.name;
       const functionToCall = availableFunctions[functionName];
-      const functionArgs = JSON.parse(toolCall.function.arguments);
-      const functionResponse = functionToCall(
-        functionArgs.location,
-        functionArgs.unit,
-        functionArgs.requestText,
-      );
-      messages.push({
-        tool_call_id: toolCall.id,
-        role: "tool",
-        name: functionName,
-        content: functionResponse,
-      });
+
+      if (functionToCall) {
+        const functionArgs = JSON.parse(toolCall.function.arguments);
+
+        const functionResponse = await functionToCall(...Object.values(functionArgs));
+        
+        messages.push({
+          tool_call_id: toolCall.id,
+          role: "tool",
+          name: functionName,
+          content: functionResponse,
+        });
+
+      } else {
+        console.error(`Function ${functionName} not found`);
+      }
     }
 
+    console.log("Tool call responses");
     console.log(messages);
 
     const secondResponse = await openai.chat.completions.create({
       model: "gpt-4o-mini",
+      max_tokens: 1000,
+      temperature: 0.6,
+      response_format: {
+        type: "json_object",
+      },
       messages: messages,
     });
 
-    responseMessage = JSON.parse(secondResponse.choices[0].message.content);
+    console.log("Second response after function calls");
+    console.log(secondResponse.choices);
+
+    finalMessage = JSON.parse(secondResponse.choices[0].message.content);
 
   } else {
-    responseMessage = JSON.parse(responseMessage.content);
-
+    console.log("No tool calls found in the response");
+    finalMessage = JSON.parse(responseMessage.content);
   }
 
-  messages = responseMessage.messages || responseMessage;
-
-  console.log(messages);
+  if (finalMessage.messages) {
+    messages = finalMessage.messages || finalMessage;
+  }
 
   for (let i = 0; i < messages.length; i++) {
     const message = messages[i];
@@ -468,9 +489,9 @@ async function ticket_hotel_tama(requestText) {
   try {
     const response = await axios.post(url, requestBody, { params: queryParams });
     console.log('Request was successful:', response.data);
-    return JSON.stringify({ message: 'El ticket ha sido creado con éxito' });
+    return JSON.stringify(response.data);
   } catch (error) {
     console.error('Error making request:', error);
-    return JSON.stringify({ message: 'Hubo un error al crear el ticket. Por favor, inténtelo de nuevo más tarde.' });
+    return JSON.stringify({ error: 'Error making request' });
   }
 }
