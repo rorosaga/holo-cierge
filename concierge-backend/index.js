@@ -299,14 +299,14 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       type: "function",
       function: {
         name: "ticket_hotel_tama",
-        description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves.",
+        description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves junto a la pequeña descripcion proporcionada por el cliente.",
         parameters: {
           type: "object",
           properties: {
             requestText: {
               type: "string",
               description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
-              El cliente pide una toalla extra en la habitación. requestText: "Toalla extra"`,
+              El cliente pide una toalla extra en la habitación porque se le inundo el baño. requestText: "Toalla extra, se inundo el baño."`,
             },
           },
           required: ["requestText"],
@@ -446,7 +446,7 @@ async function ticket_hotel_tama(requestText) {
     browserIdentify: '1718991233075',
     serviceId: null,
     guestName: 'Rodrigo Sagastegui',
-    roomNumber: 'Test',
+    roomNumber: '202',
     requestText: requestText
   };
 
