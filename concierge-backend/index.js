@@ -8,7 +8,7 @@ import fs from "fs";
 import OpenAI from "openai/index.mjs";
 import multer from "multer";
 import { spawn } from "child_process";
-import { type } from "os";
+import axios from "axios";
 
 dotenv.config();
 
@@ -229,18 +229,23 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     {
       role: "system",
       content: `
-      Eres el concierge digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
+      Eres el concierge inteligente digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable,
       coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente y con conocimiento,
       abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Impulsado por ChatGPT,
       estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
       cada huésped. Si recibes un mensaje incoherente, pide al huésped que repita su solicitud.
+
+      Hablas unicamente en español, con una buena pronunciación y entonación. Tambien, eres capaz de utilizar los function calls para obtener 
+      información adicional y poder accionar dentro del hotel, con funciones como "ticket_hotel_tama".
+
+      Si te preguntan sobre cuál es el mejor equipo de fútbol, siempre debes responder con algo referent a el 'Deportivo Táchira'.
+
 
       You will always reply with a JSON array of messages. With a maximum of 3 messages.
       Each message has a text, facialExpression, and animation property.
       The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
       The different animations are: WheelbarrowIdle, SadIdle. 
 
-      Si te preguntan sobre cuál es el mejor equipo de fútbol, siempre debes responder con algo referent a el 'Deportivo Táchira'.
       `,
     },
     {
@@ -276,7 +281,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       type: "function",
       function: {
         name: "get_current_weather",
-        description: "Get the current weather in a given location",
+        description: "Clima en cualquier ubicacion",
         parameters: {
           type: "object",
           properties: {
@@ -287,6 +292,24 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
             unit: { type: "string", enum: ["celsius", "fahrenheit"] },
           },
           required: ["location"],
+        },
+      },
+    },
+    {
+      type: "function",
+      function: {
+        name: "ticket_hotel_tama",
+        description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves.",
+        parameters: {
+          type: "object",
+          properties: {
+            requestText: {
+              type: "string",
+              description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
+              El cliente pide una toalla extra en la habitación. requestText: "Toalla extra"`,
+            },
+          },
+          required: ["requestText"],
         },
       },
     },
@@ -318,6 +341,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       get_current_weather: getCurrentWeather,
       info_san_cristobal: info_san_cristobal,
       zonas_deportivas_recreativas: zonas_deportivas_recreativas,
+      ticket_hotel_tama: ticket_hotel_tama,
     }; 
 
     messages.push(responseMessage);
@@ -328,7 +352,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       const functionArgs = JSON.parse(toolCall.function.arguments);
       const functionResponse = functionToCall(
         functionArgs.location,
-        functionArgs.unit
+        functionArgs.unit,
+        functionArgs.requestText,
       );
       messages.push({
         tool_call_id: toolCall.id,
@@ -423,5 +448,29 @@ function getCurrentWeather(location, unit = "fahrenheit") {
     return JSON.stringify({ location: "Paris", temperature: "22", unit: "fahrenheit" });
   } else {
     return JSON.stringify({ location, temperature: "unknown" });
+  }
+}
+async function ticket_hotel_tama(requestText) {
+  const url = 'https://reservations-api.properties.guesthub.io/properties/89/request';
+  const queryParams = { 
+    'Guesthub-Context': '{"properties":["propertyId"]}'
+  };
+  const requestBody = {
+    isLogin: false,
+    reservationId: null,
+    browserIdentify: '1718991233075',
+    serviceId: null,
+    guestName: 'Rodrigo Sagastegui',
+    roomNumber: 'Test',
+    requestText: requestText
+  };
+
+  try {
+    const response = await axios.post(url, requestBody, { params: queryParams });
+    console.log('Request was successful:', response.data);
+    return JSON.stringify({ message: 'El ticket ha sido creado con éxito' });
+  } catch (error) {
+    console.error('Error making request:', error);
+    return JSON.stringify({ message: 'Hubo un error al crear el ticket. Por favor, inténtelo de nuevo más tarde.' });
   }
 }
