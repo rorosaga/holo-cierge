@@ -13,6 +13,19 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
 
+const avatars = {
+  digitalConcierge: {
+    model: "/models/concierge/concierge_m3.glb",
+    background: "../public/textures/tama-frontdesk.jpg",
+
+  },
+  zoeDLM: {
+    model: "/models/zoe/dlm_zoe1.glb",
+    background: "../public/textures/avila1-dlm.jpg",
+
+  },
+};
+
 const facialExpressions = {
   default: {},
   smile: {
@@ -109,13 +122,22 @@ const corresponding = {
 let setupMode = false;
 
 export function Avatar(props) {
-  const { nodes, materials, scene } = useGLTF(
-    "/models/concierge_m3.glb"
-  );
-
+  const [selectedAvatar, setSelectedAvatar] = useState("digitalConcierge");
   const { message, onMessagePlayed, chat } = useChat();
-
   const [lipsync, setLipsync] = useState();
+
+  const conciergeModel = useGLTF(avatars.digitalConcierge.model);
+  const zoeModel = useGLTF(avatars.zoeDLM.model);
+
+  const [currentModel, setCurrentModel] = useState(conciergeModel);
+
+
+  useEffect(() => {
+    setCurrentModel(selectedAvatar === "digitalConcierge" ? conciergeModel : zoeModel);
+    
+  }, [selectedAvatar, conciergeModel, zoeModel]);
+
+  const { nodes, materials, scene } = currentModel;
 
   useEffect(() => {
     console.log(message);
@@ -224,6 +246,13 @@ export function Avatar(props) {
       }
       lerpMorphTarget(value, 0, 0.1);
     });
+  });
+
+  useControls("Avatars", {
+    avatar: {
+      options: Object.keys(avatars),
+      onChange: (value) => setSelectedAvatar(value),
+    },
   });
 
   useControls("FacialExpressions", {
@@ -348,11 +377,6 @@ export function Avatar(props) {
         skeleton={nodes.Wolf3D_Hair.skeleton}
       />
       <skinnedMesh
-        geometry={nodes.Wolf3D_Glasses.geometry}
-        material={materials.Wolf3D_Glasses}
-        skeleton={nodes.Wolf3D_Glasses.skeleton}
-      />
-      <skinnedMesh
         geometry={nodes.Wolf3D_Body.geometry}
         material={materials.Wolf3D_Body}
         skeleton={nodes.Wolf3D_Body.skeleton}
@@ -372,9 +396,18 @@ export function Avatar(props) {
         material={materials.Wolf3D_Outfit_Top}
         skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
       />
+      {selectedAvatar === "digitalConcierge" && (
+        <skinnedMesh
+          geometry={nodes.Wolf3D_Glasses.geometry}
+          material={materials.Wolf3D_Glasses}
+          skeleton={nodes.Wolf3D_Glasses.skeleton}
+        />
+      )}
+
     </group>
   );
 }
 
 useGLTF.preload("/models/concierge_m3.glb");
+useGLTF.preload("/models/dlm_zoe1.glb");
 useGLTF.preload("/models/animations.glb");
