@@ -110,7 +110,7 @@ let setupMode = false;
 
 export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF(
-    "/models/concierge_m3.glb"
+    "/models/dlm_zoe1.glb"
   );
 // change the avatar to zoe here
   const { message, onMessagePlayed, chat } = useChat();
@@ -120,7 +120,7 @@ export function Avatar(props) {
   useEffect(() => {
     console.log(message);
     if (!message) {
-      setAnimation("WheelbarrowIdle");
+      setAnimation("StandingIdle");
       return;
     }
     setAnimation(message.animation);
@@ -132,12 +132,12 @@ export function Avatar(props) {
     audio.onended = onMessagePlayed;
   }, [message]);
 
-  const { animations } = useGLTF("/models/animations.glb");
+  const { animations } = useGLTF("/models/animations_zoe.glb");
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "WheelbarrowIdle") ? "WheelbarrowIdle" : animations[0].name // Check if Idle animation exists otherwise use first animation
+    animations.find((a) => a.name === "StandingIdle") ? "StandingIdle" : animations[0].name // Check if Idle animation exists otherwise use first animation
   );
   useEffect(() => {
     actions[animation]
@@ -348,11 +348,6 @@ export function Avatar(props) {
         skeleton={nodes.Wolf3D_Hair.skeleton}
       />
       <skinnedMesh
-        geometry={nodes.Wolf3D_Glasses.geometry}
-        material={materials.Wolf3D_Glasses}
-        skeleton={nodes.Wolf3D_Glasses.skeleton}
-      />
-      <skinnedMesh
         geometry={nodes.Wolf3D_Body.geometry}
         material={materials.Wolf3D_Body}
         skeleton={nodes.Wolf3D_Body.skeleton}
@@ -376,5 +371,5 @@ export function Avatar(props) {
   );
 }
 
-useGLTF.preload("/models/concierge_m3.glb");
-useGLTF.preload("/models/animations.glb");
+useGLTF.preload("/models/dlm_zoe1.glb");
+useGLTF.preload("/models/animations_zoe.glb");
