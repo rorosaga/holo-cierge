@@ -112,7 +112,7 @@ export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF(
     "/models/concierge_m3.glb"
   );
-
+// change the avatar to zoe here
   const { message, onMessagePlayed, chat } = useChat();
 
   const [lipsync, setLipsync] = useState();
