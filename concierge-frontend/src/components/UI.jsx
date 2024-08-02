@@ -17,15 +17,15 @@ export const UI = ({ hidden, ...props }) => {
     return null;
   }
 
-  const hoverColor = '#2B1700';
-  const defaultColor = '#43270F';
+  const hoverColor = '#121212';
+  const defaultColor = '#1f1f1f';
 
   return (
     <>
       <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-between p-4 flex-col pointer-events-none">
         <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-lg">
-          <h1 className="font-black text-xl">Digital Concierge 🤵‍♂️</h1>
-          <p>At your service!</p>
+          <h1 className="font-black text-xl">Zoe 🤖💬</h1>
+          <p>A tu servicio!</p>
         </div>
 
 
