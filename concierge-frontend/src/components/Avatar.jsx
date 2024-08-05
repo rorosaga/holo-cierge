@@ -12,19 +12,9 @@ import React, { useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
+import avatarData from "../data/avatars.json";
 
-const avatars = {
-  digitalConcierge: {
-    model: "/models/concierge/concierge_m3.glb",
-    background: "../public/textures/tama-frontdesk.jpg",
-
-  },
-  zoeDLM: {
-    model: "/models/zoe/dlm_zoe1.glb",
-    background: "../public/textures/avila1-dlm.jpg",
-
-  },
-};
+const avatars = avatarData.avatars; // JSON data from avatars.json
 
 const facialExpressions = {
   default: {},
@@ -154,7 +144,7 @@ export function Avatar(props) {
     audio.onended = onMessagePlayed;
   }, [message]);
 
-  const { animations } = useGLTF("/models/animations.glb");
+  const { animations } = useGLTF(avatars.digitalConcierge.animations);
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
@@ -371,7 +361,7 @@ export function Avatar(props) {
   );
 }
 
-useGLTF.preload("/models/concierge_m3.glb");
-useGLTF.preload("/models/dlm_zoe1.glb");
-useGLTF.preload("/models/animations.glb");
-useGLTF.preload("/models/animations_zoe.glb");
+useGLTF.preload(avatars.digitalConcierge.model);
+useGLTF.preload(avatars.digitalConcierge.animations);
+useGLTF.preload(avatars.zoeDLM.model);
+useGLTF.preload(avatars.zoeDLM.animations);
