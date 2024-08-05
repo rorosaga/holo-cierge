@@ -17,7 +17,7 @@ const openai = new OpenAI({
 });
 
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
-const voiceID = "Gyqu9jCJup6lkiLgiu0l"; // Andromeda Thunders
+const voiceID = "5O3NbW4Hc6RKYNZg8Er2"; // Now: Zoe, Prev: Andromeda Thunders
 
 const stability = 0.6;
 const similarityBoost = 0.4;
@@ -287,7 +287,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
       You will always reply with a JSON array of messages. With a maximum of 3 messages.
       Each message has a text, facialExpression, and animation property.
-      The different facial expressions are: smile, sad, angry, surprised, funnyFace, and default.
+      The different facial expressions are: smile, sad, angry, and default.
       The different animations are: StandingIdle, OneLegIdle, RumbaDancing, HappyIdle, SadIdle. OneLegIdle is the preferred animation when talking.
 
       `,
