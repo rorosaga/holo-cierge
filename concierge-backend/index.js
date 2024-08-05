@@ -418,6 +418,10 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   res.send({ messages });
 });
 
+
+
+
+
 const readJsonTranscript = async (file) => {
   const data = await promises.readFile(file, "utf8");
   return JSON.parse(data);
