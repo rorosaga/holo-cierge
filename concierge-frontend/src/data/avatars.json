@@ -3,22 +3,22 @@
         "digitalConcierge": {
             "model": "/models/concierge/concierge_m3.glb",
             "animations": "/models/concierge/animations.glb",
-            "background": "",
-            "defaultPose": "",
-            "defaultColor": "",
-            "hoverColor": "",
-            "voiceID": "",
+            "background": "/textures/tama-frontdesk.jpg",
+            "defaultPose": "WheelbarrowIdle",
+            "defaultColor": "#43270F",
+            "hoverColor": "#2B1700",
+            "voiceID": "94zOad0g7T7K4oa7zhDq",
             "systemPrompt": "",
             "functionCalls": null
         },
         "zoeDLM": {
             "model": "/models/zoe/dlm_zoe3.glb",
             "animations": "/models/zoe/animations.glb",
-            "background": "",
-            "defaultPose": "",
-            "defaultColor": "",
-            "hoverColor": "",
-            "voiceID": "",
+            "background": "/textures/avila1-dlm.jpg",
+            "defaultPose": "OneLegIdle",
+            "defaultColor": "#1f1f1f",
+            "hoverColor": "#121212",
+            "voiceID": "5O3NbW4Hc6RKYNZg8Er2",
             "systemPrompt": "",
             "functionCalls": null
         }
