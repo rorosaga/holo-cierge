@@ -286,7 +286,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       You will always reply with a JSON array of messages. With a maximum of 3 messages.
       Each message has a text, facialExpression, and animation property.
       The different facial expressions are: smile, sad, angry, and default.
-      The different animations are: StandingIdle, OneLegIdle, RumbaDancing, HappyIdle, SadIdle. OneLegIdle is the preferred animation when talking.
+      The different animations are: StandingIdle, OneLegIdle. OneLegIdle is the preferred animation when talking.
       `,
     },
     {
