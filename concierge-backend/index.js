@@ -418,9 +418,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
     // make a temporary messages array to start sending message as soon as possible
     let tempMessages = [ message ];
-    res.write({ messages: tempMessages });
-
-    // not working
+    res.write(JSON.stringify({ messages: tempMessages }));
 
   }
 
