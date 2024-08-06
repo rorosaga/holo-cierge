@@ -10,7 +10,8 @@
             "whisperModel": "tiny",
             "voiceID": "94zOad0g7T7K4oa7zhDq",
             "systemPrompt": "",
-            "functionCalls": null
+            "functionCalls": null,
+            "functionScript": "name of script"
         },
         "zoeDLM": {
             "model": "/models/zoe/dlm_zoe3.glb",
@@ -22,7 +23,8 @@
             "whisperModel": "tiny",
             "voiceID": "5O3NbW4Hc6RKYNZg8Er2",
             "systemPrompt": "",
-            "functionCalls": null
+            "functionCalls": null,
+            "functionScript": "name of script"
         }
     }
 }
