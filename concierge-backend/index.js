@@ -413,9 +413,21 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     await lipSyncMessage(messageName, i);
     message.audio = await audioFileToBase64(fileName);
     message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+
+    console.log('Message:', message);
+
+    // make a temporary messages array to start sending message as soon as possible
+    let tempMessages = [ message ];
+    res.write({ messages: tempMessages });
+
+    // not working
+
   }
 
-  res.send({ messages });
+  res.end();
+
+  // console.log("Final messages:", messages);
+  // res.send({ messages });
 });
 
 
