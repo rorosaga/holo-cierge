@@ -14,7 +14,7 @@
             "functionScript": "name of script"
         },
         "zoeDLM": {
-            "model": "/models/zoe/dlm_zoe3.glb",
+            "model": "/models/zoe/dlm_zoe5.glb",
             "animations": "/models/zoe/animations.glb",
             "background": "/textures/avila1-dlm.jpg",
             "defaultPose": "OneLegIdle",
