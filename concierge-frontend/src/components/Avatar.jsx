@@ -110,7 +110,7 @@ let setupMode = false;
 
 export function Avatar(props) {
   const { nodes, materials, scene } = useGLTF(
-    "/models/dlm_zoe3.glb"
+    "/models/dlm_zoe5.glb"
   );
 // change the avatar to zoe here
   const { message, onMessagePlayed, chat } = useChat();
@@ -371,5 +371,5 @@ export function Avatar(props) {
   );
 }
 
-useGLTF.preload("/models/dlm_zoe3.glb");
+useGLTF.preload("/models/dlm_zoe5.glb");
 useGLTF.preload("/models/animations.glb");
