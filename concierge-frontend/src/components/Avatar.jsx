@@ -116,23 +116,21 @@ export function Avatar(props) {
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
 
-  const conciergeModel = useGLTF(avatars.digitalConcierge.model);
-  const zoeModel = useGLTF(avatars.zoeDLM.model);
+  const avatarModel = useGLTF(avatars[selectedAvatar].model);
 
-  const [currentModel, setCurrentModel] = useState(conciergeModel);
-
+  const [currentModel, setCurrentModel] = useState(avatarModel);
 
   useEffect(() => {
-    setCurrentModel(selectedAvatar === "digitalConcierge" ? conciergeModel : zoeModel);
+    setCurrentModel(avatarModel);
     
-  }, [selectedAvatar, conciergeModel, zoeModel]);
+  }, [selectedAvatar, avatarModel]);
 
   const { nodes, materials, scene } = currentModel;
 
   useEffect(() => {
     console.log(message);
     if (!message) {
-      setAnimation("WheelbarrowIdle");
+      setAnimation(avatars[selectedAvatar].defaultPose);
       return;
     }
     setAnimation(message.animation);
@@ -144,12 +142,12 @@ export function Avatar(props) {
     audio.onended = onMessagePlayed;
   }, [message]);
 
-  const { animations } = useGLTF(avatars.digitalConcierge.animations);
+  const { animations } = useGLTF(avatars[selectedAvatar].animations);
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "WheelbarrowIdle") ? "WheelbarrowIdle" : animations[0].name // Check if Idle animation exists otherwise use first animation
+    animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if Idle animation exists otherwise use first animation
   );
   useEffect(() => {
     actions[animation]
@@ -361,7 +359,7 @@ export function Avatar(props) {
   );
 }
 
-useGLTF.preload(avatars.digitalConcierge.model);
-useGLTF.preload(avatars.digitalConcierge.animations);
-useGLTF.preload(avatars.zoeDLM.model);
-useGLTF.preload(avatars.zoeDLM.animations);
+for (const key in avatars) {
+  useGLTF.preload(avatars[key].model);
+  useGLTF.preload(avatars[key].animations);
+}

@@ -3,8 +3,8 @@
         "digitalConcierge": {
             "model": "/models/concierge/concierge_m3.glb",
             "animations": "/models/concierge/animations.glb",
-            "background": "/textures/tama-frontdesk.jpg",
             "defaultPose": "WheelbarrowIdle",
+            "background": "/textures/tama-frontdesk.jpg",
             "defaultColor": "#43270F",
             "hoverColor": "#2B1700",
             "whisperModel": "tiny",
@@ -16,8 +16,8 @@
         "zoeDLM": {
             "model": "/models/zoe/dlm_zoe5.glb",
             "animations": "/models/zoe/animations.glb",
-            "background": "/textures/avila1-dlm.jpg",
             "defaultPose": "OneLegIdle",
+            "background": "/textures/avila1-dlm.jpg",
             "defaultColor": "#1f1f1f",
             "hoverColor": "#121212",
             "whisperModel": "tiny",
