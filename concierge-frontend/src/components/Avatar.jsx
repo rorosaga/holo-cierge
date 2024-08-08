@@ -117,7 +117,6 @@ const Avatar = forwardRef((props, ref) => {
   const [lipsync, setLipsync] = useState();
 
   const avatarModel = useGLTF(avatars[selectedAvatar].model);
-
   const [currentModel, setCurrentModel] = useState(avatarModel);
 
   useEffect(() => {
