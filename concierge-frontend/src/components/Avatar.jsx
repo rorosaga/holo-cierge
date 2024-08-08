@@ -348,13 +348,6 @@ export function Avatar(props) {
     <group {...props} dispose={null} ref={group}>
       <primitive object={nodes.Hips} />
       {renderSkinnedMeshes()}
-      {selectedAvatar === "digitalConcierge" && nodes.Wolf3D_Glasses && (
-        <skinnedMesh
-          geometry={nodes.Wolf3D_Glasses.geometry}
-          material={materials.Wolf3D_Glasses}
-          skeleton={nodes.Wolf3D_Glasses.skeleton}
-        />
-      )}
     </group>
   );
 }
