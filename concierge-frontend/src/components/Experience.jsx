@@ -9,10 +9,10 @@ import { useChat } from "../hooks/useChat";
 import { Avatar } from "./Avatar";
 
 const Dots = (props) => {
-  const { loading } = useChat();
+  const { thinking } = useChat();
   const [loadingText, setLoadingText] = useState("");
   useEffect(() => {
-    if (loading) {
+    if (thinking) {
       const interval = setInterval(() => {
         setLoadingText((loadingText) => {
           if (loadingText.length > 2) {
@@ -25,8 +25,8 @@ const Dots = (props) => {
     } else {
       setLoadingText("");
     }
-  }, [loading]);
-  if (!loading) return null;
+  }, [thinking]);
+  if (!thinking) return null;
   return (
     <group {...props} position={[0,1,0]}>
       <Text fontSize={0.14} anchorX={"left"} anchorY={"bottom"}>

@@ -10,6 +10,7 @@ export const ChatProvider = ({ children }) => {
   const [message, setMessage] = useState();
   const [loading, setLoading] = useState(false);
   const [cameraZoomed, setCameraZoomed] = useState(true);
+  const [thinking, setThinking] = useState(false);
 
   // states and refs for audio recording
   const mediaStream = useRef(null);
@@ -19,6 +20,7 @@ export const ChatProvider = ({ children }) => {
 
   const chat = async (message, audioBlob = null) => {
     setLoading(true);
+    setThinking(true);
 
     const body = audioBlob ? new FormData() : JSON.stringify({ message });
 
@@ -27,14 +29,48 @@ export const ChatProvider = ({ children }) => {
     }
 
     try {
-      const data = await fetch(`${backendUrl}/chat`, {
+      const response = await fetch(`${backendUrl}/chat`, {
         method: "POST",
         headers: audioBlob ? {} : { "Content-Type": "application/json" },
         body: audioBlob ? body : JSON.stringify({ message }),
       });
 
-      const resp = (await data.json()).messages;
-      setMessages((messages) => [...messages, ...resp]);
+      // Streaming messages from the backend
+      if (!response.body){
+        throw new Error("ReadableStream not supported");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let tempMessages = ''; // Accumulate text chunks here
+  
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+  
+        tempMessages += decoder.decode(value, { stream: true });
+  
+        let boundary = tempMessages.lastIndexOf('}');
+        if (boundary !== -1) {
+          let completeMessages = tempMessages.slice(0, boundary + 1);
+          tempMessages = tempMessages.slice(boundary + 1);
+  
+          try {
+            const parsedData = JSON.parse(completeMessages);
+            if (parsedData.messages) {
+              setMessages((messages) => [...messages, ...parsedData.messages]);
+              if (messages.length === 0 && parsedData.messages.length > 0) {
+                setThinking(false);
+              }
+            }
+          } catch (error) {
+            console.error("Failed to parse JSON:", error);
+          }
+        }
+      }
+  
+      console.log("Streaming complete");
+  
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -101,6 +137,7 @@ export const ChatProvider = ({ children }) => {
         message,
         onMessagePlayed,
         loading,
+        thinking,
         cameraZoomed,
         setCameraZoomed,
         startRecording,

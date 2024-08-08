@@ -13,7 +13,7 @@ import axios from "axios";
 dotenv.config();
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "-", // Your OpenAI API key here, I used "-" to avoid errors when the key is not set but you should not do that
+  apiKey: process.env.OPENAI_API_KEY || "-", 
 });
 
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
@@ -250,7 +250,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     },
     {
       role: "user",
-      content: userMessage || "Hola",
+      content: userMessage,
     },
   ];
   
@@ -414,7 +414,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     message.audio = await audioFileToBase64(fileName);
     message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
 
-    console.log('Message:', message);
+    console.log('Message(',i,'):', message);
 
     // make a temporary messages array to start sending message as soon as possible
     let tempMessages = [ message ];
