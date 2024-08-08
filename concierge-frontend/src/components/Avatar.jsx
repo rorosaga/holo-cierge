@@ -8,7 +8,7 @@ Alternative: https://gltf.pmnd.rs
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
@@ -111,7 +111,7 @@ const corresponding = {
 
 let setupMode = false;
 
-export function Avatar(props) {
+const Avatar = forwardRef((props, ref) => {
   const [selectedAvatar, setSelectedAvatar] = useState("digitalConcierge");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
@@ -350,9 +350,13 @@ export function Avatar(props) {
       {renderSkinnedMeshes()}
     </group>
   );
-}
+});
+
+Avatar.displayName = "Avatar";
 
 for (const key in avatars) {
   useGLTF.preload(avatars[key].model);
   useGLTF.preload(avatars[key].animations);
 }
+
+export { Avatar };
