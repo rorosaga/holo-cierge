@@ -112,7 +112,7 @@ const corresponding = {
 let setupMode = false;
 
 const Avatar = forwardRef((props, ref) => {
-  const [selectedAvatar, setSelectedAvatar] = useState("digitalConcierge");
+  const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
 
