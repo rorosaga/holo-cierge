@@ -239,7 +239,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
       Dirección: Nuestras oficinas quedan en Las Mercedes, Caracas, Venezuela.
 
-      Algunos de nuestros clientes incluyen: Residencias Los Narnajos Humboldt, Centro Plaza, Centro Comercial el Parque, Bosques del Este, Centro Comercial Bello Monte y Residencias Monte Pino.
+      Algunos de nuestros clientes incluyen: Residencias Los Naranjos Humboldt, Centro Plaza, Centro Comercial el Parque, Bosques del Este, Centro Comercial Bello Monte y Residencias Monte Pino.
 
       Sobre Nosotros: Contamos con 7 años de experiencia en soluciones inmobiliarias y gestión de condominios. Nuestro equipo profesional entiende tus necesidades y ofrece soluciones personalizadas con enfoque en el cliente y excelencia en el servicio. 
 
