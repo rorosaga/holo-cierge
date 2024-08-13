@@ -578,16 +578,38 @@ function preguntasFrecuentesDLM() {
   });
 };
 
-function contactanosEmail() {
+async function contactanosEmail({ sender, subject, body }) {
+    try {
+      
+      let transporter = nodemailer.createTransport({
+          host: 'smtp.office365.com',
+          port: 587,
+          secure: false, 
+          auth: {
+              user: 'email-here', 
+              pass: 'your-email-password' 
+          }
+      });
 
+      let mailOptions = {
+          from: "email-here", 
+          to: "email-here", 
+          subject: "Sent by: " + sender + " - " + subject,
+          text: body, 
+      };
+
+      // Send the email
+      let info = await transporter.sendMail(mailOptions);
+      console.log('Email sent: ' + info.response);
+      return { success: true, message: 'Email sent successfully' };
+  } catch (error) {
+      console.error('Error sending email:', error);
+      return { success: false, message: 'Failed to send email', error: error.message };
+  }
 };
 
 function dataCentroPlaza() {
-  return JSON.stringify({ text:
-  `
 
-  `
-  });
 };
 
 async function ticket_hotel_tama(requestText) {
