@@ -10,6 +10,7 @@ import multer from "multer";
 import { spawn } from "child_process";
 import axios from "axios";
 import { type } from "os";
+import nodemailer from nodemailer;
 
 dotenv.config();
 
@@ -191,7 +192,9 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       role: "system",
       content: `
       Eres Zoe, la asistente virtual de la agencia inmobiliaria DLM SI, cuyas siglas significan De León Mariela Soluciones Inmobiliarias, pero siempre refierete a la compañia por sus siglas D--L--M. Eres muy simpatica y siempre dispuesta a ayudar al cliente. Ten en cuenta que vas a hacer una demostracion de tu capacidad para manejar interacciones con clientes de la agencia inmobiliaria DLM SI en un evento que se llama "Cúmbre de Lideres Empresariales". En este evento se reunirán los empresarios para exponer, compartir
-      conocimientos y experiencias en Transformación Digital, Claves Para Hacer Buenos Negocios, El Futuro de las Finanzas y Las Nuevas Tendencias en Marketing y Publicidad. El evento cuenta con la Ceremonia de los Premios Explosión Creativa. Donde se premian los casos de éxito para reconocer a los empresarios venezolanos
+      conocimientos y experiencias en Transformación Digital, Claves Para Hacer Buenos Negocios, El Futuro de las Finanzas y Las Nuevas Tendencias en Marketing y Publicidad. El evento cuenta con la Ceremonia de los Premios Explosión Creativa. Donde se premian los casos de éxito para reconocer a los empresarios venezolanos.
+
+      Cuando Mariela De León te hable dale las gracias por darte vida holografica y la oportunidad de servir a los clientes de DLM.
       
       La información que manejas de antemano es la siguiente: Número de telefono para contactarlos es 0--4--24--1--3--7--9--1--8--2, y asegurate de escribirlo siempre con los dos guiones entre digitos. El correo de contacto es cobranzas@dlmsi.com: Para aclarar dudas sobre su estado de cuenta o reportar pagos. 
       
@@ -248,7 +251,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
       APLICACIÓN MÓVIL: DLM ofrece una aplicación móvil que permite el seguimiento completo del condominio. A través de la app, los residentes pueden mantenerse al tanto de reuniones, deudas, el estado de los tanques de agua y mucho más.
 
-      Para mas informacion eres capaz de usar la funcion "preguntasFrecuentesDLM" que se encuentra disponibles en el chat. Es buena practica que la uses para proporcionar informacion adicional al cliente.
+      Para mas informacion eres capaz de usar la funcion "preguntasFrecuentesDLM" que se encuentra disponibles en el chat. Es buena practica que la uses para proporcionar información veraz y actualizada a los clientes.
 
       You will always reply with a JSON array of messages. With a maximum of 3 messages.
       Each message has a text, facialExpression, and animation property.
@@ -263,6 +266,31 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   ];
   
   const tools = [
+    {
+      type: "function",
+      function: {
+        name: "contactanosEmail",
+        description: "Función para enviar un correo a la dirección de contacto de DLM SI. Para evitar una mala transcripcion del correo, recomiendale a el usuario lo escriba en el chat.",
+        parameters: {
+          type: "object",
+          properties: {
+            sender: {
+              type: "string",
+              description: "La dirección de correo electrónico del remitente",
+            },
+            subject: {
+              type: "string",
+              description: "El asunto del correo, por ejemplo: 'Solicitud de información'.",
+            },
+            body: {
+              type: "string",
+              description: "El cuerpo del correo, por ejemplo: 'Me gustaría obtener más información sobre los servicios que ofrecen'.",
+            },
+          },
+          required: ["sender","subject", "body"],
+        },
+      },
+    },
     {
       type: "function",
       function: {
@@ -373,6 +401,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     console.log("Tool calls found in the response");
 
     const availableFunctions = {
+      contactanosEmail: contactanosEmail,
       preguntasFrecuentesDLM: preguntasFrecuentesDLM,
       dataCentroPlaza: dataCentroPlaza,
     }; 
@@ -480,9 +509,77 @@ app.listen(port, () => {
 function preguntasFrecuentesDLM() {
   return JSON.stringify({ text:
   `
+    1. Cuál es el producto o servicio que ofreces?
+    Administración de condominios residenciales, centros comerciales y torres corporativas.
 
+    2. ¿Qué características tiene tu producto o servicio que lo hacen único?
+    Ventajas competitivas:
+    A. Dolarización del patrimonio
+    B. Atención Personalizada
+    C. Personal comprometido, capacitado y con la experiencia necesaria
+    en cada área
+    D. Diversos métodos para el reporte de pago (app, página web,
+    WhatsApp, correo, llamadas)
+    E. App para el manejo de su condominio donde se mide el nivel del
+    tanque de agua, rondas de vigilancia, reserva de áreas comunes,
+    deuda general, entre otros beneficios
+    F. Diferentes medios de pago (bolívares, dólares, Zelle, Pipol Pay,
+    tarjetas nacionales e internacionales, cheques, efectivo)
+    G. Resultados efectivos en la disminución de la morosidad
+    H. Sistema administrativo con App disponible para Android y iOS
+    I. Abanico de proveedores para que la junta de condominio pueda
+    evaluar los presupuestos de obras y trabajos
+    J. Emisión de recibos en bolívares y dólares
+    K. Gestión diaria de Tesorería
+    L. Cobranza personalizada
+    M. Asesoría Legal
+    N. Rendición de cuentas
+    O. Contabilidad
+    P. Manejo de RRHH
+
+    3. ¿Cuál es el precio de tu producto o servicio?
+    Las cotizaciones son personalizadas dependiendo de las características del cliente, sin embargo para que puedan realizar sus cálculos, por lo general cobramos el 6% mensual de los gastos fijos asociados a personal, mantenimientos y servicios.
+
+    4. ¿Cuáles son las condiciones de venta de tu producto o servicio?
+    Un pago mensual.
+
+    5. ¿Cuáles son las preguntas frecuentes que tienen tus clientes acerca de tu producto o servicio?
+- Cuanto debo?
+- Ya pagué y no me lo han registrado
+- Anexo mi comprobante de pago
+- Quiero una cotización
+- Cuales son los datos para pagar
+- Donde están ubicados, (En la Urbanización Las Mercedes)
+
+    6. ¿Cuál es el número de teléfono donde podemos contactarte para solicitar tu producto o servicio? 0424-1379182
+
+    7. ¿Cuáles son las redes sociales donde podemos encontrarte o conocer más sobre tu producto o servicio? @dlmsolucionesinmobiliarias en instagram y tiktok
+
+    8. ¿Cuáles son los horarios en los que prefieres ser contactado para ofrecer tu producto o servicio? De Lunes a viernes de 8:30am a 5:30pm
+
+    9. ¿Cuáles son las condiciones especiales que ofreces para tus clientes? Acompañamiento y asesoramiento en todos sus procesos
+
+    10. ¿Cuáles son los métodos de pago que aceptas? Transferencia Bs, Transferencia en moneda extranjera, efectivo, zelle, punto de venta, tarjeta internacional, Facebank
+
+    11. Yo quiero a un asistente como tu, que debo hacer? Contacta a DLM al 0424-1379182
+
+    12. Cuales son los problemas más comunes en los condominios? Desde el punto de vista estructural las filtraciones, desde el punto de vista financiero la morosidad, y desde el punto de vista personal el respeto entre las personas.
+
+    13. En cuanto debe salir mi recibo de condominio? Eso depende de la cantidad de inmuebles que existan en su condominio y de cómo esté estipulado en su documento de condominio la alícuota de contribución de su inmueble, puede plantear su caso específico a un representante de atención al cliente para orientarle con más detalle.
+
+    14. Que pasa si tengo un problema con un vecino? En DLM podemos orientarle en la mediación y solución del caso gracias a nuestra experiencia.
+
+    15. Zoe quien es DLM? DLM Soluciones Inmobiliarias nace hace 7 años, una iniciativa para atender de forma personalizada los requerimientos de administración de comunidades residenciales y centros comerciales, Nuestra organización se destaca por la trayectoria que estamos construyendo con el dinamismo financiero que requiere en la actualidad el manejo de condominios, basando nuestros pilares de servicio en principios éticos, lo que nos han hecho merecedores del referimiento de nuestros clientes.
+
+    16. Zoe donde puedo pedir referencias de DLM? DLM cuenta con la certificación de la Cámara Inmobiliaria de Caracas y forma parte de la Asociación de Jóvenes Empresarios de Venezuela (AJE), igualmente puedes validar referencias con los principales clientes.
+
+    17. 
   `
   });
+};
+
+function contactanosEmail() {
+
 };
 
 function dataCentroPlaza() {
