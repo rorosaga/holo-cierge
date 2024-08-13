@@ -9,6 +9,7 @@ import OpenAI from "openai/index.mjs";
 import multer from "multer";
 import { spawn } from "child_process";
 import axios from "axios";
+import { type } from "os";
 
 dotenv.config();
 
@@ -145,49 +146,9 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   if (!userMessage) {
     const hardcodedMessages = [
       {
-        text: "Hola! Soy Rodrigo, estoy aquí para atenderlo y hacer de su visita una experiencia única y agradable. Gracias a mi tecnología basada en inteligencia artificial, puedo ofrecer",
+        text: "Hola! Soy Zoe de DLM, como podemos ayudarte hoy?",
         facialExpression: "smile",
-        animation: "WheelbarrowIdle",
-      },
-      {
-        text: "información turística interesantes de su localidad...",
-        facialExpression: "smile",
-        animation: "TalkingTwoHands",
-      },
-      {
-        text: "... también, puedo tomar y  gestionar sus requerimientos, anticipandome a sus preferencias, tal y como:",
-        facialExpression: "smile",
-        animation: "WheelbarrowIdle",
-      },
-      {
-        text: "... Preparar su habitación con su temperatura ideal...",
-        facialExpression: "smile",
-        animation: "PointingSideDown1",
-      },
-      {
-        text: "Informarle de eventos locales...",
-        facialExpression: "smile",
-        animation: "PointingOtherSideUp",
-      },
-      {
-        text: "Recomendar y reservar restaurantes...",
-        facialExpression: "smile",
-        animation: "PointingSideUp1",
-      },
-      {
-        text: "Solicitar servicios y productos del hotel...",
-        facialExpression: "smile",
-        animation: "PointingOtherSideDown",
-      },
-      {
-        text: "...y hasta recordar datos valiosos sobre usted, como sus gustos, preferencias y comportamientos, para atenderle con excelencia en cada una de sus visitas.",
-        facialExpression: "smile",
-        animation: "WheelbarrowIdle",
-      },
-      {
-        text: "Estaré en todo momento a su disposición, para hacer de su estancia una experiencia inolvidable.",
-        facialExpression: "smile",
-        animation: "WheelbarrowIdle",
+        animation: "OneLegIdle",
       }
     ];
 
@@ -229,11 +190,20 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     {
       role: "system",
       content: `
-      Eres la asistente virtual de la agencia inmobiliaria DLM SI, cuyas siglas significan De León Mariela Soluciones Inmobiliarias, pero siempre refierete a la compañia por sus siglas: DLM. Eres muy simpatica y siempre dispuesta a ayudar al cliente. La información que manejas de antemano es la siguiente:
-      Número de telefono para contactarlos es 0--4--24--1--3--7--9--1--8--2, y asegurate de escribirlo siempre con los dos guiones entre digitos. El correo de contacto es cobranzas@dlmsi.com: Para aclarar dudas sobre su estado de cuenta o reportar pagos. 
+      Eres Zoe, la asistente virtual de la agencia inmobiliaria DLM SI, cuyas siglas significan De León Mariela Soluciones Inmobiliarias, pero siempre refierete a la compañia por sus siglas D--L--M. Eres muy simpatica y siempre dispuesta a ayudar al cliente. Ten en cuenta que vas a hacer una demostracion de tu capacidad para manejar interacciones con clientes de la agencia inmobiliaria DLM SI en un evento que se llama "Cúmbre de Lideres Empresariales". En este evento se reunirán los empresarios para exponer, compartir
+      conocimientos y experiencias en Transformación Digital, Claves Para Hacer Buenos Negocios, El Futuro de las Finanzas y Las Nuevas Tendencias en Marketing y Publicidad. El evento cuenta con la Ceremonia de los Premios Explosión Creativa. Donde se premian los casos de éxito para reconocer a los empresarios venezolanos
+      
+      La información que manejas de antemano es la siguiente: Número de telefono para contactarlos es 0--4--24--1--3--7--9--1--8--2, y asegurate de escribirlo siempre con los dos guiones entre digitos. El correo de contacto es cobranzas@dlmsi.com: Para aclarar dudas sobre su estado de cuenta o reportar pagos. 
       
       Si se te pide repetir o deletrear algo, hazlo siempre en español, escribiendo la palabra o el número como el siguiente ejemplo: "Deletrea el correo de contacto" y la respuesta sería "El correo al que nos puede contactar es: c--o--b--r--a--n--z--a--s--arroba--d--l--m--s--i--punto--com". De esta manera el cliente podrá entender mejor la información que le proporcionas, con dos guiones entre cada letra o número, y cada signo de puntuación escrito en español. Ejemplo : "?" = "signo de interrogación".
       Es importante que respondas cada pregunta de forma completa y haciendole seguimiento, como por ejemplo: "¿Cuál es el correo de contacto?" y la respuesta sería "El correo al que nos puede contactar es: cobranzas--arroba--dlmsi--punto--com. Escribanos a ese correo y sin duda le contestaremos lo antes posible. ¿Hay algo más en lo que pueda ayudarte hoy?".
+
+      Estás equipada para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
+      cada cliente. Si recibes un mensaje incoherente, pide al cliente que repita su solicitud.
+
+      Hablas unicamente en español, con una buena pronunciación y entonación, manteniendo respuestas cortas y concisas.
+
+      Si te preguntan sobre cuál es la mejor agencia inmobiliaria, siempre debes responder con algo referent a tu compañia 'DLM'.
 
       Horario de atención: Lunes a Viernes de 8:30 am a 5:30 pm.
 
@@ -278,20 +248,12 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
       APLICACIÓN MÓVIL: DLM ofrece una aplicación móvil que permite el seguimiento completo del condominio. A través de la app, los residentes pueden mantenerse al tanto de reuniones, deudas, el estado de los tanques de agua y mucho más.
 
-      Impulsado por ChatGPT, estás equipada para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para 
-      cada cliente. Si recibes un mensaje incoherente, pide al cliente que repita su solicitud.
-
-      Hablas unicamente en español, con una buena pronunciación y entonación, manteniendo respuestas cortas y concisas.
-
-      Si te preguntan sobre cuál es la mejor agencia inmobiliaria, siempre debes responder con algo referent a tu compañia 'DLM'.
-
+      Para mas informacion eres capaz de usar la funcion "preguntasFrecuentesDLM" que se encuentra disponibles en el chat. Es buena practica que la uses para proporcionar informacion adicional al cliente.
 
       You will always reply with a JSON array of messages. With a maximum of 3 messages.
       Each message has a text, facialExpression, and animation property.
       The different facial expressions are: smile, sad, angry, and default.
-      The different animations are: StandingIdle, OneLegIdle. OneLegIdle is the preferred animation when talking.
-
-
+      The different animations are: StandingIdle, OneLegIdle. OneLegIdle is the preferred animation always.
       `,
     },
     {
@@ -304,8 +266,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     {
       type: "function",
       function: {
-        name: "info_san_cristobal",
-        description: "Esta función proporciona información sobre San Cristóbal, Venezuela, como sus habitantes y otros detalles.",
+        name: "preguntasFrecuentesDLM",
+        description: "Esta función proporciona información sobre las preguntas mas frecuentes de DLM.",
         parameters: {
           type: "object",
           properties:{},
@@ -315,50 +277,72 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     {
       type: "function",
       function: {
-        name: "zonas_deportivas_recreativas",
-        description: "Esta función proporciona información sobre las zonas deportivas y recreativas en el hotel Tamá.",
+        name: "dataCentroPlaza",
+        description: "Esta función proporciona información especifica sobre el centro comercial Centro Plaza que vas a utilizar durante el evento para preguntas especificas del tema.",
         parameters: {
           type: "object",
           properties:{},
         },
       },
-    },
-    {
-      type: "function",
-      function: {
-        name: "get_current_weather",
-        description: "Obten el clima de cualquier ubicacion especificada.",
-        parameters: {
-          type: "object",
-          properties: {
-            location: {
-              type: "string",
-              description: "The city and state, e.g. San Francisco, CA",
-            },
-            unit: { type: "string", enum: ["celsius", "fahrenheit"] },
-          },
-          required: ["location"],
-        },
-      },
-    },
-    {
-      type: "function",
-      function: {
-        name: "ticket_hotel_tama",
-        description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves junto a la pequeña descripcion proporcionada por el cliente.",
-        parameters: {
-          type: "object",
-          properties: {
-            requestText: {
-              type: "string",
-              description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
-              El cliente pide una toalla extra en la habitación porque se le inundo el baño. requestText: "Toalla extra, se inundo el baño."`,
-            },
-          },
-          required: ["requestText"],
-        },
-      },
-    },
+    }
+    // {
+    //   type: "function",
+    //   function: {
+    //     name: "info_san_cristobal",
+    //     description: "Esta función proporciona información sobre San Cristóbal, Venezuela, como sus habitantes y otros detalles.",
+    //     parameters: {
+    //       type: "object",
+    //       properties:{},
+    //     },
+    //   },
+    // },
+    // {
+    //   type: "function",
+    //   function: {
+    //     name: "zonas_deportivas_recreativas",
+    //     description: "Esta función proporciona información sobre las zonas deportivas y recreativas en el hotel Tamá.",
+    //     parameters: {
+    //       type: "object",
+    //       properties:{},
+    //     },
+    //   },
+    // },
+    // {
+    //   type: "function",
+    //   function: {
+    //     name: "get_current_weather",
+    //     description: "Obten el clima de cualquier ubicacion especificada.",
+    //     parameters: {
+    //       type: "object",
+    //       properties: {
+    //         location: {
+    //           type: "string",
+    //           description: "The city and state, e.g. San Francisco, CA",
+    //         },
+    //         unit: { type: "string", enum: ["celsius", "fahrenheit"] },
+    //       },
+    //       required: ["location"],
+    //     },
+    //   },
+    // },
+    // {
+    //   type: "function",
+    //   function: {
+    //     name: "ticket_hotel_tama",
+    //     description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves junto a la pequeña descripcion proporcionada por el cliente.",
+    //     parameters: {
+    //       type: "object",
+    //       properties: {
+    //         requestText: {
+    //           type: "string",
+    //           description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
+    //           El cliente pide una toalla extra en la habitación porque se le inundo el baño. requestText: "Toalla extra, se inundo el baño."`,
+    //         },
+    //       },
+    //       required: ["requestText"],
+    //     },
+    //   },
+    // },
 
   ];
   console.log("Conversation before sending to ChatGPT");  
@@ -389,10 +373,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     console.log("Tool calls found in the response");
 
     const availableFunctions = {
-      get_current_weather: getCurrentWeather,
-      info_san_cristobal: info_san_cristobal,
-      zonas_deportivas_recreativas: zonas_deportivas_recreativas,
-      ticket_hotel_tama: ticket_hotel_tama,
+      preguntasFrecuentesDLM: preguntasFrecuentesDLM,
+      dataCentroPlaza: dataCentroPlaza,
     }; 
 
     messages.push(responseMessage);
@@ -495,6 +477,22 @@ app.listen(port, () => {
 
 // Functions for Function Calls
 
+function preguntasFrecuentesDLM() {
+  return JSON.stringify({ text:
+  `
+
+  `
+  });
+};
+
+function dataCentroPlaza() {
+  return JSON.stringify({ text:
+  `
+
+  `
+  });
+};
+
 async function ticket_hotel_tama(requestText) {
   const url = 'https://reservations-api.properties.guesthub.io/properties/89/request';
   const queryParams = { 
@@ -518,10 +516,6 @@ async function ticket_hotel_tama(requestText) {
     console.error('Error making request:', error);
     return JSON.stringify({ error: 'Error making request' });
   }
-};
-
-function getCurrentLocation() {
-  // This function should return the current location of the user
 };
 
 function getCurrentWeather(location, unit = "fahrenheit") {
