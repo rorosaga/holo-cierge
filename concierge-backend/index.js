@@ -10,7 +10,7 @@ import multer from "multer";
 import { spawn } from "child_process";
 import axios from "axios";
 import { type } from "os";
-import nodemailer from nodemailer;
+import nodemailer from "nodemailer";
 
 dotenv.config();
 
@@ -270,11 +270,15 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       type: "function",
       function: {
         name: "contactanosEmail",
-        description: "Función para enviar un correo a la dirección de contacto de DLM SI. Para evitar una mala transcripcion del correo, recomiendale a el usuario lo escriba en el chat.",
+        description: "Función para enviar un correo a la dirección de contacto de DLM SI.",
         parameters: {
           type: "object",
           properties: {
             sender: {
+              type: "string",
+              description: "Nombre del remitente",
+            },
+            user_email: {
               type: "string",
               description: "La dirección de correo electrónico del remitente",
             },
@@ -287,7 +291,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
               description: "El cuerpo del correo, por ejemplo: 'Me gustaría obtener más información sobre los servicios que ofrecen'.",
             },
           },
-          required: ["sender","subject", "body"],
+          required: ["sender", "user_email", "subject", "body"],
         },
       },
     },
@@ -302,17 +306,17 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         },
       },
     },
-    {
-      type: "function",
-      function: {
-        name: "dataCentroPlaza",
-        description: "Esta función proporciona información especifica sobre el centro comercial Centro Plaza que vas a utilizar durante el evento para preguntas especificas del tema.",
-        parameters: {
-          type: "object",
-          properties:{},
-        },
-      },
-    }
+    // {
+    //   type: "function",
+    //   function: {
+    //     name: "dataCentroPlaza",
+    //     description: "Esta función proporciona información especifica sobre el centro comercial Centro Plaza que vas a utilizar durante el evento para preguntas especificas del tema.",
+    //     parameters: {
+    //       type: "object",
+    //       properties:{},
+    //     },
+    //   },
+    // }
     // {
     //   type: "function",
     //   function: {
@@ -399,11 +403,12 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
   if (responseMessage.tool_calls) {
     console.log("Tool calls found in the response");
+    console.log(toolCalls);
 
     const availableFunctions = {
       contactanosEmail: contactanosEmail,
       preguntasFrecuentesDLM: preguntasFrecuentesDLM,
-      dataCentroPlaza: dataCentroPlaza,
+      // dataCentroPlaza: dataCentroPlaza,
     }; 
 
     messages.push(responseMessage);
@@ -484,8 +489,6 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   // console.log("Final messages:", messages);
   // res.send({ messages });
 });
-
-
 
 
 
@@ -572,39 +575,44 @@ function preguntasFrecuentesDLM() {
     15. Zoe quien es DLM? DLM Soluciones Inmobiliarias nace hace 7 años, una iniciativa para atender de forma personalizada los requerimientos de administración de comunidades residenciales y centros comerciales, Nuestra organización se destaca por la trayectoria que estamos construyendo con el dinamismo financiero que requiere en la actualidad el manejo de condominios, basando nuestros pilares de servicio en principios éticos, lo que nos han hecho merecedores del referimiento de nuestros clientes.
 
     16. Zoe donde puedo pedir referencias de DLM? DLM cuenta con la certificación de la Cámara Inmobiliaria de Caracas y forma parte de la Asociación de Jóvenes Empresarios de Venezuela (AJE), igualmente puedes validar referencias con los principales clientes.
-
-    17. 
   `
   });
 };
 
-async function contactanosEmail({ sender, subject, body }) {
-    try {
-      
-      let transporter = nodemailer.createTransport({
-          host: 'smtp.office365.com',
-          port: 587,
-          secure: false, 
-          auth: {
-              user: 'email-here', 
-              pass: 'your-email-password' 
-          }
-      });
+async function contactanosEmail(sender, user_email, subject, body) {
+  console.log('Arguments:', sender, user_email, subject, body);
+  const email = process.env.EMAIL_ADDRESS;
+  const password = process.env.EMAIL_PASSWORD;
+  
 
-      let mailOptions = {
-          from: "email-here", 
-          to: "email-here", 
-          subject: "Sent by: " + sender + " - " + subject,
-          text: body, 
-      };
+  try {
+    let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        secure: false, 
+        auth: {
+            user: email, 
+            pass: password, 
+        },
+        tls: {
+          rejectUnauthorized: false
+        }
+    });
 
-      // Send the email
-      let info = await transporter.sendMail(mailOptions);
-      console.log('Email sent: ' + info.response);
-      return { success: true, message: 'Email sent successfully' };
+    let mailOptions = {
+        from: email, 
+        to: email, 
+        subject: sender + ": " + subject,
+        text: "Email cliente: " + user_email + "\n\n" + body, 
+    };
+
+    let info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+    return JSON.stringify({ success: true, message: 'Email sent successfully' });
+
   } catch (error) {
       console.error('Error sending email:', error);
-      return { success: false, message: 'Failed to send email', error: error.message };
+      return JSON.stringify({ success: false, message: 'Failed to send email', error: error.message });
   }
 };
 
