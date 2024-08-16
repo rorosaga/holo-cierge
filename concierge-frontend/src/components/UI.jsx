@@ -1,5 +1,8 @@
 import { useRef } from "react";
 import { useChat } from "../hooks/useChat";
+import avatarData from "../data/avatars.json";
+
+const avatars = avatarData.avatars;
 
 export const UI = ({ hidden, ...props }) => {
   const input = useRef();
@@ -17,15 +20,15 @@ export const UI = ({ hidden, ...props }) => {
     return null;
   }
 
-  const hoverColor = '#2B1700';
-  const defaultColor = '#43270F';
+  const hoverColor = avatars.digitalConcierge.hoverColorUI;
+  const defaultColor = avatars.digitalConcierge.defaultColorUI;
 
   return (
     <>
       <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-between p-4 flex-col pointer-events-none">
         <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-lg">
-          <h1 className="font-black text-xl">Digital Concierge 🤵‍♂️</h1>
-          <p>At your service!</p>
+          <h1 className="font-black text-xl">{avatars.zoeDLM.headingTextUI}</h1>
+          <p>{avatars.zoeDLM.bodyTextUI}</p>
         </div>
 
 

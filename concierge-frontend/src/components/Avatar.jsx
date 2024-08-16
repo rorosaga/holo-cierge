@@ -8,10 +8,13 @@ Alternative: https://gltf.pmnd.rs
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import React, { useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
+import avatarData from "../data/avatars.json";
+
+const avatars = avatarData.avatars; // JSON data from avatars.json
 
 const facialExpressions = {
   default: {},
@@ -108,19 +111,25 @@ const corresponding = {
 
 let setupMode = false;
 
-export function Avatar(props) {
-  const { nodes, materials, scene } = useGLTF(
-    "/models/concierge_m3.glb"
-  );
-
+const Avatar = forwardRef((props, ref) => {
+  const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
   const { message, onMessagePlayed, chat } = useChat();
-
   const [lipsync, setLipsync] = useState();
+
+  const avatarModel = useGLTF(avatars[selectedAvatar].model);
+  const [currentModel, setCurrentModel] = useState(avatarModel);
+
+  useEffect(() => {
+    setCurrentModel(avatarModel);
+    
+  }, [selectedAvatar, avatarModel]);
+
+  const { nodes, materials, scene } = currentModel;
 
   useEffect(() => {
     console.log(message);
     if (!message) {
-      setAnimation("WheelbarrowIdle");
+      setAnimation(avatars[selectedAvatar].defaultPose);
       return;
     }
     setAnimation(message.animation);
@@ -132,12 +141,12 @@ export function Avatar(props) {
     audio.onended = onMessagePlayed;
   }, [message]);
 
-  const { animations } = useGLTF("/models/animations.glb");
+  const { animations } = useGLTF(avatars[selectedAvatar].animations);
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === "WheelbarrowIdle") ? "WheelbarrowIdle" : animations[0].name // Check if Idle animation exists otherwise use first animation
+    animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if Idle animation exists otherwise use first animation
   );
   useEffect(() => {
     actions[animation]
@@ -226,6 +235,13 @@ export function Avatar(props) {
     });
   });
 
+  useControls("Avatars", {
+    avatar: {
+      options: Object.keys(avatars),
+      onChange: (value) => setSelectedAvatar(value),
+    },
+  });
+
   useControls("FacialExpressions", {
     chat: button(() => chat()),
     winkLeft: button(() => {
@@ -307,74 +323,39 @@ export function Avatar(props) {
     return () => clearTimeout(blinkTimeout);
   }, []);
 
+  const renderSkinnedMeshes = () => {
+    return Object.keys(nodes).map((key) => {
+      const node = nodes[key];
+      if (!node.isSkinnedMesh) {
+        return null;
+      }
+      return (
+        <skinnedMesh
+          key={key}
+          name={node.name}
+          geometry={node.geometry}
+          material={materials[node.material.name]}
+          skeleton={node.skeleton}
+          morphTargetDictionary={node.morphTargetDictionary}
+          morphTargetInfluences={node.morphTargetInfluences}
+        />
+      );
+    });
+  };
+
   return (
     <group {...props} dispose={null} ref={group}>
       <primitive object={nodes.Hips} />
-      <skinnedMesh
-        name="EyeLeft"
-        geometry={nodes.EyeLeft.geometry}
-        material={materials.Wolf3D_Eye}
-        skeleton={nodes.EyeLeft.skeleton}
-        morphTargetDictionary={nodes.EyeLeft.morphTargetDictionary}
-        morphTargetInfluences={nodes.EyeLeft.morphTargetInfluences}
-      />
-      <skinnedMesh
-        name="EyeRight"
-        geometry={nodes.EyeRight.geometry}
-        material={materials.Wolf3D_Eye}
-        skeleton={nodes.EyeRight.skeleton}
-        morphTargetDictionary={nodes.EyeRight.morphTargetDictionary}
-        morphTargetInfluences={nodes.EyeRight.morphTargetInfluences}
-      />
-      <skinnedMesh
-        name="Wolf3D_Head"
-        geometry={nodes.Wolf3D_Head.geometry}
-        material={materials.Wolf3D_Skin}
-        skeleton={nodes.Wolf3D_Head.skeleton}
-        morphTargetDictionary={nodes.Wolf3D_Head.morphTargetDictionary}
-        morphTargetInfluences={nodes.Wolf3D_Head.morphTargetInfluences}
-      />
-      <skinnedMesh
-        name="Wolf3D_Teeth"
-        geometry={nodes.Wolf3D_Teeth.geometry}
-        material={materials.Wolf3D_Teeth}
-        skeleton={nodes.Wolf3D_Teeth.skeleton}
-        morphTargetDictionary={nodes.Wolf3D_Teeth.morphTargetDictionary}
-        morphTargetInfluences={nodes.Wolf3D_Teeth.morphTargetInfluences}
-      />
-      <skinnedMesh
-        geometry={nodes.Wolf3D_Hair.geometry}
-        material={materials.Wolf3D_Hair}
-        skeleton={nodes.Wolf3D_Hair.skeleton}
-      />
-      <skinnedMesh
-        geometry={nodes.Wolf3D_Glasses.geometry}
-        material={materials.Wolf3D_Glasses}
-        skeleton={nodes.Wolf3D_Glasses.skeleton}
-      />
-      <skinnedMesh
-        geometry={nodes.Wolf3D_Body.geometry}
-        material={materials.Wolf3D_Body}
-        skeleton={nodes.Wolf3D_Body.skeleton}
-      />
-      <skinnedMesh
-        geometry={nodes.Wolf3D_Outfit_Bottom.geometry}
-        material={materials.Wolf3D_Outfit_Bottom}
-        skeleton={nodes.Wolf3D_Outfit_Bottom.skeleton}
-      />
-      <skinnedMesh
-        geometry={nodes.Wolf3D_Outfit_Footwear.geometry}
-        material={materials.Wolf3D_Outfit_Footwear}
-        skeleton={nodes.Wolf3D_Outfit_Footwear.skeleton}
-      />
-      <skinnedMesh
-        geometry={nodes.Wolf3D_Outfit_Top.geometry}
-        material={materials.Wolf3D_Outfit_Top}
-        skeleton={nodes.Wolf3D_Outfit_Top.skeleton}
-      />
+      {renderSkinnedMeshes()}
     </group>
   );
+});
+
+Avatar.displayName = "Avatar";
+
+for (const key in avatars) {
+  useGLTF.preload(avatars[key].model);
+  useGLTF.preload(avatars[key].animations);
 }
 
-useGLTF.preload("/models/concierge_m3.glb");
-useGLTF.preload("/models/animations.glb");
+export { Avatar };
