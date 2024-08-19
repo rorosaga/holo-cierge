@@ -28,8 +28,6 @@ RUN echo "OPENAI_API_KEY=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\n\
 ELEVEN_LABS_API_KEY=sk_cb8fb74dfe5a49170b3c2239c8cf9dd52c2be0839a626ed1\n\
 RHUBARB_PATH=./bin/rhubarb" > .env
 
-RUN yarn
-
 RUN python3 -m venv venv && \
     . venv/bin/activate && \
     pip install -U openai-whisper
