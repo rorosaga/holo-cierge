@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js --ext js"
+    "dev": "nodemon index.js --ext js",
+    "postinstall": "bash ./setup.sh"
   },
   "dependencies": {
     "axios": "^1.7.2",
