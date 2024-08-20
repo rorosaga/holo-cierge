@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 
-const backendUrl = "http://localhost:3000";
+const backendUrl = "http://api.concierge.triops.com.ve:3000";
 
 const ChatContext = createContext();
 
