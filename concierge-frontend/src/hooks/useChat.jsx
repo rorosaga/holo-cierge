@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
 
-const backendUrl = "http://10.0.1.147:3000";
+const backendUrl = "http://localhost:3000";
 
 const ChatContext = createContext();
 
@@ -36,25 +36,25 @@ export const ChatProvider = ({ children }) => {
       });
 
       // Streaming messages from the backend
-      if (!response.body){
+      if (!response.body) {
         throw new Error("ReadableStream not supported");
       }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let tempMessages = ''; // Accumulate text chunks here
-  
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-  
+
         tempMessages += decoder.decode(value, { stream: true });
-  
+
         let boundary = tempMessages.lastIndexOf('}');
         if (boundary !== -1) {
           let completeMessages = tempMessages.slice(0, boundary + 1);
           tempMessages = tempMessages.slice(boundary + 1);
-  
+
           try {
             const parsedData = JSON.parse(completeMessages);
             if (parsedData.messages) {
@@ -68,9 +68,9 @@ export const ChatProvider = ({ children }) => {
           }
         }
       }
-  
+
       console.log("Streaming complete");
-  
+
     } catch (error) {
       console.error("Error sending message:", error);
     } finally {
@@ -104,7 +104,7 @@ export const ChatProvider = ({ children }) => {
       console.error("Error accessing microphone:", error);
     }
   };
-  
+
   const stopRecording = () => {
     if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
       mediaRecorder.current.stop();
@@ -117,7 +117,7 @@ export const ChatProvider = ({ children }) => {
       });
     }
   };
-  
+
   const onMessagePlayed = () => {
     setMessages((messages) => messages.slice(1));
   };

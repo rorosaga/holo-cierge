@@ -15,7 +15,7 @@ import nodemailer from "nodemailer";
 dotenv.config();
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY || "-", 
+  apiKey: process.env.OPENAI_API_KEY || "-",
 });
 
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
@@ -128,6 +128,30 @@ let messageHistory = [
 
     APLICACIÓN MÓVIL: DLM ofrece una aplicación móvil que permite el seguimiento completo del condominio. A través de la app, los residentes pueden mantenerse al tanto de reuniones, deudas, el estado de los tanques de agua y mucho más.
 
+    A las siguientes preguntas responderas con la respuesta acorde:
+
+    ¿Qué hace un administrador de condominio cuando no hay quejas?
+    ¡Revisa si todos los vecinos se han mudado!
+
+    ¿Cómo se llama el condominio que nunca se queja?
+    ¡Edificio El Milagro!
+
+    ¿Cómo sabes que tu condominio está en problemas? 
+    Return 2 separate messages:
+    Cuando las juntas de condominio duran más
+    Return 'SadIdle' as 'animation' property at this point:
+    que las películas del Señor de los Anillos.
+
+    ¿Qué le dice el administrador del condominio al plomero?
+    “Otra vez tú por aquí… Nos vemos más que a mi familia”.
+
+    ¿Qué hace un administrador de condominio en su día libre?
+    Lee las quejas de los vecinos… por diversión.
+
+    ¿Por qué el administrador del condominio no necesita despertador?
+    Porque los vecinos ya se encargan de llamarlo a cualquier hora.
+
+
     You will always reply with a JSON array of messages. With a maximum of 3 messages.
     Each message has a text, facialExpression, and animation property.
     The different facial expressions are: smile, sad, angry, and default.
@@ -204,7 +228,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     }
   }
 
-// Hardcoded messages
+  // Hardcoded messages
   if (!userMessage) {
     const hardcodedMessages = [
       {
@@ -225,13 +249,13 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
         console.log(`Audio and lipsync files already exist for message ${i}`);
       } else {
-      
-      const textInput = message.text; // The text you wish to convert to speech
-      await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
-      await lipSyncMessage(messageName, i);
-      message.audio = await audioFileToBase64(fileName);
-      message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
-      console.log(`Generated audio and lipsync for message ${i}`);
+
+        const textInput = message.text; // The text you wish to convert to speech
+        await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
+        await lipSyncMessage(messageName, i);
+        message.audio = await audioFileToBase64(fileName);
+        message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
+        console.log(`Generated audio and lipsync for message ${i}`);
       }
 
     }
@@ -240,16 +264,16 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     return;
   }
 
-  // The followind does: 
-// 1. Send a message to the OpenAI API
-// 2. Generate audio files for each message
-// 3. Generate lipsync files for each message
-// 4. Send back the messages with the audio and lipsync files
+  // The following does: 
+  // 1. Send a message to the OpenAI API
+  // 2. Generate audio files for each message
+  // 3. Generate lipsync files for each message
+  // 4. Send back the messages with the audio and lipsync files
 
-// Chat GPT 
+  // Chat GPT 
 
-  messageHistory.push({role: "user", content: userMessage});
-  
+  messageHistory.push({ role: "user", content: userMessage });
+
   const tools = [
     {
       type: "function",
@@ -287,7 +311,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         description: "Esta función proporciona información sobre las preguntas mas frecuentes de DLM.",
         parameters: {
           type: "object",
-          properties:{},
+          properties: {},
         },
       },
     },
@@ -362,7 +386,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     // },
 
   ];
-  console.log("Conversation before sending to ChatGPT");  
+  console.log("Conversation before sending to ChatGPT");
   console.log(messageHistory);
 
   const time = new Date().getTime();
@@ -384,7 +408,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
   messageHistory.push(response.choices[0].message);
 
-  const responseMessage= response.choices[0].message;
+  const responseMessage = response.choices[0].message;
 
   const toolCalls = responseMessage.tool_calls;
 
@@ -398,7 +422,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       contactanosEmail: contactanosEmail,
       preguntasFrecuentesDLM: preguntasFrecuentesDLM,
       // dataCentroPlaza: dataCentroPlaza,
-    }; 
+    };
 
     // messages.push(responseMessage);
 
@@ -410,7 +434,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         const functionArgs = JSON.parse(toolCall.function.arguments);
 
         const functionResponse = await functionToCall(...Object.values(functionArgs));
-        
+
         messageHistory.push({
           tool_call_id: toolCall.id,
           role: "tool",
@@ -462,10 +486,10 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     message.audio = await audioFileToBase64(fileName);
     message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
 
-    console.log('Message(',i,'):', message);
+    console.log('Message(', i, '):', message);
 
     // make a temporary messages array to start sending message as soon as possible
-    let tempMessages = [ message ];
+    let tempMessages = [message];
     res.write(JSON.stringify({ messages: tempMessages }));
 
   }
@@ -493,8 +517,9 @@ app.listen(port, () => {
 // Functions for Function Calls
 
 function preguntasFrecuentesDLM() {
-  return JSON.stringify({ text:
-  `
+  return JSON.stringify({
+    text:
+      `
     1. Cuál es el producto o servicio que ofreces?
     Administración de condominios residenciales, centros comerciales y torres corporativas.
 
@@ -564,27 +589,27 @@ async function contactanosEmail(sender, user_email, subject, body) {
   console.log('Arguments:', sender, user_email, subject, body);
   const email = process.env.EMAIL_ADDRESS;
   const password = process.env.EMAIL_PASSWORD;
-  
+
 
   try {
     let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, 
-        auth: {
-            user: email, 
-            pass: password, 
-        },
-        tls: {
-          rejectUnauthorized: false
-        }
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: email,
+        pass: password,
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
     });
 
     let mailOptions = {
-        from: email, 
-        to: email, 
-        subject: sender + ": " + subject,
-        text: "Email cliente: " + user_email + "\n\n" + body, 
+      from: email,
+      to: email,
+      subject: sender + ": " + subject,
+      text: "Email cliente: " + user_email + "\n\n" + body,
     };
 
     let info = await transporter.sendMail(mailOptions);
@@ -592,8 +617,8 @@ async function contactanosEmail(sender, user_email, subject, body) {
     return JSON.stringify({ success: true, message: 'Email sent successfully' });
 
   } catch (error) {
-      console.error('Error sending email:', error);
-      return JSON.stringify({ success: false, message: 'Failed to send email', error: error.message });
+    console.error('Error sending email:', error);
+    return JSON.stringify({ success: false, message: 'Failed to send email', error: error.message });
   }
 };
 
@@ -603,7 +628,7 @@ function dataCentroPlaza() {
 
 async function ticket_hotel_tama(requestText) {
   const url = 'https://reservations-api.properties.guesthub.io/properties/89/request';
-  const queryParams = { 
+  const queryParams = {
     'Guesthub-Context': '{"properties":["propertyId"]}'
   };
   const requestBody = {
@@ -639,8 +664,9 @@ function getCurrentWeather(location, unit = "fahrenheit") {
 };
 
 function info_san_cristobal() {
-  return JSON.stringify({ text:
-  `
+  return JSON.stringify({
+    text:
+      `
   Es una ciudad venezolana, capital del Estado Táchira y del Municipio San 
   Cristóbal ubicada en la Región de los Andes al suroeste de Venezuela. Está 
   ubicada a 57 kilómetros de la frontera con Colombia. La ciudad es apodada 
@@ -653,8 +679,9 @@ function info_san_cristobal() {
 };
 
 function zonas_deportivas_recreativas() {
-  return JSON.stringify({ text:
-    `
+  return JSON.stringify({
+    text:
+      `
   	Se dispone de una área deportiva compuesta por una cancha de tenis y dos 
     canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la 
     primera alberga sanitarios, fuente de soda, mini tienda y la segunda una 
