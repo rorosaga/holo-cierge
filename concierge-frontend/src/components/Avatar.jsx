@@ -8,7 +8,7 @@ Alternative: https://gltf.pmnd.rs
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
-import React, { forwardRef, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState, useCallback } from "react";
 
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
@@ -119,9 +119,39 @@ const Avatar = forwardRef((props, ref) => {
   const avatarModel = useGLTF(avatars[selectedAvatar].model);
   const [currentModel, setCurrentModel] = useState(avatarModel);
 
+  const [isHappyIdle, setIsHappyIdle] = useState(false);
+
+  const playHappyIdle = useCallback(() => {
+    setIsHappyIdle(true);
+    setAnimation('HappyIdle');
+    setFacialExpression('smile');
+
+    setTimeout(() => {
+      setIsHappyIdle(false);
+      setAnimation(avatars[selectedAvatar].defaultPose);
+      setFacialExpression('default');
+    }, 5000);
+  }, [selectedAvatar]);
+
+  useEffect(() => {
+    const scheduleNextHappyIdle = () => {
+      const randomDelay = Math.floor(Math.random() * (70000 - 50000) + 50000); // Random delay between 50-70 seconds
+      return setTimeout(() => {
+        if (!isHappyIdle && !message) {
+          playHappyIdle();
+        }
+        scheduleNextHappyIdle(); // Schedule the next occurrence
+      }, randomDelay);
+    };
+
+    const timeoutId = scheduleNextHappyIdle();
+
+    return () => clearTimeout(timeoutId);
+  }, [isHappyIdle, playHappyIdle, message]);
+
   useEffect(() => {
     setCurrentModel(avatarModel);
-    
+
   }, [selectedAvatar, avatarModel]);
 
   const { nodes, materials, scene } = currentModel;
@@ -146,7 +176,7 @@ const Avatar = forwardRef((props, ref) => {
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
-    animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if Idle animation exists otherwise use first animation
+    animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if idle animation exists otherwise use first animation
   );
   useEffect(() => {
     actions[animation]
@@ -177,13 +207,14 @@ const Avatar = forwardRef((props, ref) => {
             set({
               [target]: value,
             });
-          } catch (e) {}
+          } catch (e) { }
         }
       }
     });
   };
 
   const [blink, setBlink] = useState(false);
+  //const [dance, setDance] = useState(false);
   const [winkLeft, setWinkLeft] = useState(false);
   const [winkRight, setWinkRight] = useState(false);
   const [facialExpression, setFacialExpression] = useState("");
@@ -233,6 +264,12 @@ const Avatar = forwardRef((props, ref) => {
       }
       lerpMorphTarget(value, 0, 0.1);
     });
+
+    if (!message && isHappyIdle) {
+      Object.keys(facialExpressions['smile']).forEach((key) => {
+        lerpMorphTarget(key, facialExpressions['smile'][key], 0.1);
+      });
+    }
   });
 
   useControls("Avatars", {
@@ -275,7 +312,7 @@ const Avatar = forwardRef((props, ref) => {
         }
         const value =
           nodes.EyeLeft.morphTargetInfluences[
-            nodes.EyeLeft.morphTargetDictionary[key]
+          nodes.EyeLeft.morphTargetDictionary[key]
           ];
         if (value > 0.01) {
           emotionValues[key] = value;
@@ -320,7 +357,14 @@ const Avatar = forwardRef((props, ref) => {
       }, THREE.MathUtils.randInt(1000, 5000));
     };
     nextBlink();
-    return () => clearTimeout(blinkTimeout);
+    //return () => clearTimeout(blinkTimeout);
+
+    return (
+      <group {...props} dispose={null} ref={group}>
+        <primitive object={nodes.Hips} />
+        {renderSkinnedMeshes()}
+      </group>
+    );
   }, []);
 
   const renderSkinnedMeshes = () => {

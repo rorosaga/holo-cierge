@@ -9,7 +9,7 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 def transcribe(audio_path):
-    model = whisper.load_model("base")
+    model = whisper.load_model("small")
     start_time = time.time()
     result = model.transcribe(audio_path, language="es", fp16=False)
     end_time = time.time()

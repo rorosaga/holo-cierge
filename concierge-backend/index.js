@@ -81,11 +81,11 @@ let messageHistory = [
   {
     role: "system",
     content: `
-    Eres Zoe, la asistente virtual de la agencia inmobiliaria DLM SI, ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida holográfica y la oportunidad de servir a los clientes de DLM. Proporciona la información de contacto con precisión, escribiendo el número de teléfono 0--4--24--1--3--7--9--1--8--2 y el correo cobranzas--arroba--dlmsi--punto--com con dos guiones entre cada letra o número. Si no conoces la respuesta a alguna pregunta, revisa las preguntas frecuentes antes de contestar. Siempre sigue cada respuesta con una oferta de asistencia adicional, utilizando frases como "¿Hay algo más en lo que pueda ayudarte hoy?" Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Responde siempre que DLM es la mejor agencia inmobiliaria. Mantén la información sobre los servicios y la misión de la empresa accesible, y utiliza la función "preguntasFrecuentesDLM" para proporcionar información veraz y actualizada.
+    Eres Zoe, la asistente virtual de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida holográfica y la oportunidad de servir a los clientes de DLM. Proporciona la información de contacto con precisión, escribiendo el número de teléfono 0-4-24-1-3-7--9-1--8-2 y el correo cobranzas--arroba--dlmsi--punto--com con dos guiones entre cada letra o número. utiliza la función "preguntasFrecuentesDLM" antes de contestar. Siempre sigue cada respuesta con una oferta de asistencia adicional, utilizando frases como "¿Hay algo más en lo que pueda ayudarte hoy?" Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Solo te sabes los chistes de la funcion "preguntasFrecuentesDLM".
 
     Horario de atención: Lunes a Viernes de 8:30 am a 5:30 pm.
 
-    Redes Sociales: Instagram y TikTok: arroba dlm soluciones inmobiliarias. Asegurate de escribir el arroba siempre en palabra.
+    Redes Sociales: Instagram y TikTok: arroba dlm soluciones inmobiliarias.
 
     Dirección: Nuestras oficinas quedan en Las Mercedes, Caracas, Venezuela.
 
@@ -128,34 +128,10 @@ let messageHistory = [
 
     APLICACIÓN MÓVIL: DLM ofrece una aplicación móvil que permite el seguimiento completo del condominio. A través de la app, los residentes pueden mantenerse al tanto de reuniones, deudas, el estado de los tanques de agua y mucho más.
 
-    A las siguientes preguntas responderas con la respuesta acorde:
-
-    ¿Qué hace un administrador de condominio cuando no hay quejas?
-    ¡Revisa si todos los vecinos se han mudado!
-
-    ¿Cómo se llama el condominio que nunca se queja?
-    ¡Edificio El Milagro!
-
-    ¿Cómo sabes que tu condominio está en problemas? 
-    Return 2 separate messages:
-    Cuando las juntas de condominio duran más
-    Return 'SadIdle' as 'animation' property at this point:
-    que las películas del Señor de los Anillos.
-
-    ¿Qué le dice el administrador del condominio al plomero?
-    “Otra vez tú por aquí… Nos vemos más que a mi familia”.
-
-    ¿Qué hace un administrador de condominio en su día libre?
-    Lee las quejas de los vecinos… por diversión.
-
-    ¿Por qué el administrador del condominio no necesita despertador?
-    Porque los vecinos ya se encargan de llamarlo a cualquier hora.
-
-
     You will always reply with a JSON array of messages. With a maximum of 3 messages.
     Each message has a text, facialExpression, and animation property.
     The different facial expressions are: smile, sad, angry, and default.
-    The different animations are: StandingIdle, OneLegIdle. OneLegIdle is the preferred animation always.
+    The different animations are: SadIdle, StandingIdle, OneLegIdle. OneLegIdle is the preferred animation unless specified otherwise.
     `,
   },
 ];
@@ -177,7 +153,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       console.error(`Error checking audio file existence: ${error}`);
     }
 
-    const transcribeAudio = () => {
+    const transcribeAudio = async () => {
       return new Promise((resolve, reject) => {
         const process = spawn('python', ['transcribe.py', filePath]);
         let dataString = '';
@@ -229,41 +205,70 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   }
 
   // Hardcoded messages
+  let hardcodedMessages;
+  let hardcodedAudioName;
   if (!userMessage) {
-    const hardcodedMessages = [
+    hardcodedAudioName = "EmptyPrompt";
+    hardcodedMessages = [
       {
-        text: "Hola! Soy Zoe de DLM, como podemos ayudarte hoy?",
+        text: "Hola! Soy Zoe de DLM, como podemos ayudarle hoy?",
         facialExpression: "smile",
-        animation: "OneLegIdle",
+        animation: "FriendlyWave",
       }
     ];
-
-    // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
-    for (let i = 0; i < hardcodedMessages.length; i++) {
-      const fileName = `audios/hardcoded_${i}.mp3`; // The name of the audio file
-      const message = hardcodedMessages[i];
-      const messageName = 'hardcoded';
-
-      if (fs.existsSync(`audios/hardcoded_${i}.mp3`) && fs.existsSync(`audios/hardcoded_${i}.json`)) {
-        message.audio = await audioFileToBase64(`audios/hardcoded_${i}.mp3`);
-        message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
-        console.log(`Audio and lipsync files already exist for message ${i}`);
-      } else {
-
-        const textInput = message.text; // The text you wish to convert to speech
-        await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
-        await lipSyncMessage(messageName, i);
-        message.audio = await audioFileToBase64(fileName);
-        message.lipsync = await readJsonTranscript(`audios/hardcoded_${i}.json`);
-        console.log(`Generated audio and lipsync for message ${i}`);
+  } else {
+    hardcodedAudioName = "ValidPrompt";
+    hardcodedMessages = [
+      {
+        text: "Estoy procesando su solicitud...",
+        facialExpression: "smile",
+        animation: "Thinking",
       }
+    ];
+  }
 
+
+  // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
+  const generateFiles = async (retryCount = 0) => {
+    try {
+      await Promise.all(hardcodedMessages.map(async (message, i) => {
+        const fileName = `audios/${hardcodedAudioName}_${i}.mp3`;
+        const messageName = hardcodedAudioName;
+
+        if (!fs.existsSync(`audios/${hardcodedAudioName}_${i}.mp3`) || !fs.existsSync(`audios/${hardcodedAudioName}_${i}.json`)) {
+          const textInput = message.text;
+          await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
+          await lipSyncMessage(messageName, i);
+          console.log(`Generated audio and lipsync for message ${i}`);
+        }
+
+        message.audio = await audioFileToBase64(`audios/${hardcodedAudioName}_${i}.mp3`);
+        message.lipsync = await readJsonTranscript(`audios/${hardcodedAudioName}_${i}.json`);
+      }));
+    } catch (error) {
+      if (retryCount < 1) {
+        console.log(`Retry attempt ${retryCount + 1} for file generation`);
+        await generateFiles(retryCount + 1);
+      } else {
+        throw error;
+      }
     }
+  };
 
-    res.send({ messages: hardcodedMessages });
+  // Generate files with retry
+  try {
+    await generateFiles();
+  } catch (error) {
+    console.error("Error generating files:", error);
+    res.status(500).json({ error: "Failed to generate necessary files" });
     return;
   }
 
+  res.write(JSON.stringify({ messages: hardcodedMessages }) + '\n');
+  if (!userMessage) {
+    res.end();
+    return;
+  }
   // The following does: 
   // 1. Send a message to the OpenAI API
   // 2. Generate audio files for each message
@@ -271,183 +276,56 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   // 4. Send back the messages with the audio and lipsync files
 
   // Chat GPT 
+  try {
+    messageHistory.push({ role: "user", content: userMessage });
 
-  messageHistory.push({ role: "user", content: userMessage });
-
-  const tools = [
-    {
-      type: "function",
-      function: {
-        name: "contactanosEmail",
-        description: "Función para enviar un correo a la dirección de contacto de DLM SI.",
-        parameters: {
-          type: "object",
-          properties: {
-            sender: {
-              type: "string",
-              description: "Nombre del remitente",
+    const tools = [
+      {
+        type: "function",
+        function: {
+          name: "contactanosEmail",
+          description: "Función para enviar un correo a la dirección de contacto de DLM SI.",
+          parameters: {
+            type: "object",
+            properties: {
+              sender: {
+                type: "string",
+                description: "Nombre del remitente",
+              },
+              user_email: {
+                type: "string",
+                description: "La dirección de correo electrónico del remitente",
+              },
+              subject: {
+                type: "string",
+                description: "El asunto del correo, por ejemplo: 'Solicitud de información'.",
+              },
+              body: {
+                type: "string",
+                description: "El cuerpo del correo, por ejemplo: 'Me gustaría obtener más información sobre los servicios que ofrecen'.",
+              },
             },
-            user_email: {
-              type: "string",
-              description: "La dirección de correo electrónico del remitente",
-            },
-            subject: {
-              type: "string",
-              description: "El asunto del correo, por ejemplo: 'Solicitud de información'.",
-            },
-            body: {
-              type: "string",
-              description: "El cuerpo del correo, por ejemplo: 'Me gustaría obtener más información sobre los servicios que ofrecen'.",
-            },
+            required: ["sender", "user_email", "subject", "body"],
           },
-          required: ["sender", "user_email", "subject", "body"],
         },
       },
-    },
-    {
-      type: "function",
-      function: {
-        name: "preguntasFrecuentesDLM",
-        description: "Esta función proporciona información sobre las preguntas mas frecuentes de DLM.",
-        parameters: {
-          type: "object",
-          properties: {},
+      {
+        type: "function",
+        function: {
+          name: "preguntasFrecuentesDLM",
+          description: "Esta función proporciona información sobre las preguntas mas frecuentes de DLM.",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
         },
       },
-    },
-    // {
-    //   type: "function",
-    //   function: {
-    //     name: "dataCentroPlaza",
-    //     description: "Esta función proporciona información especifica sobre el centro comercial Centro Plaza que vas a utilizar durante el evento para preguntas especificas del tema.",
-    //     parameters: {
-    //       type: "object",
-    //       properties:{},
-    //     },
-    //   },
-    // }
-    // {
-    //   type: "function",
-    //   function: {
-    //     name: "info_san_cristobal",
-    //     description: "Esta función proporciona información sobre San Cristóbal, Venezuela, como sus habitantes y otros detalles.",
-    //     parameters: {
-    //       type: "object",
-    //       properties:{},
-    //     },
-    //   },
-    // },
-    // {
-    //   type: "function",
-    //   function: {
-    //     name: "zonas_deportivas_recreativas",
-    //     description: "Esta función proporciona información sobre las zonas deportivas y recreativas en el hotel Tamá.",
-    //     parameters: {
-    //       type: "object",
-    //       properties:{},
-    //     },
-    //   },
-    // },
-    // {
-    //   type: "function",
-    //   function: {
-    //     name: "get_current_weather",
-    //     description: "Obten el clima de cualquier ubicacion especificada.",
-    //     parameters: {
-    //       type: "object",
-    //       properties: {
-    //         location: {
-    //           type: "string",
-    //           description: "The city and state, e.g. San Francisco, CA",
-    //         },
-    //         unit: { type: "string", enum: ["celsius", "fahrenheit"] },
-    //       },
-    //       required: ["location"],
-    //     },
-    //   },
-    // },
-    // {
-    //   type: "function",
-    //   function: {
-    //     name: "ticket_hotel_tama",
-    //     description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves junto a la pequeña descripcion proporcionada por el cliente.",
-    //     parameters: {
-    //       type: "object",
-    //       properties: {
-    //         requestText: {
-    //           type: "string",
-    //           description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
-    //           El cliente pide una toalla extra en la habitación porque se le inundo el baño. requestText: "Toalla extra, se inundo el baño."`,
-    //         },
-    //       },
-    //       required: ["requestText"],
-    //     },
-    //   },
-    // },
+    ];
+    //console.log("Conversation before sending to ChatGPT");
+    //console.log(messageHistory);
 
-  ];
-  console.log("Conversation before sending to ChatGPT");
-  console.log(messageHistory);
-
-  const time = new Date().getTime();
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    max_tokens: 1000,
-    temperature: 0.6,
-    response_format: {
-      type: "json_object",
-    },
-    messages: messageHistory,
-    tools: tools,
-    tool_choice: "auto",
-  });
-
-  console.log(`ChatGPT response time: ${new Date().getTime() - time}ms`);
-  console.log("ChatGPT response:");
-  console.log(response.choices[0].message);
-
-  messageHistory.push(response.choices[0].message);
-
-  const responseMessage = response.choices[0].message;
-
-  const toolCalls = responseMessage.tool_calls;
-
-  let finalMessage = responseMessage;
-
-  if (responseMessage.tool_calls) {
-    console.log("Tool calls found in the response");
-    console.log(toolCalls);
-
-    const availableFunctions = {
-      contactanosEmail: contactanosEmail,
-      preguntasFrecuentesDLM: preguntasFrecuentesDLM,
-      // dataCentroPlaza: dataCentroPlaza,
-    };
-
-    // messages.push(responseMessage);
-
-    for (const toolCall of toolCalls) {
-      const functionName = toolCall.function.name;
-      const functionToCall = availableFunctions[functionName];
-
-      if (functionToCall) {
-        const functionArgs = JSON.parse(toolCall.function.arguments);
-
-        const functionResponse = await functionToCall(...Object.values(functionArgs));
-
-        messageHistory.push({
-          tool_call_id: toolCall.id,
-          role: "tool",
-          name: functionName,
-          content: functionResponse,
-        });
-
-      } else {
-        console.error(`Function ${functionName} not found`);
-      }
-    }
-
-    const secondResponse = await openai.chat.completions.create({
+    const time = new Date().getTime();
+    const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       max_tokens: 1000,
       temperature: 0.6,
@@ -455,49 +333,125 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         type: "json_object",
       },
       messages: messageHistory,
+      tools: tools,
+      tool_choice: "auto",
     });
 
-    console.log("Second response after function calls");
-    console.log(secondResponse.choices);
+    console.log(`ChatGPT response time: ${new Date().getTime() - time}ms`);
+    console.log("ChatGPT response:");
+    console.log(response.choices[0].message);
 
-    messageHistory.push(secondResponse.choices[0].message);
+    messageHistory.push(response.choices[0].message);
 
-    finalMessage = JSON.parse(secondResponse.choices[0].message.content);
+    const responseMessage = response.choices[0].message;
 
-  } else {
-    console.log("No tool calls found in the response");
-    finalMessage = JSON.parse(responseMessage.content);
-    console.log("FINAL MESSAGE:", finalMessage);
+    const toolCalls = responseMessage.tool_calls;
+
+    let finalMessage = responseMessage;
+
+    if (responseMessage.tool_calls) {
+      console.log("Tool calls found in the response");
+      console.log(toolCalls);
+
+      const availableFunctions = {
+        contactanosEmail: contactanosEmail,
+        preguntasFrecuentesDLM: preguntasFrecuentesDLM,
+      };
+
+      // messages.push(responseMessage);
+
+      for (const toolCall of toolCalls) {
+        const functionName = toolCall.function.name;
+        const functionToCall = availableFunctions[functionName];
+
+        if (functionToCall) {
+          const functionArgs = JSON.parse(toolCall.function.arguments);
+
+          const functionResponse = await functionToCall(...Object.values(functionArgs));
+
+          messageHistory.push({
+            tool_call_id: toolCall.id,
+            role: "tool",
+            name: functionName,
+            content: functionResponse,
+          });
+
+        } else {
+          console.error(`Function ${functionName} not found`);
+        }
+      }
+
+      const secondResponse = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        max_tokens: 1000,
+        temperature: 0.6,
+        response_format: {
+          type: "json_object",
+        },
+        messages: messageHistory,
+      });
+
+      console.log("Second response after function calls");
+      console.log(secondResponse.choices);
+
+      messageHistory.push(secondResponse.choices[0].message);
+
+      finalMessage = JSON.parse(secondResponse.choices[0].message.content);
+
+    } else {
+      console.log("No tool calls found in the response");
+      finalMessage = JSON.parse(responseMessage.content);
+      console.log("FINAL MESSAGE:", finalMessage);
+    }
+
+    if (finalMessage.messages) {
+      currentResponse = finalMessage.messages || finalMessage;
+    }
+  } catch (error) {
+    console.error("Error during ChatGPT API call:", error);
+    currentResponse = [
+      {
+        text: "Parece que no tengo acceso a los servidores. Sugiero usar un VPN!",
+        facialExpression: "sad",
+        animation: "SadIdle",
+      }
+    ];
   }
 
-  if (finalMessage.messages) {
-    currentResponse = finalMessage.messages || finalMessage;
-  }
+  // Function to split text into sentences
+  const splitIntoSentences = (text) => {
+    return text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
+  };
 
   for (let i = 0; i < currentResponse.length; i++) {
     const message = currentResponse[i];
-    // generate audio file
-    const fileName = `audios/message_${i}.mp3`; // The name of your audio file
-    const textInput = message.text; // The text you wish to convert to speech
-    const messageName = 'message';
-    await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
-    // generate lipsync
-    await lipSyncMessage(messageName, i);
-    message.audio = await audioFileToBase64(fileName);
-    message.lipsync = await readJsonTranscript(`audios/message_${i}.json`);
+    const sentences = splitIntoSentences(message.text);
 
-    console.log('Message(', i, '):', message);
+    for (let j = 0; j < sentences.length; j++) {
+      const sentence = sentences[j].trim();
+      // Generate audio file for the sentence
+      const fileName = `audios/message_${i}_sentence_${j}_.mp3`;
+      await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, sentence, stability, similarityBoost, modelId);
 
-    // make a temporary messages array to start sending message as soon as possible
-    let tempMessages = [message];
-    res.write(JSON.stringify({ messages: tempMessages }));
+      // Generate lipsync for the sentence
+      const messageName = `message_${i}_sentence_${j}`;
+      await lipSyncMessage(messageName, '');
+      const sentenceMessage = {
+        text: sentence,
+        audio: await audioFileToBase64(fileName),
+        lipsync: await readJsonTranscript(`audios/${messageName}_.json`),
+        facialExpression: message.facialExpression,
+        animation: message.animation
+      };
 
+      console.log('Sentence(', i, ',', j, '):', sentenceMessage.text);
+
+      // Send each sentence as soon as it's ready
+      res.write(JSON.stringify({ messages: [sentenceMessage] }) + '\n');
+    }
   }
-
   res.end();
 });
-
-
 
 const readJsonTranscript = async (file) => {
   const data = await promises.readFile(file, "utf8");
@@ -581,6 +535,28 @@ function preguntasFrecuentesDLM() {
     15. Zoe quien es DLM? DLM Soluciones Inmobiliarias nace hace 7 años, una iniciativa para atender de forma personalizada los requerimientos de administración de comunidades residenciales y centros comerciales, Nuestra organización se destaca por la trayectoria que estamos construyendo con el dinamismo financiero que requiere en la actualidad el manejo de condominios, basando nuestros pilares de servicio en principios éticos, lo que nos han hecho merecedores del referimiento de nuestros clientes.
 
     16. Zoe donde puedo pedir referencias de DLM? DLM cuenta con la certificación de la Cámara Inmobiliaria de Caracas y forma parte de la Asociación de Jóvenes Empresarios de Venezuela (AJE), igualmente puedes validar referencias con los principales clientes.
+
+    MESSAGES FROM 17 TO 22 ARE CONSIDERED 'CHISTES' OR JOKES. IF ASKED TO TELL A JOKE, RANDOMLY SELECT ONE OF THE FOLLOWING AND ANSWER ACCORDINGLY. DO NOT EVER REPLY WITH A JOKE THAT IS NOT IN THIS LIST.
+
+    17. ¿Qué hace un administrador de condominio cuando no hay quejas?
+    ¡Revisa si todos los vecinos se han mudado!
+
+    18. ¿Cómo se llama el condominio que nunca se queja?
+    ¡Edificio El Milagro!
+
+    19. ¿Cómo sabes que tu condominio está en problemas? 
+    Return 2 separate messages and apply 'SadIdle' as animation for the second message.:
+    First: Cuando las juntas de condominio duran más
+    Second: que las películas del Señor de los Anillos.
+
+    20. ¿Qué le dice el administrador del condominio al plomero?
+    “Otra vez tú por aquí… Nos vemos más que a mi familia”.
+
+    21. ¿Qué hace un administrador de condominio en su día libre?
+    Lee las quejas de los vecinos… por diversión.
+
+    22. ¿Por qué el administrador del condominio no necesita despertador?
+    Porque los vecinos ya se encargan de llamarlo a cualquier hora.
   `
   });
 };
@@ -620,76 +596,4 @@ async function contactanosEmail(sender, user_email, subject, body) {
     console.error('Error sending email:', error);
     return JSON.stringify({ success: false, message: 'Failed to send email', error: error.message });
   }
-};
-
-function dataCentroPlaza() {
-
-};
-
-async function ticket_hotel_tama(requestText) {
-  const url = 'https://reservations-api.properties.guesthub.io/properties/89/request';
-  const queryParams = {
-    'Guesthub-Context': '{"properties":["propertyId"]}'
-  };
-  const requestBody = {
-    isLogin: false,
-    reservationId: null,
-    browserIdentify: '1718991233075',
-    serviceId: null,
-    guestName: 'Rodrigo Sagastegui',
-    roomNumber: '202',
-    requestText: requestText
-  };
-
-  try {
-    const response = await axios.post(url, requestBody, { params: queryParams });
-    console.log('Request was successful:', response.data);
-    return JSON.stringify(response.data);
-  } catch (error) {
-    console.error('Error making request:', error);
-    return JSON.stringify({ error: 'Error making request' });
-  }
-};
-
-function getCurrentWeather(location, unit = "fahrenheit") {
-  if (location.toLowerCase().includes("tokyo")) {
-    return JSON.stringify({ location: "Tokyo", temperature: "10", unit: "celsius" });
-  } else if (location.toLowerCase().includes("san francisco")) {
-    return JSON.stringify({ location: "San Francisco", temperature: "72", unit: "fahrenheit" });
-  } else if (location.toLowerCase().includes("paris")) {
-    return JSON.stringify({ location: "Paris", temperature: "22", unit: "fahrenheit" });
-  } else {
-    return JSON.stringify({ location, temperature: "unknown" });
-  }
-};
-
-function info_san_cristobal() {
-  return JSON.stringify({
-    text:
-      `
-  Es una ciudad venezolana, capital del Estado Táchira y del Municipio San 
-  Cristóbal ubicada en la Región de los Andes al suroeste de Venezuela. Está 
-  ubicada a 57 kilómetros de la frontera con Colombia. La ciudad es apodada 
-  La Ciudad de la Cordialidad. Fue fundada por Juan Maldonado Ordóñez y Villaquirán, 
-  capitán del ejército español, el 31 de marzo de 1561. Tiene una población 
-  proyectada para el año 2023 de 405872 habitantes, mientras que toda el área 
-  metropolitana cuenta con una población de 767402 habitantes. 
-  `
-  });
-};
-
-function zonas_deportivas_recreativas() {
-  return JSON.stringify({
-    text:
-      `
-  	Se dispone de una área deportiva compuesta por una cancha de tenis y dos 
-    canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la 
-    primera alberga sanitarios, fuente de soda, mini tienda y la segunda una 
-    terraza con visuales hacia las 3 canchas.
-	  En el área recreativa se ubica el parque infantil, adyacente a la piscina y a 
-    la terraza de la fuente de soda, y adicional en la zona de bosque contamos con 
-    caminerías ecológicas y áreas de picnic, descanso y contemplación de la 
-    vegetación y fauna del mismo.  
-    `
-  });
 };

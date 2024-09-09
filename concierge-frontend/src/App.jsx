@@ -30,7 +30,7 @@ function App() {
           <Experience />
         </XR>
       </Canvas>
-      <VRButton hidden/>
+      <VRButton />
     </>
   );
 }

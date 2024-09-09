@@ -114,7 +114,7 @@ export const UI = ({ hidden, ...props }) => {
             ref={input}
             onKeyDown={(e) => {
               if (e.key === "Enter" || isRecording) {
-                sendMessage();
+                sendMessage;
               }
             }}
             disabled={isRecording}
@@ -124,9 +124,8 @@ export const UI = ({ hidden, ...props }) => {
           <button
             disabled={loading || message || isRecording}
             onClick={sendMessage}
-            className={`text-white p-4 px-10 font-semibold uppercase rounded-md ${
-              loading || message || isRecording ? "cursor-not-allowed" : ""
-            }`}
+            className={`text-white p-4 px-10 font-semibold uppercase rounded-md ${loading || message || isRecording ? "cursor-not-allowed" : ""
+              }`}
             style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
             onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
             onMouseOut={(e) => (e.currentTarget.style.backgroundColor = defaultColor)}
@@ -143,9 +142,8 @@ export const UI = ({ hidden, ...props }) => {
                 stopRecording();
               }
             }}
-            className={`pointer-events-auto text-white p-4 rounded-md relative ${
-              loading || message ? "cursor-not-allowed" : ""
-            }`}
+            className={`pointer-events-auto text-white p-4 rounded-md relative ${loading || message ? "cursor-not-allowed" : ""
+              }`}
             style={{ backgroundColor: defaultColor, transition: 'background-color 0.3s' }}
             onMouseOver={(e) => (e.currentTarget.style.backgroundColor = hoverColor)}
             onMouseOut={(e) => (e.currentTarget.style.backgroundColor = defaultColor)}
