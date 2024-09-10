@@ -23,14 +23,14 @@ function App() {
   return (
     <>
       <Loader />
-      <Leva collapsed />
+      <Leva />
       <UI />
       <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 3], fov: 45 }}>
-        <XR>
+        <XR >
           <Experience />
         </XR>
       </Canvas>
-      <VRButton hidden />
+      <VRButton position />
     </>
   );
 }
