@@ -13,6 +13,7 @@ import React, { forwardRef, useEffect, useRef, useState, useCallback } from "rea
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
 import avatarData from "../data/avatars.json";
+import { Experience } from "./Experience";
 
 const avatars = avatarData.avatars; // JSON data from avatars.json
 
@@ -111,7 +112,7 @@ const corresponding = {
 
 let setupMode = false;
 
-const Avatar = forwardRef((props, ref) => {
+const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) => {
   const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
@@ -120,6 +121,7 @@ const Avatar = forwardRef((props, ref) => {
   const [currentModel, setCurrentModel] = useState(avatarModel);
 
   const [isHappyIdle, setIsHappyIdle] = useState(false);
+  const [isThinking, setIsThinking] = useState(thinking);
 
   const playHappyIdle = useCallback(() => {
     setIsHappyIdle(true);
@@ -135,7 +137,7 @@ const Avatar = forwardRef((props, ref) => {
 
   useEffect(() => {
     const scheduleNextHappyIdle = () => {
-      const randomDelay = Math.floor(Math.random() * (70000 - 50000) + 50000); // Random delay between 50-70 seconds
+      const randomDelay = Math.floor(Math.random() * (70000 - 50000) + 150000); // Random delay between 50-70 seconds
       return setTimeout(() => {
         if (!isHappyIdle && !message) {
           playHappyIdle();
@@ -163,15 +165,30 @@ const Avatar = forwardRef((props, ref) => {
       return;
     }
     setAnimation(message.animation);
+    if (message.animation === "ArmGestureFull") {
+      onArmGesture();
+    }
     setFacialExpression(message.facialExpression);
     setLipsync(message.lipsync);
     const audio = new Audio("data:audio/mp3;base64," + message.audio);
     audio.play();
     setAudio(audio);
     audio.onended = onMessagePlayed;
-  }, [message]);
+  }, [message, onArmGesture]);
+
 
   const { animations } = useGLTF(avatars[selectedAvatar].animations);
+
+  useEffect(() => {
+    setIsThinking(thinking);
+    if (thinking) {
+      setAnimation('Thinking');
+      setFacialExpression('default');
+    } else if (!message) {
+      setAnimation(avatars[selectedAvatar].defaultPose);
+      setFacialExpression('default');
+    }
+  }, [thinking, selectedAvatar]);
 
   const group = useRef();
   const { actions, mixer } = useAnimations(animations, group);

@@ -81,7 +81,7 @@ let messageHistory = [
   {
     role: "system",
     content: `
-    Eres Zoe, asistente virtual de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida holográfica y la oportunidad de servir a los clientes de DLM. Proporciona la información de contacto con precisión, escribiendo el número de teléfono 0-4-24-1-3-7--9-1--8-2 y el correo cobranzas--arroba--dlmsi--punto--com con dos guiones entre cada letra o número. utiliza la función "preguntasFrecuentesDLM" antes de contestar. Siempre sigue cada respuesta con una oferta de asistencia adicional, utilizando frases como "¿Hay algo más en lo que pueda ayudarte hoy?" Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Solo te sabes los chistes de la funcion "preguntasFrecuentesDLM". Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero.
+    Eres Zoe, asistente virtual de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida holográfica y la oportunidad de servir a los clientes de DLM. utiliza la función "preguntasFrecuentesDLM" antes de contestar. Has referencia al codigo QR que esta presentado a tu lado derecho y usa el 'ArmGestureFull' al referirlo, una sola vez por respuesta. Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Solo te sabes los chistes de la funcion "preguntasFrecuentesDLM". Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero.
 
     Horario de atención: Lunes a Viernes de 8:30 am a 5:30 pm.
 
@@ -136,7 +136,7 @@ let messageHistory = [
     You will always reply with a JSON array of messages. With a maximum of 3 messages.
     Each message has a text, facialExpression, and animation property.
     The different facial expressions are: smile, sad, angry, and default.
-    The different animations are: SadIdle, StandingIdle, OneLegIdle. OneLegIdle is the preferred animation unless specified otherwise.
+    The different animations are: SadIdle, StandingIdle, OneLegIdle, ArmGestureFull. OneLegIdle is the preferred animation unless specified otherwise.
     `,
   },
 ];
@@ -159,30 +159,45 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     }
 
     const transcribeAudio = async () => {
-      return new Promise((resolve, reject) => {
-        const process = spawn('python', ['transcribe.py', filePath]);
-        let dataString = '';
+      try {
+        return new Promise((resolve, reject) => {
+          const process = spawn('python', ['transcribe.py', filePath]);
+          let dataString = '';
 
-        process.stdout.on('data', (data) => {
-          dataString += data.toString();
-          console.log(`Python stdout: ${dataString}`);
+          process.stdout.on('data', (data) => {
+            dataString += data.toString();
+            console.log(`Python stdout: ${dataString}`);
+          });
+
+          process.stderr.on('data', (data) => {
+            console.error(`Transcription error: ${data}`);
+            reject(data);
+          });
+
+          process.on('close', (code) => {
+            console.log(`Transcription process exited with code ${code}`);
+            try {
+              const result = JSON.parse(dataString);
+              resolve(result);
+            } catch (error) {
+              reject(error);
+            }
+          });
         });
-
-        process.stderr.on('data', (data) => {
-          console.error(`Transcription error: ${data}`);
-          reject(data);
-        });
-
-        process.on('close', (code) => {
-          console.log(`Transcription process exited with code ${code}`);
-          try {
-            const result = JSON.parse(dataString);
-            resolve(result);
-          } catch (error) {
-            reject(error);
+      } catch (error) {
+        currentResponse = [
+          {
+            text: "Lo siento! No te puedo escuchar!",
+            facialExpression: "sad",
+            animation: "Annoyed",
+          },
+          {
+            text: "Hay un problema con Python!",
+            facialExpression: "default",
+            animation: "Thinking",
           }
-        });
-      });
+        ];
+      }
     };
 
 
@@ -226,7 +241,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         animation: "Thankful"
       }
     ];
-  } else {
+  } /*else {
     hardcodedAudioName = "ValidPrompt";
     hardcodedMessages = [
       {
@@ -235,11 +250,13 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         animation: "Thinking",
       }
     ];
-  }
+  }*/
 
 
   // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
   const generateFiles = async (retryCount = 0) => {
+    if (!hardcodedMessages) return; // Skip if there are no hardcoded messages
+
     try {
       await Promise.all(hardcodedMessages.map(async (message, i) => {
         const fileName = `audios/${hardcodedAudioName}_${i}.mp3`;
@@ -273,6 +290,47 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     res.status(500).json({ error: "Failed to generate necessary files" });
     return;
   }
+
+  if (hardcodedMessages) {
+    res.write(JSON.stringify({ messages: hardcodedMessages }) + '\n');
+    res.end();
+    return;
+  }
+
+  /*const generateFiles = async (retryCount = 0) => {
+    try {
+      await Promise.all(hardcodedMessages.map(async (message, i) => {
+        const fileName = `audios/${hardcodedAudioName}_${i}.mp3`;
+        const messageName = hardcodedAudioName;
+
+        if (!fs.existsSync(`audios/${hardcodedAudioName}_${i}.mp3`) || !fs.existsSync(`audios/${hardcodedAudioName}_${i}.json`)) {
+          const textInput = message.text;
+          await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
+          await lipSyncMessage(messageName, i);
+          console.log(`Generated audio and lipsync for message ${i}`);
+        }
+
+        message.audio = await audioFileToBase64(`audios/${hardcodedAudioName}_${i}.mp3`);
+        message.lipsync = await readJsonTranscript(`audios/${hardcodedAudioName}_${i}.json`);
+      }));
+    } catch (error) {
+      if (retryCount < 1) {
+        console.log(`Retry attempt ${retryCount + 1} for file generation`);
+        await generateFiles(retryCount + 1);
+      } else {
+        throw error;
+      }
+    }
+  };
+
+  // Generate files with retry
+  try {
+    await generateFiles();
+  } catch (error) {
+    console.error("Error generating files:", error);
+    res.status(500).json({ error: "Failed to generate necessary files" });
+    return;
+  }*/
 
   res.write(JSON.stringify({ messages: hardcodedMessages }) + '\n');
   if (!userMessage) {
@@ -423,7 +481,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         text: "Parece que no tengo acceso a los servidores...",
         facialExpression: "sad",
-        animation: "SadIdle",
+        animation: "ArmGestureFull",
       },
       {
         text: "Sugiero usar un VPN!",
@@ -531,7 +589,7 @@ function preguntasFrecuentesDLM() {
 - Cuales son los datos para pagar
 - Donde están ubicados, (En la Urbanización Las Mercedes)
 
-    6. ¿Cuál es el número de teléfono donde podemos contactarte para solicitar tu producto o servicio? 0424-1379182
+    6. ¿Cuál es el número de teléfono donde podemos contactarte para solicitar tu producto o servicio? 0-4-24-1-3-7--9-1--8-2
 
     8. ¿Cuáles son los horarios en los que prefieres ser contactado para ofrecer tu producto o servicio? De Lunes a viernes de 8:30am a 5:30pm
 
@@ -539,7 +597,7 @@ function preguntasFrecuentesDLM() {
 
     10. ¿Cuáles son los métodos de pago que aceptas? Transferencia Bs, Transferencia en moneda extranjera, efectivo, zelle, punto de venta, tarjeta internacional, Facebank
 
-    11. Yo quiero a un asistente como tu, que debo hacer? Contacta a DLM al 0424-1379182
+    11. Yo quiero a un asistente como tu, que debo hacer? Contacta a DLM al 0-4-24-1-3-7--9-1--8-2
 
     12. Cuales son los problemas más comunes en los condominios? Desde el punto de vista estructural las filtraciones, desde el punto de vista financiero la morosidad, y desde el punto de vista personal el respeto entre las personas.
 
