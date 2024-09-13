@@ -2,7 +2,7 @@ import { exec } from "child_process";
 import cors from "cors";
 import dotenv from "dotenv";
 import voice from "elevenlabs-node";
-import express from "express";
+import express, { text } from "express";
 import { promises } from "fs";
 import fs from "fs";
 import OpenAI from "openai/index.mjs";
@@ -216,16 +216,21 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     hardcodedAudioName = "EmptyPrompt";
     hardcodedMessages = [
       {
-        text: "Hola! Soy Zoe de DLM, como podemos ayudarle hoy?",
+        text: "Hola",
         facialExpression: "smile",
-        animation: "Greeting",
+        animation: "Waving",
+      },
+      {
+        text: "Soy Zoe de DLM. Encantada de ayudarle hoy!",
+        facialExpression: "smile",
+        animation: "Thankful"
       }
     ];
   } else {
     hardcodedAudioName = "ValidPrompt";
     hardcodedMessages = [
       {
-        text: "Estoy procesando su solicitud...",
+        text: "Hmm...",
         facialExpression: "smile",
         animation: "Thinking",
       }
@@ -416,9 +421,14 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     console.error("Error during ChatGPT API call:", error);
     currentResponse = [
       {
-        text: "Parece que no tengo acceso a los servidores. Sugiero usar un VPN!",
+        text: "Parece que no tengo acceso a los servidores...",
         facialExpression: "sad",
         animation: "SadIdle",
+      },
+      {
+        text: "Sugiero usar un VPN!",
+        facialExpression: "default",
+        animation: "Thinking",
       }
     ];
   }
