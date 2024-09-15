@@ -11,6 +11,7 @@ import { spawn } from "child_process";
 import axios from "axios";
 import { type } from "os";
 import nodemailer from "nodemailer";
+import { Readable } from 'stream';
 
 dotenv.config();
 
@@ -167,6 +168,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
           process.stdout.on('data', (data) => {
             dataString += data.toString();
             console.log(`Python stdout: ${dataString}`);
+            const partialTranscription = JSON.stringify({ partialTranscription: dataString });
+            res.write(partialTranscription + '\n');
           });
 
           process.stderr.on('data', (data) => {
@@ -192,7 +195,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
             animation: "Annoyed",
           },
           {
-            text: "Hay un problema con Python!",
+            text: "Creo que hay un problema con el microfono!",
             facialExpression: "default",
             animation: "Thinking",
           }
@@ -296,42 +299,6 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     res.end();
     return;
   }
-
-  /*const generateFiles = async (retryCount = 0) => {
-    try {
-      await Promise.all(hardcodedMessages.map(async (message, i) => {
-        const fileName = `audios/${hardcodedAudioName}_${i}.mp3`;
-        const messageName = hardcodedAudioName;
-
-        if (!fs.existsSync(`audios/${hardcodedAudioName}_${i}.mp3`) || !fs.existsSync(`audios/${hardcodedAudioName}_${i}.json`)) {
-          const textInput = message.text;
-          await voice.textToSpeech(elevenLabsApiKey, voiceID, fileName, textInput, stability, similarityBoost, modelId);
-          await lipSyncMessage(messageName, i);
-          console.log(`Generated audio and lipsync for message ${i}`);
-        }
-
-        message.audio = await audioFileToBase64(`audios/${hardcodedAudioName}_${i}.mp3`);
-        message.lipsync = await readJsonTranscript(`audios/${hardcodedAudioName}_${i}.json`);
-      }));
-    } catch (error) {
-      if (retryCount < 1) {
-        console.log(`Retry attempt ${retryCount + 1} for file generation`);
-        await generateFiles(retryCount + 1);
-      } else {
-        throw error;
-      }
-    }
-  };
-
-  // Generate files with retry
-  try {
-    await generateFiles();
-  } catch (error) {
-    console.error("Error generating files:", error);
-    res.status(500).json({ error: "Failed to generate necessary files" });
-    return;
-  }*/
-
   res.write(JSON.stringify({ messages: hardcodedMessages }) + '\n');
   if (!userMessage) {
     res.end();

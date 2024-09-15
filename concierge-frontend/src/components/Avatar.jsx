@@ -5,13 +5,15 @@ Command: npx gltfjsx@6.2.3 public/models/concierge_m1.glb -o src/components/Avat
 Alternative: https://gltf.pmnd.rs
 */
 
-import React, { forwardRef, useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
+import React, { forwardRef, useEffect, useRef, useState, useCallback } from "react";
+
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
 import avatarData from "../data/avatars.json";
+import { Experience } from "./Experience";
 
 const avatars = avatarData.avatars; // JSON data from avatars.json
 
@@ -114,160 +116,312 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
+
+  const avatarModel = useGLTF(avatars[selectedAvatar].model);
+  const [currentModel, setCurrentModel] = useState(avatarModel);
+
   const [isHappyIdle, setIsHappyIdle] = useState(false);
-  const [facialExpression, setFacialExpression] = useState("default");
-  const [animation, setAnimation] = useState(avatars[selectedAvatar].defaultPose);
-  const audioRef = useRef(null);
+  const [isThinking, setIsThinking] = useState(thinking);
 
-  // Memoize the avatar model
-  const avatarModel = useMemo(() => useGLTF(avatars[selectedAvatar].model), [selectedAvatar]);
-  const { nodes, materials, scene } = avatarModel;
 
-  const { animations } = useGLTF(avatars[selectedAvatar].animations);
-  const group = useRef();
-  const { actions, mixer } = useAnimations(animations, group);
 
   const playHappyIdle = useCallback(() => {
     setIsHappyIdle(true);
-    const isHappy = Math.random() < 0.5;
-    console.log("Estoy aburrida...");
-    setAnimation(isHappy ? 'HappyIdle' : 'Bored');
-    setFacialExpression(isHappy ? 'smile' : 'default');
+    setAnimation('HappyIdle');
+    setFacialExpression('smile');
+
     setTimeout(() => {
       setIsHappyIdle(false);
       setAnimation(avatars[selectedAvatar].defaultPose);
       setFacialExpression('default');
-    }, 10000);
+    }, 5000);
   }, [selectedAvatar]);
 
-  // Handle happy idle scheduling
-  useEffect(() => {
-    const idleInterval = setInterval(() => {
-      if (!isHappyIdle && !message) {
-        playHappyIdle();
-      }
-    }, Math.random() * 20000 + 50000); // Random interval between 50-70 seconds
+  /*useEffect(() => {
+    const scheduleNextHappyIdle = () => {
+      const randomDelay = Math.floor(Math.random() * (70000 - 50000) + 90000); // Random delay between 50-70 seconds
+      return setTimeout(() => {
+        if (!isHappyIdle && !message) {
+          playHappyIdle();
+        }
+        scheduleNextHappyIdle(); // Schedule the next occurrence
+      }, randomDelay);
+    };
 
-    return () => clearInterval(idleInterval);
-  }, [isHappyIdle, playHappyIdle, message]);
+    const timeoutId = scheduleNextHappyIdle();
 
-  // Handle message changes
+    return () => clearTimeout(timeoutId);
+  }, [isHappyIdle, playHappyIdle, message]);*/
+
   useEffect(() => {
+    setCurrentModel(avatarModel);
+
+  }, [selectedAvatar, avatarModel]);
+
+  const { nodes, materials, scene } = currentModel;
+
+  useEffect(() => {
+    console.log(message);
     if (!message) {
       setAnimation(avatars[selectedAvatar].defaultPose);
       return;
     }
 
-    setAnimation(message.animation);
-    setFacialExpression(message.facialExpression);
-    setLipsync(message.lipsync);
+    if (message.text === '¡Hola!') {
+      setAnimation('Waving');
+    } else if (message.text === '¡Estoy aquí para ayudarte!') {
+      setAnimation('Thankful');
+    }
+    else {
+      setAnimation(message.animation);
+    }
 
     if (message.animation === "Presentation") {
       onArmGesture();
     }
-
+    setFacialExpression(message.facialExpression);
+    setLipsync(message.lipsync);
     const audio = new Audio("data:audio/mp3;base64," + message.audio);
-    audioRef.current = audio;
     audio.play();
+    setAudio(audio);
     audio.onended = onMessagePlayed;
+  }, [message, onArmGesture]);
 
-    return () => {
-      audio.pause();
-      audio.onended = null;
-    };
-  }, [message, onArmGesture, selectedAvatar]);
 
-  // Handle animation changes
+  const { animations } = useGLTF(avatars[selectedAvatar].animations);
+
   useEffect(() => {
-    const action = actions[animation]
-      .reset()
-      .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
-      .play();
+    setIsThinking(thinking);
+    if (thinking) {
+      setAnimation('ThinkingVeryLong');
+      setFacialExpression('default');
+    } else if (!message) {
+      setAnimation(avatars[selectedAvatar].defaultPose);
+      setFacialExpression('default');
+    }
+  }, [thinking, selectedAvatar]);
 
-    if (animation !== avatars[selectedAvatar].defaultPose) {
+  const group = useRef();
+  const { actions, mixer } = useAnimations(animations, group);
+  const [animation, setAnimation] = useState(
+    animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if idle animation exists otherwise use first animation
+  );
+  useEffect(() => {
+    if (animation === avatars[selectedAvatar].defaultPose) {
+      // Play the default pose animation in a loop
+      actions[animation]
+        .reset()
+        .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
+        .play();
+    } else {
+      // Play non-default animations only once
+      const action = actions[animation]
+        .reset()
+        .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
+        .play();
       action.loop = THREE.LoopOnce;
       action.clampWhenFinished = true;
-      mixer.addEventListener('finished', () => setAnimation(avatars[selectedAvatar].defaultPose));
-    }
 
+      // After the animation completes, return to the default pose
+      mixer.addEventListener('finished', () => {
+        setAnimation(avatars[selectedAvatar].defaultPose);
+      });
+    }
     return () => {
-      action.fadeOut(0.5);
+      actions[animation].fadeOut(0.5);
       mixer.removeEventListener('finished');
     };
-  }, [animation, selectedAvatar, actions, mixer]);
-
-  // Handle blinking
-  const [blink, setBlink] = useState(false);
-  useEffect(() => {
-    const blinkInterval = setInterval(() => {
-      setBlink(true);
-      setTimeout(() => setBlink(false), 200);
-    }, THREE.MathUtils.randInt(1000, 5000));
-
-    return () => clearInterval(blinkInterval);
-  }, []);
-
-  // Frame update logic
-  const lerpMorphTarget = useCallback((target, value, speed = 0.1) => {
+  }, [animation, selectedAvatar]);
+  const lerpMorphTarget = (target, value, speed = 0.1) => {
     scene.traverse((child) => {
       if (child.isSkinnedMesh && child.morphTargetDictionary) {
         const index = child.morphTargetDictionary[target];
-        if (index !== undefined && child.morphTargetInfluences[index] !== undefined) {
-          child.morphTargetInfluences[index] = THREE.MathUtils.lerp(
-            child.morphTargetInfluences[index],
-            value,
-            speed
-          );
+        if (
+          index === undefined ||
+          child.morphTargetInfluences[index] === undefined
+        ) {
+          return;
+        }
+        child.morphTargetInfluences[index] = THREE.MathUtils.lerp(
+          child.morphTargetInfluences[index],
+          value,
+          speed
+        );
+
+        if (!setupMode) {
+          try {
+            set({
+              [target]: value,
+            });
+          } catch (e) { }
         }
       }
     });
-  }, [scene]);
+  };
+
+  const [blink, setBlink] = useState(false);
+  //const [dance, setDance] = useState(false);
+  const [winkLeft, setWinkLeft] = useState(false);
+  const [winkRight, setWinkRight] = useState(false);
+  const [facialExpression, setFacialExpression] = useState("");
+  const [audio, setAudio] = useState();
 
   useFrame(() => {
-    // Apply facial expressions
-    Object.entries(facialExpressions[facialExpression] || {}).forEach(([key, value]) => {
-      if (key !== "eyeBlinkLeft" && key !== "eyeBlinkRight") {
-        lerpMorphTarget(key, value, 0.1);
+    !setupMode &&
+      Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
+        const mapping = facialExpressions[facialExpression];
+        if (key === "eyeBlinkLeft" || key === "eyeBlinkRight") {
+          return; // eyes wink/blink are handled separately
+        }
+        if (mapping && mapping[key]) {
+          lerpMorphTarget(key, mapping[key], 0.1);
+        } else {
+          lerpMorphTarget(key, 0, 0.1);
+        }
+      });
+
+    lerpMorphTarget("eyeBlinkLeft", blink || winkLeft ? 1 : 0, 0.5);
+    lerpMorphTarget("eyeBlinkRight", blink || winkRight ? 1 : 0, 0.5);
+
+    // LIPSYNC
+    if (setupMode) {
+      return;
+    }
+
+    const appliedMorphTargets = [];
+    if (message && lipsync) {
+      const currentAudioTime = audio.currentTime;
+      for (let i = 0; i < lipsync.mouthCues.length; i++) {
+        const mouthCue = lipsync.mouthCues[i];
+        if (
+          currentAudioTime >= mouthCue.start &&
+          currentAudioTime <= mouthCue.end
+        ) {
+          appliedMorphTargets.push(corresponding[mouthCue.value]);
+          lerpMorphTarget(corresponding[mouthCue.value], 1, 0.2);
+          break;
+        }
       }
+    }
+
+    Object.values(corresponding).forEach((value) => {
+      if (appliedMorphTargets.includes(value)) {
+        return;
+      }
+      lerpMorphTarget(value, 0, 0.1);
     });
 
-    // Handle blinking
-    lerpMorphTarget("eyeBlinkLeft", blink ? 1 : 0, 0.5);
-    lerpMorphTarget("eyeBlinkRight", blink ? 1 : 0, 0.5);
-
-    // Handle lipsync
-    if (audioRef.current && lipsync) {
-      const currentAudioTime = audioRef.current.currentTime;
-      const currentMouthCue = lipsync.mouthCues.find(
-        cue => currentAudioTime >= cue.start && currentAudioTime <= cue.end
-      );
-
-      if (currentMouthCue) {
-        lerpMorphTarget(corresponding[currentMouthCue.value], 1, 0.2);
-      }
-
-      Object.values(corresponding).forEach(value => {
-        if (!currentMouthCue || corresponding[currentMouthCue.value] !== value) {
-          lerpMorphTarget(value, 0, 0.1);
-        }
+    if (!message && isHappyIdle) {
+      Object.keys(facialExpressions['smile']).forEach((key) => {
+        lerpMorphTarget(key, facialExpressions['smile'][key], 0.1);
       });
     }
   });
 
-  // Controls setup
   useControls("Avatars", {
     avatar: {
       options: Object.keys(avatars),
-      onChange: setSelectedAvatar,
+      onChange: (value) => setSelectedAvatar(value),
     },
   });
 
-  const renderSkinnedMeshes = useCallback(() => {
-    return Object.values(nodes)
-      .filter(node => node.isSkinnedMesh)
-      .map(node => (
+  useControls("FacialExpressions", {
+    chat: button(() => chat()),
+    winkLeft: button(() => {
+      setWinkLeft(true);
+      setTimeout(() => setWinkLeft(false), 300);
+    }),
+    winkRight: button(() => {
+      setWinkRight(true);
+      setTimeout(() => setWinkRight(false), 300);
+    }),
+    animation: {
+      value: animation,
+      options: animations.map((a) => a.name),
+      onChange: (value) => setAnimation(value),
+    },
+    facialExpression: {
+      options: Object.keys(facialExpressions),
+      onChange: (value) => setFacialExpression(value),
+    },
+    enableSetupMode: button(() => {
+      setupMode = true;
+    }),
+    disableSetupMode: button(() => {
+      setupMode = false;
+    }),
+    logMorphTargetValues: button(() => {
+      const emotionValues = {};
+      Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
+        if (key === "eyeBlinkLeft" || key === "eyeBlinkRight") {
+          return; // eyes wink/blink are handled separately
+        }
+        const value =
+          nodes.EyeLeft.morphTargetInfluences[
+          nodes.EyeLeft.morphTargetDictionary[key]
+          ];
+        if (value > 0.01) {
+          emotionValues[key] = value;
+        }
+      });
+      console.log(JSON.stringify(emotionValues, null, 2));
+    }),
+  });
+
+  const [, set] = useControls("MorphTarget", () =>
+    Object.assign(
+      {},
+      ...Object.keys(nodes.EyeLeft.morphTargetDictionary).map((key) => {
+        return {
+          [key]: {
+            label: key,
+            value: 0,
+            min: nodes.EyeLeft.morphTargetInfluences[
+              nodes.EyeLeft.morphTargetDictionary[key]
+            ],
+            max: 1,
+            onChange: (val) => {
+              if (setupMode) {
+                lerpMorphTarget(key, val, 1);
+              }
+            },
+          },
+        };
+      })
+    )
+  );
+
+  useEffect(() => {
+    let blinkTimeout;
+    const nextBlink = () => {
+      blinkTimeout = setTimeout(() => {
+        setBlink(true);
+        setTimeout(() => {
+          setBlink(false);
+          nextBlink();
+        }, 200);
+      }, THREE.MathUtils.randInt(1000, 5000));
+    };
+    nextBlink();
+    //return () => clearTimeout(blinkTimeout);
+
+    return (
+      <group {...props} dispose={null} ref={group}>
+        <primitive object={nodes.Hips} />
+        {renderSkinnedMeshes()}
+      </group>
+    );
+  }, []);
+
+  const renderSkinnedMeshes = () => {
+    return Object.keys(nodes).map((key) => {
+      const node = nodes[key];
+      if (!node.isSkinnedMesh) {
+        return null;
+      }
+      return (
         <skinnedMesh
-          key={node.name}
+          key={key}
           name={node.name}
           geometry={node.geometry}
           material={materials[node.material.name]}
@@ -275,8 +429,9 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
           morphTargetDictionary={node.morphTargetDictionary}
           morphTargetInfluences={node.morphTargetInfluences}
         />
-      ));
-  }, [nodes, materials]);
+      );
+    });
+  };
 
   return (
     <group {...props} dispose={null} ref={group}>
@@ -288,10 +443,9 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
 
 Avatar.displayName = "Avatar";
 
-export { Avatar };
+for (const key in avatars) {
+  useGLTF.preload(avatars[key].model);
+  useGLTF.preload(avatars[key].animations);
+}
 
-// Preload avatar models and animations
-Object.values(avatars).forEach(avatar => {
-  useGLTF.preload(avatar.model);
-  useGLTF.preload(avatar.animations);
-});
+export { Avatar };
