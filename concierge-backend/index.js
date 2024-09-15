@@ -610,9 +610,9 @@ function preguntasFrecuentesDLM() {
     ¡Edificio El Milagro!
 
     19. ¿Cómo sabes que tu condominio está en problemas? 
-    Return 2 separate messages and apply 'SadIdle' as animation for only the second message:
-    First: Cuando las juntas de condominio duran más...
-    Second: que las películas del Señor de los Anillos.
+    At this point return 2 separate messages and apply 'SadIdle' as animation for the second message:
+    (HappyIdle) First: Cuando las juntas de condominio duran más...
+    (SadIdle) Second: que las películas del Señor de los Anillos.
 
     20. ¿Qué le dice el administrador del condominio al plomero?
     “Otra vez tú por aquí… Nos vemos más que a mi familia”.

@@ -206,6 +206,7 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   useEffect(() => {
     if (animation === avatars[selectedAvatar].defaultPose) {
       // Play the default pose animation in a loop
+      setFacialExpression('default');
       actions[animation]
         .reset()
         .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
