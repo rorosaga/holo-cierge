@@ -119,7 +119,6 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
 
   const avatarModel = useGLTF(avatars[selectedAvatar].model);
   const [currentModel, setCurrentModel] = useState(avatarModel);
-
   const [isHappyIdle, setIsHappyIdle] = useState(false);
   const [isThinking, setIsThinking] = useState(thinking);
 
@@ -167,7 +166,7 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       return;
     }
 
-    if (message.text === '¡Hola!') {
+    if (message.text === '¡Hola!' || message.text === 'Hola.') {
       setAnimation('Waving');
     } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Estoy aquí para ayudarte') {
       setAnimation('Thankful');

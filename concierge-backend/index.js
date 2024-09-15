@@ -230,7 +230,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   // Hardcoded messages
   let hardcodedMessages;
   let hardcodedAudioName;
-  if (!userMessage) {
+  /*if (!userMessage) {
     hardcodedAudioName = "EmptyPrompt";
     hardcodedMessages = [
       {
@@ -239,9 +239,14 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         animation: "Waving",
       },
       {
-        text: "Soy Zoe de DLM. Encantada de ayudarle hoy!",
+        text: "Soy Zoe de DLM.",
         facialExpression: "smile",
-        animation: "Thankful"
+        animation: "Thankful",
+      },
+      {
+        text: "Encantada de ayudarle hoy!",
+        facialExpression: "smile",
+        animation: "OneLegIdle",
       }
     ];
   } /*else {
@@ -257,7 +262,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
 
 
   // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
-  const generateFiles = async (retryCount = 0) => {
+  /*const generateFiles = async (retryCount = 0) => {
     if (!hardcodedMessages) return; // Skip if there are no hardcoded messages
 
     try {
@@ -303,7 +308,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   if (!userMessage) {
     res.end();
     return;
-  }
+  }*/
   // The following does: 
   // 1. Send a message to the OpenAI API
   // 2. Generate audio files for each message
@@ -463,6 +468,26 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     return text.match(/[^\.!\?]+[\.!\?]+/g) || [text];
   };
 
+  if (!userMessage) {
+    currentResponse = [
+      {
+        text: "Hola",
+        facialExpression: "smile",
+        animation: "Waving",
+      },
+      {
+        text: "Soy Zoe de DLM.",
+        facialExpression: "smile",
+        animation: "Thankful",
+      },
+      {
+        text: "Encantada de ayudarle hoy!",
+        facialExpression: "smile",
+        animation: "OneLegIdle",
+      }
+    ];
+  }
+
   for (let i = 0; i < currentResponse.length; i++) {
     const message = currentResponse[i];
     const sentences = splitIntoSentences(message.text);
@@ -585,8 +610,8 @@ function preguntasFrecuentesDLM() {
     ¡Edificio El Milagro!
 
     19. ¿Cómo sabes que tu condominio está en problemas? 
-    Return 2 separate messages and apply 'SadIdle' as animation for the second message:
-    First: Cuando las juntas de condominio duran más
+    Return 2 separate messages and apply 'SadIdle' as animation for only the second message:
+    First: Cuando las juntas de condominio duran más...
     Second: que las películas del Señor de los Anillos.
 
     20. ¿Qué le dice el administrador del condominio al plomero?
