@@ -3,6 +3,7 @@ import {
   ContactShadows,
   Environment,
   Text,
+  RoundedBox,
 } from "@react-three/drei";
 import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useChat } from "../hooks/useChat";
@@ -61,7 +62,7 @@ export const Experience = () => {
     setShowQR(true);
     setTimeout(() => {
       setShowQR(false);
-    }, 10000); // Hide QR code after 10 seconds
+    }, 20000); // Hide QR code after 20 seconds
   }, []);
 
   return (
@@ -74,7 +75,13 @@ export const Experience = () => {
       </Suspense>
       <Avatar thinking={thinking} onArmGesture={handleArmGesture} />
       <ContactShadows opacity={0.7} />
-      {showQR && (<ThreeQRCode value={qrData} size={.4} position={[-0.8, 1.8, -.2]} />
+      {showQR && (
+        <group position={[-0.8, 1.8, -0.4]}>
+          <RoundedBox args={[0.42, 0.42, 0.01]} radius={0.02} smoothness={4}>
+            <meshBasicMaterial color="white" />
+          </RoundedBox>
+          <ThreeQRCode value={qrData} size={0.4} position={[-0.8, 1.8, -0.39]} />
+        </group>
       )}
     </>
   );
