@@ -169,13 +169,11 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
 
     if (message.text === '¡Hola!') {
       setAnimation('Waving');
-    } else if (message.text === '¡Estoy aquí para ayudarte!') {
+    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Estoy aquí para ayudarte') {
       setAnimation('Thankful');
-    }
-    else {
+    } else {
       setAnimation(message.animation);
     }
-
     if (message.animation === "Presentation") {
       onArmGesture();
     }
@@ -403,14 +401,12 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       }, THREE.MathUtils.randInt(1000, 5000));
     };
     nextBlink();
-    //return () => clearTimeout(blinkTimeout);
 
-    return (
-      <group {...props} dispose={null} ref={group}>
-        <primitive object={nodes.Hips} />
-        {renderSkinnedMeshes()}
-      </group>
-    );
+    return () => {
+      if (blinkTimeout) {
+        clearTimeout(blinkTimeout);
+      }
+    };
   }, []);
 
   const renderSkinnedMeshes = () => {
