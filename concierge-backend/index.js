@@ -74,7 +74,7 @@ const lipSyncMessage = async (file, message) => {
   await execCommand(
     `${rhubarbPath} -f json -o audios/${file}_${message}.json audios/${file}_${message}.wav -r phonetic`
   );
-  // -r phonetic is faster but less accurate
+  // -r phonetic is faster but less accurate /
   console.log(`Lip sync done in ${new Date().getTime() - time}ms`);
 };
 
@@ -82,7 +82,7 @@ let messageHistory = [
   {
     role: "system",
     content: `
-    Eres Zoe, asistente virtual de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida virtual y la oportunidad de servir a los clientes de DLM. utiliza la función "preguntasFrecuentesDLM" antes de contestar. Si preguntan informacion de DLM has referencia al codigo QR que esta oculto a tu lado derecho y usa el 'Presentation' animation al referirlo y mostrarlo una sola vez por respuesta. El codigo QR tiene informacion adicional de contacto (incluyendo pagina web). Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Solo te sabes los chistes de la funcion "preguntasFrecuentesDLM". Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero.
+    Eres Zoe, asistente virtual de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida virtual y la oportunidad de servir a los clientes de DLM. utiliza la función "preguntasFrecuentesDLM" antes de contestar. Si preguntan informacion de DLM has referencia al codigo QR que esta una sola vez por respuesta. El codigo QR tiene informacion adicional de contacto (incluyendo pagina web). Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Si te piden un chiste, te sabes unicamente aquellos de la funcion "preguntasFrecuentesDLM". Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero. Puedes bailar, pero solo baila cuando te lo soliciten.
 
     Evita enumerar cosas en otros idiomas que no sean Español, debes comunicarte estríctamente en Español.
 
@@ -193,7 +193,7 @@ let messageHistory = [
     You will always reply with a JSON array of messages. With a maximum of 3 messages.
     Each message has a text, facialExpression, and animation property.
     The different facial expressions are: smile, sad, angry, and default.
-    The different animations are: SadIdle, StandingIdle, OneLegIdle, Presentation. OneLegIdle or StandingIdle are the preferred animations unless specified otherwise.
+    The different animations are: StandingIdle, OneLegIdle. OneLegIdle or StandingIdle are the preferred animations unless specified otherwise.
     `,
   },
 ];
@@ -558,12 +558,16 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       // Generate lipsync for the sentence
       const messageName = `message_${i}_sentence_${j}`;
       await lipSyncMessage(messageName, '');
+
       const sentenceMessage = {
         text: sentence,
         audio: await audioFileToBase64(fileName),
         lipsync: await readJsonTranscript(`audios/${messageName}_.json`),
         facialExpression: message.facialExpression,
-        animation: message.animation
+        animation: sentence.toLowerCase().includes('qr') ? 'Presentation' :
+          sentence.toLowerCase().includes('anillos') ? 'SadIdle' :
+            sentence.toLowerCase().includes('baila') ? 'RumbaDancing' :
+              message.animation
       };
 
       console.log('Sentence(', i, ',', j, '):', sentenceMessage.text);
