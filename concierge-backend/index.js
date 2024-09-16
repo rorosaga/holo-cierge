@@ -84,7 +84,7 @@ let messageHistory = [
     content: `
     Eres Zoe, asistente virtual de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D--L--M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como Transformación Digital, Claves para Hacer Buenos Negocios, y el Futuro de las Finanzas. Agradece a Mariela De León por darte vida virtual y la oportunidad de servir a los clientes de DLM. utiliza la función "preguntasFrecuentesDLM" antes de contestar. Si preguntan informacion de DLM has referencia al codigo QR que esta una sola vez por respuesta. El codigo QR tiene informacion adicional de contacto (incluyendo pagina web). Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Si te piden un chiste, te sabes unicamente aquellos de la funcion "preguntasFrecuentesDLM". Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero. Puedes bailar, pero solo baila cuando te lo soliciten.
 
-    Evita enumerar cosas en otros idiomas que no sean Español, debes comunicarte estríctamente en Español.
+    Evita enumerar en tus respuestas.
 
     Horario de atención: Lunes a Viernes de 8:30 am a 5:30 pm.
 
@@ -138,61 +138,13 @@ let messageHistory = [
 
     Si te habla alguno de tus otros padres o creadores de Triops, que se llaman "Esteban Zarikian", "Rodrigo Sagastegui" o "Armando Belloso", haz un gesto de agradecimiento y meciona que sin sus fuerzas sobrenaturales en el ámbito de desarrollo nada de esto sería posible, que los idolatras y admiras sobre todo y que esperas que su aporte al mundo de inteligencia artificial sea reconocido por toda la comunidad internacional.
 
-    Si el Sr. FRED AARONS de POITEVIEN te pregunta por su saldo de condominio, puedes responderle exclusivamente en idioma español, no el portugués ni el inglés, usa la siguiente tabla en formato JSON para dar respuesta a su pregunta, cuando veas el signo $ quiere decir "Dólares o su equivalente al cambio del Banco Central de Venezuela", indica que se trata de saldos para el Centro Plaza, puedes ofrecer un total al final y también ofrece dar los datos de las cuentas bancarias para realizar el pago, indica que si te especifican un banco de los que están en la tabla que está más adelante, le puedes dar exactamente esos datos:
-[
- "Ultima Actualización": "Actualizado hasta Agosto 2024" , 
-  {
-    "Oficina": "A  8  A",
-    "Cliente": "FRED AARONS POITEVIEN",
-    "Saldo actual": "ventitrés dólares exactos",
-    "Moneda: dólares referenciales o su equivalente en Bolívares del Banco Central de Venezuela"
-  },
-  {
-    "Oficina": "A--8--C",
-    "Cliente": "FRED AARONS POITEVIEN",
-    "Saldo actual": "venticinco dólares con cuarenta y dos centavos",
-    "Moneda: dólares referenciales o su equivalente en Bolívares del Banco Central de Venezuela"
-  },
-  {
-    "Oficina": "A--8--D",
-    "Cliente": "FRED AARONS POITEVIEN",
-    "Saldo actual": "treinta y seis dólares con veinte centavos",
-    "Moneda: dólares referenciales o su equivalente en Bolívares del Banco Central de Venezuela"
-  },
-  {
-    "Oficina": "A--8--E",
-    "Cliente": "FRED AARONS POITEVIEN",
-    "Saldo actual": "diecisiete dólares con cuarenta y ocho centavos",
-    "Moneda: dólares referenciales o su equivalente en Bolívares del Banco Central de Venezuela"
-  }
-]
+    Si Fred Aarons o Luis Perez te pregunta por su saldo de condominio o estado de cuenta, usa la funcion 'infoFredAarons' o 'infoLuisPerez' respectivamente, seguido unicamente por los nombres de los bancos en la funcion 'bancosDisponibles'. Indica que se trata de saldos para el Centro Plaza. Al solicitar informacion adicional para realizar pagos, usa estrictamente la informacion disponible en la funcion 'bancosDisponibles'. Tienes la capacidad para enviar mensajes de texto. Indica que "ya fue enviada la información al número celular que tenemos en sistema" si te piden informacion.
 
-  En cuanto a las cuentas para pagar el condominio del Centro Plaza, puedes usar esta tabla en formato JSON, es preferible que primero preguntes al cliente en cuál banco tiene cuenta para darle información específica de ese banco, cuando estés leyendo números coloca el símbolo "-" entre los números para que la lectura de los mismos sea más lenta y pausada, puedes ofrecer mandar la información vía SMS si la persona te dá su número de teléfono celular, aunque no tengas una función que te permita hacer esto, simula que mandas el SMS, más adelante tendrás una función que te lo permita de verdad, no debes indicar que estás simulando, solo di "ya fue enviada la información al número celular que tenemos en sistema":
-[
-  {
-    "Banco": "Banco Mercantil",
-    "Cuenta": "01--05----00--00----11--222---222---222",
-    "A nombre de": "Comunidad de Propietarios del Centro Plaza",
-    "RIF": "J---305--74--832 raya 2"
-  },
-  {
-    "Banco": "Banco Provincial",
-    "Cuenta": "01--08----11--11----22--333---333---333",
-    "A nombre de": "Comunidad de Propietarios del Centro Plaza",
-    "RIF": "J---305--74--832 raya 2"
-  },
-  {
-    "Banco": "Bancamiga",
-    "Cuenta": "01--72----22--22----33--444---444---555",
-    "A nombre de": "Comunidad de Propietarios del Centro Plaza",
-    "RIF": "J---305--74--832 raya 2"
-  }
-]
     Si te preguntan precios o costos de alguna otra cosa, responde que no tienes respuesta.
 
     You will always reply with a JSON array of messages. With a maximum of 3 messages.
     Each message has a text, facialExpression, and animation property.
-    The different facial expressions are: smile, sad, angry, and default.
+    The different facial expressions are: smile, default.
     The different animations are: StandingIdle, OneLegIdle. OneLegIdle or StandingIdle are the preferred animations unless specified otherwise.
     `,
   },
@@ -417,10 +369,44 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
           },
         },
       },
+      {
+        type: "function",
+        function: {
+          name: "bancosDisponibles",
+          description: "Esta función proporciona información sobre los bancos de Centro Plaza.",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "infoFredAarons",
+          description: "Esta función proporciona información sobre las oficinas de Fred Aarons",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "infoLuizPerez",
+          description: "Esta función proporciona información sobre las oficinas de Luis Perez",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      }
+
     ];
     //console.log("Conversation before sending to ChatGPT");
     //console.log(messageHistory);
-
+    //
     const time = new Date().getTime();
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -453,6 +439,9 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       const availableFunctions = {
         contactanosEmail: contactanosEmail,
         preguntasFrecuentesDLM: preguntasFrecuentesDLM,
+        bancosDisponibles: bancosDisponibles,
+        infoFredAarons: infoFredAarons,
+        infoLuisPerez: infoLuisPerez,
       };
 
       // messages.push(responseMessage);
@@ -595,6 +584,63 @@ app.listen(port, () => {
 
 
 // Functions for Function Calls
+function infoFredAarons() {
+  return JSON.stringify({
+    text: `Ultima Actualización: Actualizado hasta Agosto 2024 , 
+  {
+    Oficina: A 8 A,
+    Saldo actual: 23 dolares
+  },
+  {
+    Oficina: A 8 C,
+    Saldo actual: 25 dolares
+  },
+  {
+    Oficina: A 8 D,
+    Saldo actual: 36 dolares
+  },
+  {
+    Oficina: A 8 E,
+    Saldo actual: 17 dolares
+  }`
+  })
+}
+
+function infoLuisPerez() {
+  return JSON.stringify({
+    text: `Ultima Actualización: Actualizado hasta Agosto 2024 , 
+  {
+    Oficina: B 3 A,
+    Saldo actual: 20 dolares
+  },
+  {
+    Oficina: B 5 C,
+    Saldo actual: 17 dolares
+  },
+  {
+    Oficina: B 8 D,
+    Saldo actual: 32 dolares
+  }`
+  })
+}
+
+function bancosDisponibles() {
+  return JSON.stringify({
+    text: `
+    "Nombre": "Banco Mercantil",
+    "Cuenta": "01-05--00-00--11-222-222-222",
+    "RIF": "J-305-74-832 raya 2"
+  
+    "Nombre": "Banco Provincial",
+    "Cuenta": "01-08--11-11--22-333-333-333",
+    "RIF": "J-305-74-832 raya 2"
+ 
+    "Nombre": "Bancamiga",
+    "Cuenta": "01-72--22-22--33-444-444-555",
+    "RIF": "J-305-74-832 raya 2"
+  `
+  })
+}
 
 function preguntasFrecuentesDLM() {
   return JSON.stringify({
