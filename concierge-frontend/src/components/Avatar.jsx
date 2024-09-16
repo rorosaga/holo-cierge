@@ -170,7 +170,8 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       setAnimation('Waving');
     } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Estoy aquí para ayudarte') {
       setAnimation('Thankful');
-    } else {
+    }
+    else {
       setAnimation(message.animation);
     }
     if (message.animation === "Presentation") {
