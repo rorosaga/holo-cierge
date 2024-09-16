@@ -394,19 +394,18 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         type: "function",
         function: {
-          name: "infoLuizPerez",
+          name: "infoLuisPerez",
           description: "Esta función proporciona información sobre las oficinas de Luis Perez",
           parameters: {
             type: "object",
             properties: {},
           },
-        },
-      }
-
+        }
+      },
     ];
     //console.log("Conversation before sending to ChatGPT");
     //console.log(messageHistory);
-    //
+
     const time = new Date().getTime();
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
