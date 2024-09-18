@@ -2,7 +2,7 @@
   "avatars": {
     "zoeDLM": {
       "model": "/models/zoe/dlm_zoe6.glb",
-      "animations": "/models/zoe/zoe_animations.glb",
+      "animations": "/models/zoe/zoe_animations2.glb",
       "defaultPose": "IdleFixed",
       "background": "/textures/avila1-dlm.jpg",
       "defaultColorUI": "#1f1f1f",

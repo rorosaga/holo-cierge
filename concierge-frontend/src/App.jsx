@@ -17,7 +17,7 @@ config.targetY = 0.3
 config.targetZ = 0.79
 config.targetDiam = 3
 config.fovy = (13 * Math.PI) / 180
-new LookingGlassWebXRPolyfill()
+//new LookingGlassWebXRPolyfill()
 
 function App() {
   return (
@@ -30,7 +30,7 @@ function App() {
           <Experience />
         </XR>
       </Canvas>
-      <VRButton hidden />
+      <VRButton />
     </>
   );
 }
