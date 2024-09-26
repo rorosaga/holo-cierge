@@ -9,11 +9,10 @@ import { useAnimations, useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import React, { forwardRef, useEffect, useRef, useState, useCallback } from "react";
-
+import { useXR } from '@react-three/xr';
 import * as THREE from "three";
 import { useChat } from "../hooks/useChat";
 import avatarData from "../data/avatars.json";
-import { Experience } from "./Experience";
 
 const avatars = avatarData.avatars; // JSON data from avatars.json
 
@@ -113,18 +112,32 @@ const corresponding = {
 let setupMode = false;
 
 const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) => {
-  const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
+  const [selectedAvatar, setSelectedAvatar] = useState("digitalConcierge");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
-
   const avatarModel = useGLTF(avatars[selectedAvatar].model);
   const [currentModel, setCurrentModel] = useState(avatarModel);
   const [isHappyIdle, setIsHappyIdle] = useState(false);
   const [isThinking, setIsThinking] = useState(thinking);
+  const [blink, setBlink] = useState(false);
+  //const [dance, setDance] = useState(false);
+  const [winkLeft, setWinkLeft] = useState(false);
+  const [winkRight, setWinkRight] = useState(false);
+  const [facialExpression, setFacialExpression] = useState("");
+  const [audio, setAudio] = useState();
+  const { nodes, materials, scene } = currentModel;
+
+  const { player, isPresenting } = useXR();
+  const avatarHeadRef = useRef();
+  const [debugMode, setDebugMode] = useState(false);
+
+  // Initialize avatar position and rotation
+  const [avatarPosition, setAvatarPosition] = useState(new THREE.Vector3(0, 1.6, 0));
+  const [avatarRotation, setAvatarRotation] = useState(new THREE.Euler());
 
 
 
-  const playHappyIdle = useCallback(() => {
+  /*const playHappyIdle = useCallback(() => {
     setIsHappyIdle(true);
     setAnimation('HappyIdle');
     setFacialExpression('smile');
@@ -152,12 +165,17 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
     return () => clearTimeout(timeoutId);
   }, [isHappyIdle, playHappyIdle, message]);*/
 
+
+  useEffect(() => {
+    const newModel = useGLTF(avatars[selectedAvatar].model);
+    setCurrentModel(newModel);  // This will refresh the model when avatar changes
+  }, [selectedAvatar]);
+
+
   useEffect(() => {
     setCurrentModel(avatarModel);
 
   }, [selectedAvatar, avatarModel]);
-
-  const { nodes, materials, scene } = currentModel;
 
   useEffect(() => {
     console.log(message);
@@ -204,33 +222,43 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   const [animation, setAnimation] = useState(
     animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if idle animation exists otherwise use first animation
   );
+
   useEffect(() => {
     if (animation === avatars[selectedAvatar].defaultPose) {
       // Play the default pose animation in a loop
       setFacialExpression('default');
-      actions[animation]
-        .reset()
-        .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
-        .play();
+      const action = actions[animation];
+      if (action) {
+        action
+          .reset()
+          .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
+          .play();
+      }
     } else {
       // Play non-default animations only once
-      const action = actions[animation]
-        .reset()
-        .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
-        .play();
-      action.loop = THREE.LoopOnce;
-      action.clampWhenFinished = true;
+      const action = actions[animation];
+      if (action) {
+        action
+          .reset()
+          .fadeIn(mixer.stats.actions.inUse === 0 ? 0 : 0.5)
+          .play();
+        action.loop = THREE.LoopOnce;
+        action.clampWhenFinished = true;
 
-      // After the animation completes, return to the default pose
-      mixer.addEventListener('finished', () => {
-        setAnimation(avatars[selectedAvatar].defaultPose);
-      });
+        // After the animation completes, return to the default pose
+        mixer.addEventListener('finished', () => {
+          setAnimation(avatars[selectedAvatar].defaultPose);
+        });
+      }
     }
     return () => {
-      actions[animation].fadeOut(0.5);
+      if (actions[animation]) {
+        actions[animation].fadeOut(0.5);
+      }
       mixer.removeEventListener('finished');
     };
   }, [animation, selectedAvatar]);
+
   const lerpMorphTarget = (target, value, speed = 0.1) => {
     scene.traverse((child) => {
       if (child.isSkinnedMesh && child.morphTargetDictionary) {
@@ -257,13 +285,6 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       }
     });
   };
-
-  const [blink, setBlink] = useState(false);
-  //const [dance, setDance] = useState(false);
-  const [winkLeft, setWinkLeft] = useState(false);
-  const [winkRight, setWinkRight] = useState(false);
-  const [facialExpression, setFacialExpression] = useState("");
-  const [audio, setAudio] = useState();
 
   useFrame(() => {
     !setupMode &&
@@ -314,6 +335,33 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       Object.keys(facialExpressions['smile']).forEach((key) => {
         lerpMorphTarget(key, facialExpressions['smile'][key], 0.1);
       });
+    }
+
+    if (isPresenting && player) {
+      let newPosition, newRotation;
+
+      if (player.head && player.head.position && player.head.rotation) {
+        newPosition = player.head.position;
+        newRotation = player.head.rotation;
+      } else if (player.position && player.rotation) {
+        newPosition = player.position;
+        newRotation = player.rotation;
+      }
+
+      if (newPosition && newRotation) {
+        // Smooth transition
+        avatarHeadRef.current.position.lerp(newPosition, 0.1);
+        avatarHeadRef.current.rotation.setFromVector3(
+          new THREE.Vector3().lerp(new THREE.Vector3(newRotation.x, newRotation.y, newRotation.z), 0.1)
+        );
+
+        setAvatarPosition(avatarHeadRef.current.position);
+        setAvatarRotation(avatarHeadRef.current.rotation);
+      }
+
+      if (debugMode) {
+        console.log('VR Data:', { player, position: newPosition, rotation: newRotation });
+      }
     }
   });
 
@@ -425,6 +473,7 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
           skeleton={node.skeleton}
           morphTargetDictionary={node.morphTargetDictionary}
           morphTargetInfluences={node.morphTargetInfluences}
+          frustumCulled={false} //Stops culling in VR mode. You're now able to zoom in completely.
         />
       );
     });
@@ -433,7 +482,9 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   return (
     <group {...props} dispose={null} ref={group}>
       <primitive object={nodes.Hips} />
-      {renderSkinnedMeshes()}
+      <group ref={avatarHeadRef} position={avatarPosition} rotation={avatarRotation}>
+        {renderSkinnedMeshes()}
+      </group>
     </group>
   );
 });

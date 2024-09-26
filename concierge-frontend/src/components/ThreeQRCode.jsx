@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import QRCode from 'qrcode';
-import { CameraControls, ContactShadows, Environment, Text, Plane } from "@react-three/drei";
 
 const ThreeQRCode = ({ value, size = 1, position = [0, 0, 0] }) => {
     const { scene } = useThree();

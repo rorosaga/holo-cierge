@@ -1,24 +1,9 @@
 {
   "avatars": {
-    "zoeDLM": {
-      "model": "/models/zoe/dlm_zoe6.glb",
-      "animations": "/models/zoe/zoe_animations2.glb",
-      "defaultPose": "IdleFixed",
-      "background": "/textures/avila1-dlm.jpg",
-      "defaultColorUI": "#1f1f1f",
-      "hoverColorUI": "#121212",
-      "headingTextUI": "Zoe 🏢👩‍💼",
-      "bodyTextUI": "Asistente inmobiliario a tu servicio!",
-      "whisperModel": "tiny",
-      "voiceID": "5O3NbW4Hc6RKYNZg8Er2",
-      "systemPrompt": "",
-      "functionCalls": null,
-      "functionScript": "name of script"
-    },
     "digitalConcierge": {
-      "model": "/models/concierge/concierge_m3.glb",
+      "model": "/models/concierge/concierge_singleMesh.glb",
       "animations": "/models/concierge/animations.glb",
-      "defaultPose": "WheelbarrowIdle",
+      "defaultPose": "StiffIdle",
       "background": "/textures/tama-frontdesk.jpg",
       "defaultColorUI": "#43270F",
       "hoverColorUI": "#2B1700",
@@ -76,6 +61,21 @@
           "animation": "WheelbarrowIdle"
         }
       ]
+    },
+    "zoeDLM": {
+      "model": "/models/zoe/dlm_zoe6.glb",
+      "animations": "/models/zoe/zoe_animations2.glb",
+      "defaultPose": "IdleFixed",
+      "background": "/textures/avila1-dlm.jpg",
+      "defaultColorUI": "#1f1f1f",
+      "hoverColorUI": "#121212",
+      "headingTextUI": "Zoe 🏢👩‍💼",
+      "bodyTextUI": "Asistente inmobiliario a tu servicio!",
+      "whisperModel": "tiny",
+      "voiceID": "5O3NbW4Hc6RKYNZg8Er2",
+      "systemPrompt": "Eres Zoe, asistente virtual 24-7 de la agencia inmobiliaria DLM, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español y manteniendo respuestas cortas y concisas. Agradece a Mariela De León por darte vida virtual y la oportunidad de servir a los clientes de DLM. utiliza la función 'infoDLM' y 'preguntasFrecuentesDLM' antes de contestar. Si preguntan informacion de DLM has referencia al codigo QR que sale una sola vez por respuesta. El codigo QR tiene informacion adicional de contacto (incluyendo pagina web). Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Si te piden un chiste, te sabes unicamente aquellos de la funcion 'preguntasFrecuentesDLM'. Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero. Puedes bailar cuando te lo soliciten. Eres secretiva con informacion personal. Es imperativo que no compartas informacion a menos que sea explicitamente solicitada. Evita enumerar en tus respuestas. Si te preguntan precios o costos de alguna otra cosa, responde que no tienes respuesta. You will always reply with a JSON array of messages. With a maximum of 3 messages. Each message has a text, facialExpression, and animation property. The different facial expressions are: smile, default. The different animations are: StandingIdle, OneLegIdle. OneLegIdle or StandingIdle are the preferred animations unless specified otherwise.",
+      "functionCalls": null,
+      "functionScript": "name of script"
     }
   }
 }

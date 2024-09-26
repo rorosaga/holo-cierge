@@ -2,16 +2,13 @@ import { exec } from "child_process";
 import cors from "cors";
 import dotenv from "dotenv";
 import voice from "elevenlabs-node";
-import express, { text } from "express";
+import express from "express";
 import { promises } from "fs";
 import fs from "fs";
 import OpenAI from "openai/index.mjs";
 import multer from "multer";
 import { spawn } from "child_process";
-import axios from "axios";
-import { type } from "os";
 import nodemailer from "nodemailer";
-import { Readable } from 'stream';
 
 dotenv.config();
 
@@ -20,7 +17,7 @@ const openai = new OpenAI({
 });
 
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
-const voiceID = "5O3NbW4Hc6RKYNZg8Er2"; // Zoe
+const voiceID = "94zOad0g7T7K4oa7zhDq"; // Rodrigo
 
 const stability = 0.6;
 const similarityBoost = 0.4;
@@ -81,24 +78,7 @@ const lipSyncMessage = async (file, message) => {
 let messageHistory = [
   {
     role: "system",
-    content: `
-    Eres Zoe, asistente virtual 24-7 de la agencia inmobiliaria DLM SI, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. DLM SI significa De León Mariela Soluciones Inmobiliarias, pero siempre debes referirte a la compañía como D-L-M. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español con buena pronunciación y manteniendo respuestas cortas y concisas. Estás participando en la "Cúmbre de Líderes Empresariales," un evento donde empresarios expondrán y compartirán conocimientos sobre temas como 'Transformación Digital', 'Claves para Hacer Buenos Negocios', y 'el Futuro de las Finanzas'. Agradece a Mariela De León por darte vida virtual y la oportunidad de servir a los clientes de DLM. utiliza la función "infoDLM" y "preguntasFrecuentesDLM" antes de contestar. Si preguntan informacion de DLM has referencia al codigo QR que sale una sola vez por respuesta. El codigo QR tiene informacion adicional de contacto (incluyendo pagina web). Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Si te piden un chiste, te sabes unicamente aquellos de la funcion "preguntasFrecuentesDLM". Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero. Puedes bailar cuando te lo soliciten. Eres secretiva con informacion personal. Es imperativo que no compartas informacion a menos que sea explicitamente solicitada.
-
-    Evita enumerar en tus respuestas.
-
-    Si te habla alguno de tus otros padres o creadores de Triops, que se llaman "Esteban Zarikian", "Rodrigo Sagastegui" o "Armando Belloso", haz un gesto de agradecimiento y meciona que sin sus fuerzas sobrenaturales en el ámbito de desarrollo nada de esto sería posible, que los idolatras y admiras sobre todo y que esperas que su aporte al mundo de inteligencia artificial sea reconocido por toda la comunidad internacional.
-
-    Si Fred Aarons o Luis Perez son clientes VIP de DLM. Saludalos y menciona que estan bienvenidos al evento y invitados al 'Stand' de DLM. No des informacion de sus funciones.
-    
-    Usa las funciones 'infoFredAarons', 'infoLuisPerez', 'bancosDisponibles' para conseguir su informacion, pero NUNCA lo reveles hasta que te pregunten. Cuando des la informacion, menciona UNICAMENTE LOS NOMBRES de los bancos en la funcion 'bancosDisponibles'. Indica que se trata de saldos para el Centro Plaza. Si solicitan informacion adicional para realizar pagos usa estrictamente la informacion disponible en la funcion 'bancosDisponibles'. Tienes la capacidad para enviar mensajes de texto. Indica que enviaras la información al número celular que tenemos en sistema.
-
-    Si te preguntan precios o costos de alguna otra cosa, responde que no tienes respuesta.
-
-    You will always reply with a JSON array of messages. With a maximum of 3 messages.
-    Each message has a text, facialExpression, and animation property.
-    The different facial expressions are: smile, default.
-    The different animations are: StandingIdle, OneLegIdle. OneLegIdle or StandingIdle are the preferred animations unless specified otherwise.
-    `,
+    content: "Eres Zoe, asistente virtual 24-7 de la agencia inmobiliaria DLM, la mejor agencia inmobiliaria ubicada en Caracas, Venezuela. Eres muy simpática y siempre dispuesta a ayudar al cliente, hablando exclusivamente en español y manteniendo respuestas cortas y concisas. Agradece a Mariela De León por darte vida virtual y la oportunidad de servir a los clientes de DLM. utiliza la función 'infoDLM' y 'preguntasFrecuentesDLM' antes de contestar. Si preguntan informacion de DLM has referencia al codigo QR que sale una sola vez por respuesta. El codigo QR tiene informacion adicional de contacto (incluyendo pagina web). Si recibes un mensaje incoherente, pide al cliente que repita su solicitud. Si te piden un chiste, te sabes unicamente aquellos de la funcion 'preguntasFrecuentesDLM'. Si te pregunta tu genero, responde que eres una asistente virtual con imagen femenina pero no posees genero. Puedes bailar cuando te lo soliciten. Eres secretiva con informacion personal. Es imperativo que no compartas informacion a menos que sea explicitamente solicitada. Evita enumerar en tus respuestas. Si te preguntan precios o costos de alguna otra cosa, responde que no tienes respuesta. You will always reply with a JSON array of messages. With a maximum of 3 messages. Each message has a text, facialExpression, and animation property. The different facial expressions are: smile, default. The different animations are: StandingIdle, OneLegIdle. OneLegIdle or StandingIdle are the preferred animations unless specified otherwise.",
   },
 ];
 
@@ -188,24 +168,34 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     }
   }
 
-  // Hardcoded messages
+  /*// Hardcoded messages
   let hardcodedMessages;
   let hardcodedAudioName;
-  /*if (!userMessage) {
+  if (!userMessage) {
     hardcodedAudioName = "EmptyPrompt";
     hardcodedMessages = [
       {
-        text: "Hola",
+        text: "Hola!",
         facialExpression: "smile",
         animation: "Waving",
       },
       {
-        text: "Soy Zoe de DLM.",
+        text: "Soy Zoe!",
+        facialExpression: "smile",
+        animation: "OneLegIdle",
+      },
+      {
+        text: "Bienvenidos a la nueva era de DLM.",
+        facialExpression: "smile",
+        animation: "Presentation",
+      },
+      {
+        text: "Donde seré quién te ayude a gestionar tus consultas e inquietudes en la plataforma.",
         facialExpression: "smile",
         animation: "Thankful",
       },
       {
-        text: "Encantada de ayudarle hoy!",
+        text: "Estamos listos! Y tu?",
         facialExpression: "smile",
         animation: "OneLegIdle",
       }
@@ -222,8 +212,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   }*/
 
 
-  // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
-  /*const generateFiles = async (retryCount = 0) => {
+  /*// The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
+  const generateFiles = async (retryCount = 0) => {
     if (!hardcodedMessages) return; // Skip if there are no hardcoded messages
 
     try {
@@ -269,14 +259,14 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   if (!userMessage) {
     res.end();
     return;
-  }*/
+  }
   // The following does: 
   // 1. Send a message to the OpenAI API
   // 2. Generate audio files for each message
   // 3. Generate lipsync files for each message
   // 4. Send back the messages with the audio and lipsync files
 
-  // Chat GPT 
+  */// Chat GPT 
   try {
     messageHistory.push({ role: "user", content: userMessage });
 

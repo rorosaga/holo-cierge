@@ -15,10 +15,12 @@
     "@react-three/xr": "5.7.1",
     "@types/three": "0.152.1",
     "leva": "^0.9.35",
+    "next-dev-https": "^0.13.3",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-qr-code": "^2.0.15",
+    "react-three": "^0.9.7",
     "three": "0.153.0"
   },
   "devDependencies": {

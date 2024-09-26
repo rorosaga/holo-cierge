@@ -1,10 +1,4 @@
-import {
-  CameraControls,
-  ContactShadows,
-  Environment,
-  Text,
-  RoundedBox,
-} from "@react-three/drei";
+import { CameraControls, ContactShadows, Environment, Text, RoundedBox } from "@react-three/drei";
 import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useChat } from "../hooks/useChat";
 import { Avatar } from "./Avatar";
@@ -41,6 +35,7 @@ const Dots = (props) => {
 };
 
 export const Experience = () => {
+
   const cameraControls = useRef();
   const { cameraZoomed, thinking } = useChat();
   const [showQR, setShowQR] = useState(false);
@@ -74,7 +69,6 @@ export const Experience = () => {
         <Dots position-y={1.75} position-x={-0.07} />
       </Suspense>
       <Avatar thinking={thinking} onArmGesture={handleArmGesture} />
-      <ContactShadows opacity={0.7} />
       {showQR && (
         <group position={[-0.8, 1.8, -0.4]}>
           <RoundedBox args={[0.42, 0.42, 0.01]} radius={0.02} smoothness={4}>
