@@ -3,6 +3,8 @@ import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useChat } from "../hooks/useChat";
 import { Avatar } from "./Avatar";
 import ThreeQRCode from "./ThreeQRCode";
+import { TextureLoader } from "three";
+import { useLoader } from "@react-three/fiber";
 
 //This code initially had 3 black dots display on top of the avatar while thinking.
 const Dots = (props) => {
@@ -40,6 +42,7 @@ export const Experience = () => {
   const { cameraZoomed, thinking } = useChat();
   const [showQR, setShowQR] = useState(false);
   const qrData = "http://linktr.ee/DLMSolucionesInmobiliarias";
+  const texture = useLoader(TextureLoader, '../public/image.jpg');
 
   useEffect(() => {
     cameraControls.current.setLookAt(0, 2, 5, 0, 1.5, 0);
@@ -57,7 +60,7 @@ export const Experience = () => {
     setShowQR(true);
     setTimeout(() => {
       setShowQR(false);
-    }, 20000); // Hide QR code after 20 seconds
+    }, 200000); // Hide QR code after 20 seconds
   }, []);
 
   return (
@@ -74,9 +77,13 @@ export const Experience = () => {
           <RoundedBox args={[0.42, 0.42, 0.01]} radius={0.02} smoothness={4}>
             <meshBasicMaterial color="white" />
           </RoundedBox>
-          <ThreeQRCode value={qrData} size={0.4} position={[-0.8, 1.8, -0.39]} />
+          <mesh position={[0, 0, 0.006]}>
+            <planeGeometry args={[0.4, 0.4]} />
+            <meshBasicMaterial map={texture} transparent />
+          </mesh>
         </group>
       )}
     </>
   );
 };
+//<ThreeQRCode value={qrData} size={0.4} position={[-0.8, 1.8, -0.39]} />

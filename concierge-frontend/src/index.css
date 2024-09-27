@@ -21,7 +21,7 @@
 body {
   margin: 0;
   background-color: #4169E1;
-  background-image: url('/textures/avila1-dlm.jpg'), linear-gradient(19deg, #2a49a5 0%, #d3e4ff 100%);
+  background-image: url('/textures/tama-frontdesk.jpg'), linear-gradient(19deg, #2a49a5 0%, #d3e4ff 100%);
   background-size: cover;
   background-position: center;
 }
@@ -35,9 +35,11 @@ body.greenScreen {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }

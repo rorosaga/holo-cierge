@@ -168,39 +168,64 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     }
   }
 
-  /*// Hardcoded messages
+  // Hardcoded messages
   let hardcodedMessages;
   let hardcodedAudioName;
   if (!userMessage) {
     hardcodedAudioName = "EmptyPrompt";
     hardcodedMessages = [
       {
-        text: "Hola!",
+        text: "¡Hola a todos! Soy Leo, su Concierge Digital",
         facialExpression: "smile",
-        animation: "Waving",
+        animation: "Bow",
       },
       {
-        text: "Soy Zoe!",
+        text: "Aunque aún no puedo servirles un cóctel de bienvenida...",
         facialExpression: "smile",
-        animation: "OneLegIdle",
+        animation: "Concede",
       },
       {
-        text: "Bienvenidos a la nueva era de DLM.",
+        text: "estoy encantado de invitarlos al catorceavo Encuentro Gerencial dos mil veinticuatro de Euro-bhilding Hotehls",
         facialExpression: "smile",
         animation: "Presentation",
       },
       {
-        text: "Donde seré quién te ayude a gestionar tus consultas e inquietudes en la plataforma.",
+        text: "Permítanme contarles un secreto: En Treeops Solutions, han desarrollado herramientas para emplear la inteligencia artificial pensando en sus hoteles.",
         facialExpression: "smile",
-        animation: "Thankful",
+        animation: "Talking",
       },
       {
-        text: "Estamos listos! Y tu?",
+        text: "Sí, lo sé. Están tratando que yo sea más inteligente que Siri y más encantador que Alexa.",
         facialExpression: "smile",
-        animation: "OneLegIdle",
+        animation: "Boom",
+      },
+      {
+        text: "Servirles es nuestro compromiso.",
+        facialExpression: "smile",
+        animation: "Bow",
+      },
+      {
+        text: "Así necesiten ayuda para solicitar un kit dental o para pedir room service...",
+        facialExpression: "smile",
+        animation: "ThisOrThat",
+      },
+      {
+        text: "...estamos aquí para ustedes!",
+        facialExpression: "smile",
+        animation: "HappyGive",
+      },
+      {
+        text: "Para terminar, les deseo un evento lleno de ideas brillantes, y recuerden este pensamiento que aplica Tachy: 'el servicio es como la fe, no se razona, solo se siente, se vive y se practica!'",
+        facialExpression: "smile",
+        animation: "Speak",
+      },
+      {
+        text: "Nos vemos en el Tamá!",
+        facialExpression: "smile",
+        animation: "PointBack",
       }
     ];
-  } /*else {
+  } else {
     hardcodedAudioName = "ValidPrompt";
     hardcodedMessages = [
       {
@@ -209,10 +234,10 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         animation: "Thinking",
       }
     ];
-  }*/
+  }
 
 
-  /*// The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
+  // The following code generates the audio and lipsync files for hardcoded messages if they don't exist already
   const generateFiles = async (retryCount = 0) => {
     if (!hardcodedMessages) return; // Skip if there are no hardcoded messages
 
@@ -266,7 +291,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   // 3. Generate lipsync files for each message
   // 4. Send back the messages with the audio and lipsync files
 
-  */// Chat GPT 
+  // Chat GPT 
   try {
     messageHistory.push({ role: "user", content: userMessage });
 

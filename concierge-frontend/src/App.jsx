@@ -47,7 +47,6 @@ function App() {
           <Controllers />
           <Hands />
           <OrbitControls />
-          <FlatCubeBackground />
           <group scale={[4, 4, 4]} position={[0, -5, -1]}>
             <Experience />
           </group>
