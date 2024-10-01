@@ -309,76 +309,62 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         type: "function",
         function: {
-          name: "contactanosEmail",
-          description: "Función para enviar un correo a la dirección de contacto de DLM SI.",
+          name: "info_san_cristobal",
+          description: "Esta función proporciona información sobre San Cristóbal, Venezuela, como sus habitantes y otros detalles.",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "zonas_deportivas_recreativas",
+          description: "Esta función proporciona información sobre las zonas deportivas y recreativas en el hotel Tamá.",
+          parameters: {
+            type: "object",
+            properties: {},
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "get_current_weather",
+          description: "Clima en cualquier ubicacion",
           parameters: {
             type: "object",
             properties: {
-              sender: {
+              location: {
                 type: "string",
-                description: "Nombre del remitente",
+                description: "The city and state, e.g. San Francisco, CA",
               },
-              user_email: {
+              unit: { type: "string", enum: ["celsius", "fahrenheit"] },
+            },
+            required: ["location"],
+          },
+        },
+      },
+      {
+        type: "function",
+        function: {
+          name: "ticket_hotel_tama",
+          description: "Función para solicitar un ticket en el hotel Tamá, con la solicitud del cliente. Debes proporcionar la solicitud individualmenente y utilizando solo las palabras claves.",
+          parameters: {
+            type: "object",
+            properties: {
+              requestText: {
                 type: "string",
-                description: "La dirección de correo electrónico del remitente",
-              },
-              subject: {
-                type: "string",
-                description: "El asunto del correo, por ejemplo: 'Solicitud de información'.",
-              },
-              body: {
-                type: "string",
-                description: "El cuerpo del correo, por ejemplo: 'Me gustaría obtener más información sobre los servicios que ofrecen'.",
+                description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
+              El cliente pide una toalla extra en la habitación. requestText: "Toalla extra"`,
               },
             },
-            required: ["sender", "user_email", "subject", "body"],
+            required: ["requestText"],
           },
         },
       },
-      {
-        type: "function",
-        function: {
-          name: "preguntasFrecuentesDLM",
-          description: "Esta función proporciona información sobre las preguntas mas frecuentes de DLM.",
-          parameters: {
-            type: "object",
-            properties: {},
-          },
-        },
-      },
-      {
-        type: "function",
-        function: {
-          name: "bancosDisponibles",
-          description: "Esta función proporciona información sobre los bancos de Centro Plaza.",
-          parameters: {
-            type: "object",
-            properties: {},
-          },
-        },
-      },
-      {
-        type: "function",
-        function: {
-          name: "infoFredAarons",
-          description: "Esta función proporciona información sobre las oficinas de Fred Aarons",
-          parameters: {
-            type: "object",
-            properties: {},
-          },
-        },
-      },
-      {
-        type: "function",
-        function: {
-          name: "infoLuisPerez",
-          description: "Esta función proporciona información sobre las oficinas de Luis Perez",
-          parameters: {
-            type: "object",
-            properties: {},
-          },
-        }
-      },
+
     ];
     //console.log("Conversation before sending to ChatGPT");
     //console.log(messageHistory);
