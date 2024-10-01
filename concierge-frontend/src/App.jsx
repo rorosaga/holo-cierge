@@ -20,6 +20,21 @@ config.targetDiam = 3
 config.fovy = (13 * Math.PI) / 180
 new LookingGlassWebXRPolyfill()
 
+//EL VR NO FUNCIONA SIN LA CAJITA!!
+function Box(props) {
+  // This reference gives us direct access to the THREE.Mesh object
+  const ref = useRef()
+  // Return the view, these are regular Threejs elements expressed in JSX
+  return (
+    <mesh
+      {...props}
+      ref={ref}>
+      <boxGeometry args={[.001, .001, .001]} />
+      <meshStandardMaterial color='black' />
+    </mesh>
+  )
+}
+
 function FlatCubeBackground() {
   const texture = useTexture('/textures/tama-frontdesk.jpg');
   const size = 10; // Adjust this value to change the size of the cube
@@ -27,7 +42,7 @@ function FlatCubeBackground() {
 
   return (
     <>
-      <mesh position={[0, 0, -3.5]}>
+      <mesh position={[0, 0, -1.5]}>
         <boxGeometry args={[size, size, depth]} />
         <meshBasicMaterial map={texture} side={2} /> {/* Side: 2 for double-sided material */}
       </mesh>
@@ -47,6 +62,7 @@ function App() {
           <Controllers />
           <Hands />
           <OrbitControls />
+          <Box position={[0, -1, -1]} />
           <group scale={[4, 4, 4]} position={[0, -5, -1]}>
             <Experience />
           </group>
