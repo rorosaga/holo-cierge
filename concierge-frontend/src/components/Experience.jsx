@@ -1,10 +1,11 @@
-import { CameraControls, ContactShadows, Environment, Text, RoundedBox } from "@react-three/drei";
+import { CameraControls, ContactShadows, Environment, Text, RoundedBox, useTexture } from "@react-three/drei";
 import { Suspense, useEffect, useRef, useState, useCallback } from "react";
 import { useChat } from "../hooks/useChat";
 import { Avatar } from "./Avatar";
 import ThreeQRCode from "./ThreeQRCode";
 import { TextureLoader } from "three";
 import { useLoader } from "@react-three/fiber";
+import { useSpring, animated } from '@react-spring/three';
 
 //This code initially had 3 black dots display on top of the avatar while thinking.
 const Dots = (props) => {
@@ -42,7 +43,14 @@ export const Experience = () => {
   const { cameraZoomed, thinking } = useChat();
   const [showQR, setShowQR] = useState(false);
   const qrData = "http://linktr.ee/DLMSolucionesInmobiliarias";
-  const texture = useLoader(TextureLoader, '../public/image.jpg');
+  const texture = useTexture('../public/image.jpg');
+
+  const AnimatedGroup = animated.group;
+  const springProps = useSpring({
+    scale: showQR ? 1 : 0,
+    opacity: showQR ? 1 : 0,
+    config: { mass: 1, tension: 280, friction: 60 }
+  });
 
   useEffect(() => {
     cameraControls.current.setLookAt(0, 2, 5, 0, 1.5, 0);
@@ -60,7 +68,7 @@ export const Experience = () => {
     setShowQR(true);
     setTimeout(() => {
       setShowQR(false);
-    }, 200000); // Hide QR code after 20 seconds
+    }, 60000); // Hide QR code after 60 seconds
   }, []);
 
   return (
@@ -73,15 +81,16 @@ export const Experience = () => {
       </Suspense>
       <Avatar thinking={thinking} onArmGesture={handleArmGesture} />
       {showQR && (
-        <group position={[-0.8, 1.8, -0.4]}>
-          <RoundedBox args={[0.42, 0.42, 0.01]} radius={0.02} smoothness={4}>
+        <AnimatedGroup position={[-0.8, 1.8, -0.4]} scale={springProps.scale} opacity={springProps.opacity}>
+          <RoundedBox args={[0.80, 0.80, 0.01]} radius={0.02} smoothness={4}>
             <meshBasicMaterial color="white" />
           </RoundedBox>
-          <mesh position={[0, 0, 0.006]}>
-            <planeGeometry args={[0.4, 0.4]} />
-            <meshBasicMaterial map={texture} transparent />
+          <mesh position={[0, 0, 0.06]}>
+            <planeGeometry args={[0.72, 0.72]} />
+            <meshBasicMaterial color="white" transparent opacity={springProps.opacity} />
+            <meshBasicMaterial map={texture} opacity={springProps.opacity} />
           </mesh>
-        </group>
+        </AnimatedGroup>
       )}
     </>
   );

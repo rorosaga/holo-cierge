@@ -3,7 +3,7 @@
     "digitalConcierge": {
       "model": "/models/concierge/concierge_singleMesh.glb",
       "animations": "/models/concierge/animations.glb",
-      "defaultPose": "WeightShift",
+      "defaultPose": "Idle",
       "background": "/textures/tama-frontdesk.jpg",
       "defaultColorUI": "#43270F",
       "hoverColorUI": "#2B1700",
