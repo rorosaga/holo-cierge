@@ -10,7 +10,6 @@ import { Canvas, useFrame } from '@react-three/fiber';
 const config = LookingGlassConfig
 config.tileHeight = 455
 config.numViews = 24
-config.targetX = -0.2
 config.trackballX = 0
 config.trackballY = 0
 config.targetX = 0.2

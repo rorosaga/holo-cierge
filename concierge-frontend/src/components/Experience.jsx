@@ -42,8 +42,8 @@ export const Experience = () => {
   const cameraControls = useRef();
   const { cameraZoomed, thinking } = useChat();
   const [showQR, setShowQR] = useState(false);
-  const qrData = "http://linktr.ee/DLMSolucionesInmobiliarias";
-  const texture = useTexture('../public/image.jpg');
+  const qrData = "http://linktr.ee/DLMSolucionesInmobiliarias"; //QR Link
+  const texture = useTexture('../public/image.jpg'); //Image Link
 
   const AnimatedGroup = animated.group;
   const springProps = useSpring({
@@ -85,7 +85,7 @@ export const Experience = () => {
           <RoundedBox args={[0.80, 0.80, 0.01]} radius={0.02} smoothness={4}>
             <meshBasicMaterial color="white" />
           </RoundedBox>
-          <mesh position={[0, 0, 0.06]}>
+          <mesh position={[0, 0, 0.01]}>
             <planeGeometry args={[0.72, 0.72]} />
             <meshBasicMaterial color="white" transparent opacity={springProps.opacity} />
             <meshBasicMaterial map={texture} opacity={springProps.opacity} />

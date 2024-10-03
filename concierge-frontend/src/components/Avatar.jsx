@@ -135,8 +135,6 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   const [avatarPosition, setAvatarPosition] = useState(new THREE.Vector3(0, 1.6, 0));
   const [avatarRotation, setAvatarRotation] = useState(new THREE.Euler());
 
-
-
   /*const playHappyIdle = useCallback(() => {
     setIsHappyIdle(true);
     setAnimation('HappyIdle');
@@ -203,13 +201,28 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
     audio.onended = onMessagePlayed;
   }, [message, onArmGesture]);
 
-
+  const group = useRef();
   const { animations } = useGLTF(avatars[selectedAvatar].animations);
+  const [loadedAnimations, setLoadedAnimations] = useState(null);
+
+  useEffect(() => {
+    // Load animations
+    const loader = new THREE.AnimationLoader();
+    loader.load(avatars[selectedAvatar].animations, (animData) => {
+      const newAnimations = animData.map((clip) => {
+        return new THREE.AnimationClip(clip.name, clip.duration, clip.tracks);
+      });
+      setLoadedAnimations(newAnimations);
+    });
+  }, [selectedAvatar]);
+
+  const { actions, mixer } = useAnimations(loadedAnimations || animations, group);
+
 
   useEffect(() => {
     setIsThinking(thinking);
     if (thinking) {
-      setAnimation('ThinkingVeryLong');
+      setAnimation('Thinking');
       setFacialExpression('default');
     } else if (!message) {
       setAnimation(avatars[selectedAvatar].defaultPose);
@@ -217,13 +230,13 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
     }
   }, [thinking, selectedAvatar]);
 
-  const group = useRef();
-  const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState(
     animations.find((a) => a.name === avatars[selectedAvatar].defaultPose) ? avatars[selectedAvatar].defaultPose : animations[0].name // Check if idle animation exists otherwise use first animation
   );
 
   useEffect(() => {
+    if (!actions || !mixer) return;
+
     if (animation === avatars[selectedAvatar].defaultPose) {
       // Play the default pose animation in a loop
       setFacialExpression('default');
@@ -257,7 +270,7 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       }
       mixer.removeEventListener('finished');
     };
-  }, [animation, selectedAvatar]);
+  }, [animation, selectedAvatar, actions, mixer]);
 
   const lerpMorphTarget = (target, value, speed = 0.1) => {
     scene.traverse((child) => {
@@ -286,7 +299,20 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
     });
   };
 
-  useFrame(() => {
+  useFrame((state, delta) => {
+    if (mixer) {
+      mixer.update(delta);
+    }
+
+    if (isPresenting) {
+      console.log('VR mode active');
+      console.log('Current animation:', animation);
+      console.log('Actions:', Object.keys(actions));
+      if (actions[animation]) {
+        console.log('Animation weight:', actions[animation].getEffectiveWeight());
+        console.log('Animation time:', actions[animation].time);
+      }
+    }
     !setupMode &&
       Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
         const mapping = facialExpressions[facialExpression];
@@ -491,6 +517,7 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
 
 Avatar.displayName = "Avatar";
 
+// Preload assets
 for (const key in avatars) {
   useGLTF.preload(avatars[key].model);
   useGLTF.preload(avatars[key].animations);

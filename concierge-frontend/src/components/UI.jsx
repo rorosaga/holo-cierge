@@ -27,8 +27,8 @@ export const UI = ({ hidden, ...props }) => {
     <>
       <div className="fixed top-0 left-0 right-0 bottom-0 z-10 flex justify-between p-4 flex-col pointer-events-none">
         <div className="self-start backdrop-blur-md bg-white bg-opacity-50 p-4 rounded-lg">
-          <h1 className="font-black text-xl">{avatars.zoeDLM.headingTextUI}</h1>
-          <p>{avatars.zoeDLM.bodyTextUI}</p>
+          <h1 className="font-black text-xl">{avatars.digitalConcierge.headingTextUI}</h1>
+          <p>{avatars.digitalConcierge.bodyTextUI}</p>
         </div>
 
 
