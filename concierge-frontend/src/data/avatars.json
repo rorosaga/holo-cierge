@@ -1,7 +1,7 @@
 {
   "avatars": {
     "digitalConcierge": {
-      "model": "/models/concierge/concierge_singleMesh.glb",
+      "model": "/models/concierge/concierge_singleMesh_withID.glb",
       "animations": "/models/concierge/animations.glb",
       "defaultPose": "Idle",
       "background": "/textures/tama-frontdesk.jpg",
@@ -88,7 +88,7 @@
     },
     "zoeDLM": {
       "model": "/models/zoe/dlm_zoe6.glb",
-      "animations": "/models/zoe/zoe_animations2.glb",
+      "animations": "/models/zoe/animations.glb",
       "defaultPose": "IdleFixed",
       "background": "/textures/avila1-dlm.jpg",
       "defaultColorUI": "#1f1f1f",

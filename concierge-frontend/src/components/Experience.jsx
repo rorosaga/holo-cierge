@@ -82,7 +82,7 @@ export const Experience = () => {
       <Avatar thinking={thinking} onArmGesture={handleArmGesture} />
       {showQR && (
         <AnimatedGroup position={[-0.8, 1.8, -0.4]} scale={springProps.scale} opacity={springProps.opacity}>
-          <RoundedBox args={[0.80, 0.80, 0.01]} radius={0.02} smoothness={4}>
+          <RoundedBox args={[0.70, 0.70, 0.01]} radius={0.02} smoothness={4}>
             <meshBasicMaterial color="white" />
           </RoundedBox>
           <mesh position={[0, 0, 0.01]}>

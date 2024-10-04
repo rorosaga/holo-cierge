@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.2.3 public/models/concierge_m1.glb -o src/components/Avat
 Alternative: https://gltf.pmnd.rs
 */
 
-import { useAnimations, useGLTF } from "@react-three/drei";
+import { useAnimations, useGLTF, useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import React, { forwardRef, useEffect, useRef, useState, useCallback } from "react";
@@ -111,8 +111,21 @@ const corresponding = {
 
 let setupMode = false;
 
+const FlatCubeBackground = () => {
+  const texture = useTexture('/textures/tama-frontdesk.jpg');
+  const size = 10;
+  const depth = 0.01;
+
+  return (
+    <mesh position={[0, 1, -4]}>
+      <boxGeometry args={[size, size, depth]} />
+      <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
+    </mesh>
+  );
+};
+
 const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) => {
-  const [selectedAvatar, setSelectedAvatar] = useState("digitalConcierge");
+  const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
   const avatarModel = useGLTF(avatars[selectedAvatar].model);
@@ -300,9 +313,6 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   };
 
   useFrame((state, delta) => {
-    if (mixer) {
-      mixer.update(delta);
-    }
 
     if (isPresenting) {
       console.log('VR mode active');
@@ -506,12 +516,15 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   };
 
   return (
-    <group {...props} dispose={null} ref={group}>
-      <primitive object={nodes.Hips} />
-      <group ref={avatarHeadRef} position={avatarPosition} rotation={avatarRotation}>
-        {renderSkinnedMeshes()}
+    <>
+      {isPresenting && <FlatCubeBackground />}
+      <group {...props} dispose={null} ref={group}>
+        <primitive object={nodes.Hips} />
+        <group ref={avatarHeadRef} position={avatarPosition} rotation={avatarRotation}>
+          {renderSkinnedMeshes()}
+        </group>
       </group>
-    </group>
+    </>
   );
 });
 
