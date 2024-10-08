@@ -282,7 +282,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         type: "function",
         function: {
           name: "getCurrentWeather",
-          description: "Función para obtener clima local",
+          description: "Función para obtener data climatológica local (San Cristobal).",
           parameters: {
             type: "object",
             properties: {},

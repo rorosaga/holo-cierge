@@ -265,11 +265,9 @@ export async function ticket_hotel_tama(requestText) {
 export async function getCurrentWeather() {
     // Define the parameters
     const parameters = {
-        'key': process.env.METEOSOURCE_API_KEY,  // Make sure this is set in your environment variables
-        'place_id': 'san-cristobal',
-        'language': 'es',
-        'unit': 'metric'
-    };
+        'key': process.env.METEOSOURCE_API_KEY,
+        'place_id': 'san-cristobal'
+    }
 
     // Define the base URL
     const url = "https://www.meteosource.com/api/v1/free/point";
@@ -283,8 +281,8 @@ export async function getCurrentWeather() {
 
         // Return the data in a structured format
         return JSON.stringify({
-            text: `Responde con la información básica que salga de la variable 'data'.`,
-            data: data  // Return the weather data here for more flexibility
+            text: `Responde con la información básica que salga de la variable 'data'. Cambia la puntuación de los valores de ésta manera: si lees 23.5 refiérete al valor como 'veintitres punto cinco.`,
+            data: data
         });
 
     } catch (error) {
