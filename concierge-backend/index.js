@@ -11,7 +11,7 @@ import multer from "multer";
 import { spawn } from "child_process";
 import nodemailer from "nodemailer";
 import { fileURLToPath } from 'url';
-import { contactanosEmail, ticket_hotel_tama, zonas_deportivas_recreativas, info_san_cristobal } from './functions.js';
+import { contactanosEmail, ticket_hotel_tama, zonas_deportivas_recreativas, info_san_cristobal, getCurrentWeather } from './functions.js';
 
 dotenv.config();
 
@@ -37,6 +37,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "-",
 });
 
+const meteosourceKey = process.env.METEOSOURCE_API_KEY;
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
 const voiceID = avatarData.avatars.digitalConcierge.voiceID;
 
@@ -191,7 +192,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   let hardcodedAudioName;
   if (!userMessage) {
     hardcodedAudioName = "EmptyPrompt";
-    hardcodedMessages = avatarData.avatars.digitalConcierge.hardcodedMessages.intro;
+    hardcodedMessages = avatarData.avatars.digitalConcierge.hardcodedMessages.test;
     console.log("hardcodedMessages:", JSON.stringify(hardcodedMessages));
   }
 
@@ -280,20 +281,13 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         type: "function",
         function: {
-          name: "get_current_weather",
-          description: "Clima en cualquier ubicacion",
+          name: "getCurrentWeather",
+          description: "Función para obtener clima local",
           parameters: {
             type: "object",
-            properties: {
-              location: {
-                type: "string",
-                description: "The city and state, e.g. San Francisco, CA",
-              },
-              unit: { type: "string", enum: ["celsius", "fahrenheit"] },
-            },
-            required: ["location"],
+            properties: {},
           },
-        },
+        }
       },
       {
         type: "function",
@@ -312,8 +306,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
             required: ["requestText"],
           },
         },
-      },
-
+      }
     ];
     //console.log("Conversation before sending to ChatGPT");
     //console.log(messageHistory);
@@ -346,6 +339,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       ticket_hotel_tama,
       zonas_deportivas_recreativas,
       info_san_cristobal,
+      getCurrentWeather
     };
 
     let finalMessage = responseMessage;

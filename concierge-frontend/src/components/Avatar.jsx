@@ -112,12 +112,22 @@ const corresponding = {
 let setupMode = false;
 
 const FlatCubeBackground = () => {
+  // Use useTexture at the component level
   const texture = useTexture('/textures/tama-frontdesk.jpg');
-  const size = 10;
+  const size = 3;
   const depth = 0.01;
 
+  // Handle cleanup when component unmounts
+  useEffect(() => {
+    return () => {
+      if (texture) {
+        texture.dispose();
+      }
+    };
+  }, [texture]);
+
   return (
-    <mesh position={[0, 1, -4]}>
+    <mesh position={[0, 1.2, -1]}>
       <boxGeometry args={[size, size, depth]} />
       <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
     </mesh>
@@ -125,7 +135,7 @@ const FlatCubeBackground = () => {
 };
 
 const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) => {
-  const [selectedAvatar, setSelectedAvatar] = useState("zoeDLM");
+  const [selectedAvatar, setSelectedAvatar] = useState("digitalConcierge");
   const { message, onMessagePlayed, chat } = useChat();
   const [lipsync, setLipsync] = useState();
   const avatarModel = useGLTF(avatars[selectedAvatar].model);
@@ -189,16 +199,15 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   }, [selectedAvatar, avatarModel]);
 
   useEffect(() => {
-    console.log(message);
     if (!message) {
       setAnimation(avatars[selectedAvatar].defaultPose);
       return;
     }
 
     if (message.text === '¡Hola!' || message.text === 'Hola.') {
-      setAnimation('Waving');
-    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Estoy aquí para ayudarte') {
-      setAnimation('Thankful');
+      setAnimation('Bow');
+    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Servir') {
+      setAnimation('OfCourse');
     }
     else {
       setAnimation(message.animation);
@@ -217,17 +226,6 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   const group = useRef();
   const { animations } = useGLTF(avatars[selectedAvatar].animations);
   const [loadedAnimations, setLoadedAnimations] = useState(null);
-
-  useEffect(() => {
-    // Load animations
-    const loader = new THREE.AnimationLoader();
-    loader.load(avatars[selectedAvatar].animations, (animData) => {
-      const newAnimations = animData.map((clip) => {
-        return new THREE.AnimationClip(clip.name, clip.duration, clip.tracks);
-      });
-      setLoadedAnimations(newAnimations);
-    });
-  }, [selectedAvatar]);
 
   const { actions, mixer } = useAnimations(loadedAnimations || animations, group);
 
@@ -313,16 +311,6 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   };
 
   useFrame((state, delta) => {
-
-    if (isPresenting) {
-      console.log('VR mode active');
-      console.log('Current animation:', animation);
-      console.log('Actions:', Object.keys(actions));
-      if (actions[animation]) {
-        console.log('Animation weight:', actions[animation].getEffectiveWeight());
-        console.log('Animation time:', actions[animation].time);
-      }
-    }
     !setupMode &&
       Object.keys(nodes.EyeLeft.morphTargetDictionary).forEach((key) => {
         const mapping = facialExpressions[facialExpression];

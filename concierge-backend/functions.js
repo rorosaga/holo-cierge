@@ -1,3 +1,8 @@
+import { request } from "express"
+import dotenv from "dotenv";
+import axios from 'axios';
+
+dotenv.config();
 // Functions for Function Calls to be imported from JSON
 export function infoFredAarons() {
     return JSON.stringify({
@@ -257,17 +262,40 @@ export async function ticket_hotel_tama(requestText) {
     }
 }
 
-export function getCurrentWeather(location, unit = "fahrenheit") {
-    if (location.toLowerCase().includes("tokyo")) {
-        return JSON.stringify({ location: "Tokyo", temperature: "10", unit: "celsius" });
-    } else if (location.toLowerCase().includes("san francisco")) {
-        return JSON.stringify({ location: "San Francisco", temperature: "72", unit: "fahrenheit" });
-    } else if (location.toLowerCase().includes("paris")) {
-        return JSON.stringify({ location: "Paris", temperature: "22", unit: "fahrenheit" });
-    } else {
-        return JSON.stringify({ location, temperature: "unknown" });
+export async function getCurrentWeather() {
+    // Define the parameters
+    const parameters = {
+        'key': process.env.METEOSOURCE_API_KEY,  // Make sure this is set in your environment variables
+        'place_id': 'san-cristobal',
+        'language': 'es',
+        'unit': 'metric'
+    };
+
+    // Define the base URL
+    const url = "https://www.meteosource.com/api/v1/free/point";
+
+    try {
+        // Make the GET request using axios
+        const response = await axios.get(url, { params: parameters });
+
+        // Extract data from the response
+        const data = response.data;
+
+        // Return the data in a structured format
+        return JSON.stringify({
+            text: `Responde con la información básica que salga de la variable 'data'.`,
+            data: data  // Return the weather data here for more flexibility
+        });
+
+    } catch (error) {
+        // Handle any errors that occur during the request
+        console.error("Error fetching weather data:", error);
+
+        return JSON.stringify({
+            text: "Hubo un error al obtener la información del clima. Por favor, inténtalo de nuevo más tarde."
+        });
     }
-};
+}
 
 export function info_san_cristobal() {
     return JSON.stringify({
