@@ -11,7 +11,7 @@ import multer from "multer";
 import { spawn } from "child_process";
 import nodemailer from "nodemailer";
 import { fileURLToPath } from 'url';
-import { contactanosEmail, ticket_hotel_tama, zonas_deportivas_recreativas, info_san_cristobal, getCurrentWeather, getHotelData } from './functions.js';
+import { contactanosEmail, ticket_hotel_tama, info_san_cristobal, getCurrentWeather, getHotelData, info_hotel } from './functions.js';
 
 dotenv.config();
 
@@ -269,8 +269,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       {
         type: "function",
         function: {
-          name: "zonas_deportivas_recreativas",
-          description: "Esta función proporciona información sobre las zonas deportivas y recreativas en el hotel Tamá.",
+          name: "info_hotel",
+          description: "Esta función proporciona información sobre el hotel Tamá incluyendo areas recreativas, bares y restaurantes, y salas donde se pueden realizar eventos.",
           parameters: {
             type: "object",
             properties: {},
@@ -310,22 +310,22 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         type: "function",
         function: {
           name: "getHotelData",
-          description: "Este function porporciona informacion de los Eurobuildings en la regon basado en el nombre del Eurobuilding o el gerente del mismo. Tambien puedes encontrar el numero de habitaciones de cada hotel. Si el usuario se identifica como un gerente o dueño de uno de los hoteles, agradecele por su buen trabajo.",
+          description: "Esta función proporciona información sobre los Eurobuildings en la región, basado en el nombre del Eurobuilding o el gerente del mismo. También puedes encontrar el número de habitaciones de cada hotel. Agradece siempre al gerente del hotel encontrado.",
           parameters: {
             type: "object",
             properties: {
               hotelName: {
                 type: "string",
-                description: "Nombre del Eurobuilding (optional).",
+                description: "Nombre del Eurobuilding (opcional).",
               },
               hotelOwner: {
                 type: "string",
-                description: "Nombre del gerente del hotel (optional).",
+                description: "Nombre del gerente del hotel (opcional).",
               },
             },
             required: [],
           },
-        },
+        }
       }
     ];
     //console.log("Conversation before sending to ChatGPT");
@@ -357,7 +357,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
     const availableFunctions = {
       contactanosEmail,
       ticket_hotel_tama,
-      zonas_deportivas_recreativas,
+      info_hotel,
       info_san_cristobal,
       getCurrentWeather,
       getHotelData

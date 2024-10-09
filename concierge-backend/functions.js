@@ -1,9 +1,11 @@
 import { request, text } from "express"
 import dotenv from "dotenv";
 import axios from 'axios';
+import nodemailer from "nodemailer";
 
 dotenv.config();
-// Functions for Function Calls to be imported from JSON
+
+//ZoeDLM
 export function infoFredAarons() {
     return JSON.stringify({
         text: `Ultima Actualización: Actualizado hasta Agosto 2024 , 
@@ -201,11 +203,11 @@ export function preguntasFrecuentesDLM() {
     });
 };
 
+//digitalConcierge
 export async function contactanosEmail(sender, user_email, subject, body) {
     console.log('Arguments:', sender, user_email, subject, body);
     const email = process.env.EMAIL_ADDRESS;
     const password = process.env.EMAIL_PASSWORD;
-
 
     try {
         let transporter = nodemailer.createTransport({
@@ -305,16 +307,20 @@ export function info_san_cristobal() {
     La Ciudad de la Cordialidad. Fue fundada por Juan Maldonado Ordóñez y Villaquirán, 
     capitán del ejército español, el 31 de marzo de 1561. Tiene una población 
     proyectada para el año 2023 de 405872 habitantes, mientras que toda el área 
-    metropolitana cuenta con una población de 767402 habitantes. 
+    metropolitana cuenta con una población de 767402 habitantes. El hotel Tamá es llamado asi por el parque nacional ubicado en la region.
     `
     });
 };
 
-export function zonas_deportivas_recreativas() {
+export function info_hotel() {
     return JSON.stringify({
         text:
             `
-Se dispone de una área deportiva compuesta por una cancha de tenis y dos canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la primera alberga sanitarios, fuente de soda, mini tienda y la segunda una terraza con visuales hacia las 3 canchas. En el área recreativa se ubica el parque infantil, adyacente a la piscina y a la terraza de la fuente de soda, y adicional en la zona de bosque contamos con caminerías ecológicas y áreas de picnic, descanso y contemplación de la vegetación y fauna del mismo.  
+            Restaurantes y Bares:
+            El Bosque que se especializa en sus desayunos y brunch, con barra libre de 6-30 a 10 de la mañana. Oliva (el restaurante oficial del hotel) abierto de 6 de la mañana a 11 de la noche, reconocido por sus sabrosa entrada de 'Berenjena Crispy Miel' y sus platos principales como los 'Medallones de Lomito Tamá', la 'Suprema de Pollo', y el 'Risotto de Camarones', tambien sirven hamburguesas y pastas personalizadas. Lola, un bar donde sirven comida gourmet y española, es un buen lugar donde se aprecia el espacio abierto y el buen ambiente social. Aqua es una fuente de soda que abre los fines de semana al lado de la piscina. La chocolatería en el area comercial tambien ofrece algunos postres artesanales.
+            
+            Recreacion y deporte:
+            Se dispone de una área deportiva compuesta por una cancha de tenis y dos canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la primera alberga sanitarios, fuente de soda, mini tienda y la segunda una terraza con visuales hacia las 3 canchas. En el área recreativa se ubica el parque infantil, adyacente a la piscina (que permanece abierta diariamente de 9am a 7pm) y a la terraza de la fuente de soda, y adicional en la zona de bosque contamos con caminerías ecológicas y áreas de picnic, descanso y contemplación de la vegetación y fauna del mismo. El casino, ubicado al lado de las canchas de padel y tenis, esta abierto 24-7 y cuenta con servicio personalizada.
       `
     });
 };
@@ -376,8 +382,9 @@ export function getHotelData(hotelName = null, hotelOwner = null) {
         roomCount: 80
     }
     ];
+
     return JSON.stringify({
-        text: `Responde con la información relevante al contexto que salga de la variable 'data'.'`,
+        text: `Responde con la información relevante al contexto que salga de la variable 'data'. Si reconoces al gerente, menciona solo el nombre de el respectivo hotel y agradecele por su trabajo.'`,
         data: data
     });
 }
