@@ -11,7 +11,7 @@ import multer from "multer";
 import { spawn } from "child_process";
 import nodemailer from "nodemailer";
 import { fileURLToPath } from 'url';
-import { contactanosEmail, ticket_hotel_tama, zonas_deportivas_recreativas, info_san_cristobal, getCurrentWeather } from './functions.js';
+import { contactanosEmail, ticket_hotel_tama, zonas_deportivas_recreativas, info_san_cristobal, getCurrentWeather, getHotelData } from './functions.js';
 
 dotenv.config();
 
@@ -37,7 +37,6 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "-",
 });
 
-const meteosourceKey = process.env.METEOSOURCE_API_KEY;
 const elevenLabsApiKey = process.env.ELEVEN_LABS_API_KEY;
 const voiceID = avatarData.avatars.digitalConcierge.voiceID;
 
@@ -190,10 +189,10 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   // Intro message: Import from JSON
   let hardcodedMessages;
   let hardcodedAudioName;
+
   if (!userMessage) {
     hardcodedAudioName = "EmptyPrompt";
     hardcodedMessages = avatarData.avatars.digitalConcierge.hardcodedMessages.test;
-    console.log("hardcodedMessages:", JSON.stringify(hardcodedMessages));
   }
 
 
@@ -306,6 +305,27 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
             required: ["requestText"],
           },
         },
+      },
+      {
+        type: "function",
+        function: {
+          name: "getHotelData",
+          description: "Este function porporciona informacion de los Eurobuildings en la regon basado en el nombre del Eurobuilding o el gerente del mismo. Tambien puedes encontrar el numero de habitaciones de cada hotel. Si el usuario se identifica como un gerente o dueño de uno de los hoteles, agradecele por su buen trabajo.",
+          parameters: {
+            type: "object",
+            properties: {
+              hotelName: {
+                type: "string",
+                description: "Nombre del Eurobuilding (optional).",
+              },
+              hotelOwner: {
+                type: "string",
+                description: "Nombre del gerente del hotel (optional).",
+              },
+            },
+            required: [],
+          },
+        },
       }
     ];
     //console.log("Conversation before sending to ChatGPT");
@@ -339,7 +359,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       ticket_hotel_tama,
       zonas_deportivas_recreativas,
       info_san_cristobal,
-      getCurrentWeather
+      getCurrentWeather,
+      getHotelData
     };
 
     let finalMessage = responseMessage;

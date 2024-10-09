@@ -10,13 +10,13 @@ import { XR, VRButton } from '@react-three/xr'
 const config = LookingGlassConfig
 config.tileHeight = 455
 config.numViews = 24
-config.trackballX = 0
-config.trackballY = 0
-config.targetX = 0.2
-config.targetY = -0.3
-config.targetZ = 0.79
-config.targetDiam = 3
-config.fovy = (13 * Math.PI) / 180
+/*config.trackballX = 0
+config.trackballY = -6
+config.targetX = 0
+config.targetY = 1.6
+config.targetZ = 0.80
+config.targetDiam = 1
+config.fovy = (34 * Math.PI) / 180*/
 new LookingGlassWebXRPolyfill()
 
 function Box(props) {
@@ -42,7 +42,7 @@ function App() {
       <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 3], fov: 45 }}>
         <XR >
           <Box position={[0, -1, -1]} />
-          <group scale={[4, 4, 4]} position={[0, -5, -1]}>
+          <group position={[0, .05, -.2]} rotation={[.15, 0, 0]}>
             <Experience />
           </group>
         </XR>

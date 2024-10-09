@@ -1,4 +1,4 @@
-import { request } from "express"
+import { request, text } from "express"
 import dotenv from "dotenv";
 import axios from 'axios';
 
@@ -281,7 +281,7 @@ export async function getCurrentWeather() {
 
         // Return the data in a structured format
         return JSON.stringify({
-            text: `Responde con la información básica que salga de la variable 'data'. Cambia la puntuación de los valores de ésta manera: si lees 23.5 refiérete al valor como 'veintitres punto cinco.`,
+            text: `Responde con la información básica que salga de la variable 'data'. Cambia la puntuación de los valores de ésta manera: si lees 23.5 refiérete al valor como 'veintitres punto cinco. En lugar de decir 'celcius' refierete a 'grados centígrados'`,
             data: data
         });
 
@@ -314,14 +314,79 @@ export function zonas_deportivas_recreativas() {
     return JSON.stringify({
         text:
             `
-        Se dispone de una área deportiva compuesta por una cancha de tenis y dos 
-      canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la 
-      primera alberga sanitarios, fuente de soda, mini tienda y la segunda una 
-      terraza con visuales hacia las 3 canchas.
-        En el área recreativa se ubica el parque infantil, adyacente a la piscina y a 
-      la terraza de la fuente de soda, y adicional en la zona de bosque contamos con 
-      caminerías ecológicas y áreas de picnic, descanso y contemplación de la 
-      vegetación y fauna del mismo.  
+Se dispone de una área deportiva compuesta por una cancha de tenis y dos canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la primera alberga sanitarios, fuente de soda, mini tienda y la segunda una terraza con visuales hacia las 3 canchas. En el área recreativa se ubica el parque infantil, adyacente a la piscina y a la terraza de la fuente de soda, y adicional en la zona de bosque contamos con caminerías ecológicas y áreas de picnic, descanso y contemplación de la vegetación y fauna del mismo.  
       `
+    });
+};
+
+export function getHotelData(hotelName = null, hotelOwner = null) {
+    const data = [{
+        hotelName: "Maracay",
+        hotelOwner: "Zoraida Pernia",
+        roomCount: 85
+    },
+    {
+        hotelName: "Maiquetía",
+        hotelOwner: "María Verde",
+        roomCount: 243
+    },
+    {
+        hotelName: "Miami",
+        hotelOwner: "Ada Paredes",
+        roomCount: 133
+    },
+    {
+        hotelName: "Guayana",
+        hotelOwner: "José Rodríguez",
+        roomCount: 144
+    },
+    {
+        hotelName: "Tamá",
+        hotelOwner: "Carlos Jiménez",
+        roomCount: 111
+    },
+    {
+        hotelName: "Buenos Aires",
+        hotelOwner: "Roberto Brizuela",
+        roomCount: 57
+    },
+    {
+        hotelName: "Quito",
+        hotelOwner: "Richard Perdomo",
+        roomCount: 96
+    },
+    {
+        hotelName: "Coro",
+        hotelOwner: "Rosina Ruiz",
+        roomCount: 80
+    },
+    {
+        hotelName: "Lechería",
+        hotelOwner: "Ana Soto",
+        roomCount: 111
+    },
+    {
+        hotelName: "Barinas",
+        hotelOwner: "Simón Casique",
+        roomCount: 123
+    },
+    {
+        hotelName: "El Tigre",
+        hotelOwner: "Candi Arvelaiz",
+        roomCount: 80
+    }
+    ];
+    return JSON.stringify({
+        text: `Responde con la información relevante al contexto que salga de la variable 'data'.'`,
+        data: data
+    });
+}
+
+export function preguntasFrecuentesTama() {
+    return JSON.stringify({
+        text:
+            `
+    
+    `
     });
 };

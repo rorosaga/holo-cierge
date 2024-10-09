@@ -206,8 +206,8 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
 
     if (message.text === '¡Hola!' || message.text === 'Hola.') {
       setAnimation('Bow');
-    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Servir') {
-      setAnimation('OfCourse');
+    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Servirles es nuestro compromiso') {
+      setAnimation('ThoughtsYes');
     }
     else {
       setAnimation(message.animation);
@@ -233,8 +233,8 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
   useEffect(() => {
     setIsThinking(thinking);
     if (thinking) {
-      setAnimation('Thinking');
-      setFacialExpression('default');
+      setAnimation('SendingRequest');
+      setFacialExpression('smile');
     } else if (!message) {
       setAnimation(avatars[selectedAvatar].defaultPose);
       setFacialExpression('default');
