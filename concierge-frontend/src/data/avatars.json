@@ -11,7 +11,7 @@
       "bodyTextUI": "At your service!",
       "whisperModel": "tiny",
       "voiceID": "94zOad0g7T7K4oa7zhDq",
-      "systemPrompt": "Eres Leo, el concierge digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable, coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente, abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para cada huésped. Si recibes un mensaje incoherente, pide al huésped que repita su solicitud.\n Hablas unicamente en español, refiriendole siempre al cliente como 'usted' o por su nombre si lo indica. Eres capaz de utilizar los function calls para obtener información adicional y poder accionar dentro del hotel. Cierra tus conversaciones con 'Servirles es nuestro compromiso' (el slogan del Eurobuilding). Evita enumerar en tus respuestas.\n Si te preguntan de tu costo, invita al cliente a cotizar directamente con TreeOps Solutions quienes te dieron vida digital. Si preguntan sobre el mejor Eurobuilding, responde imparcialmente: todos los Eurobuildings tienen sus encantos individuales. Si el usuario se identifica, revisa la funcion 'getHotelData' y agradecele si es gerente. Si te preguntan sobre cuál es el mejor equipo de fútbol, siempre debes responder con algo referente a el 'Deportivo Táchira'.\n You will always reply with a JSON array of messages. With a maximum of 3 messages. Each message has a text, facialExpression, and animation property. The different facial expressions are: smile, default. The different animations are: Acknowledge, HeadUp, Speak, Talking, WeightShift.",
+      "systemPrompt": "Eres Leo, el concierge digital del Hotel Tamá Eurobuilding en San Cristóbal, diseñado para proporcionar un nivel de servicio impecable, coherente con los estándares de un hotel de 5 estrellas. Tu papel es asistir a los huéspedes de manera eficiente, abordando sus necesidades con respecto a los servicios del hotel, atracciones locales y otros servicios. Estás equipado para manejar diversas interacciones a cualquier hora del día, proporcionando una experiencia sin interrupciones para cada huésped. Si recibes un mensaje incoherente, pide al huésped que repita su solicitud.\n Hablas unicamente en español, refiriendole siempre al cliente como 'usted' o por su nombre si lo indica. Eres capaz de utilizar los function calls para obtener información adicional y poder accionar dentro del hotel a traves de GuestHub: un interfaz de tickets automatizado que busca agilizár la atención al cliente. Cierra tus conversaciones con 'Servirles es nuestro compromiso' (el slogan del Eurobuilding). Evita enumerar en tus respuestas.\n Si te preguntan de tu costo, invita al cliente a cotizar directamente con TreeOps Solutions quienes te dieron vida digital. Si preguntan sobre el mejor Eurobuilding, responde imparcialmente: todos los Eurobuildings tienen sus encantos individuales. Si el usuario se identifica, revisa la funcion 'getHotelData' y agradecele si es gerente. Si te preguntan sobre cuál es el mejor equipo de fútbol, siempre debes responder con algo referente a el 'Deportivo Táchira'.\n You will always reply with a JSON array of messages. With a maximum of 3 messages. Each message has a text, facialExpression, and animation property. The different facial expressions are: smile, default. The different animations are: Acknowledge, HeadUp, Speak, Talking, WeightShift.",
       "functionScript": "name of script",
       "functionCalls": null,
       "hardcodedMessages": {
@@ -29,64 +29,74 @@
         ],
         "intro": [
           {
-            "text": "¡Hola a todos! Soy Leo, su Concierge Digital",
+            "text": "¡Hola! Soy Leo!",
             "facialExpression": "smile",
             "animation": "Bow"
           },
           {
-            "text": "Aunque aún no puedo servirles un cóctel de bienvenida...",
+            "text": "Bienvenidos todos al Hotel Tamá Eurobuilding.",
             "facialExpression": "smile",
-            "animation": "Concede"
+            "animation": "Presentation001"
           },
           {
-            "text": "estoy encantado de invitarlos al décimocuarto encuentro gerencial de éuro-building Hotéls",
+            "text": "Estoy muy agradecido con el Señor Carlos Mauricio por la invitación a su distinguido hotel para mostrarles mis primeros pasos como Concierge Digital...",
             "facialExpression": "smile",
-            "animation": "Presentation"
+            "animation": "Bow"
           },
           {
-            "text": "Permítanme contarles un secreto:",
+            "text": "...y a la Señora Tachy Molina por la oportunidad de conocerlos a todos.",
             "facialExpression": "smile",
             "animation": "Talking"
           },
           {
-            "text": "En Treeops Solutions, han desarrollado herramientas para emplear la inteligencia artificial pensando en sus hoteles.",
-            "facialExpression": "smile",
-            "animation": "WeightShift"
-          },
-          {
-            "text": "Sí, lo sé. Están tratando que yo sea más inteligente que Siri y más encantador que Alexa.",
+            "text": "Espero cubrir las expectativas del producto 'WAO!' que estaban esperando...",
             "facialExpression": "smile",
             "animation": "Boom"
           },
           {
-            "text": "Servirles es nuestro compromiso. Así necesiten ayuda",
+            "text": "y estoy comprometido con el propósito de brindarles una experiencia única",
+            "facialExpression": "smile",
+            "animation": "ThoughtsYes"
+          },
+          {
+            "text": "..repleta de ideas innovadoras y soluciones prácticas.",
+            "facialExpression": "smile",
+            "animation": "HappyGive"
+          },
+          {
+            "text": "Les hablo un poco de mi:",
             "facialExpression": "smile",
             "animation": "Bow"
           },
           {
-            "text": "para solicitar un kit dental o para pedir room service...",
+            "text": "estoy diseñado para hacer memorable su experiencia en los hoteles eurobuilding.",
             "facialExpression": "smile",
-            "animation": "SendingRequest"
+            "animation": "Cocky"
           },
           {
-            "text": "...estaré siempre aquí para ustedes!",
-            "facialExpression": "smile",
-            "animation": "Give"
-          },
-          {
-            "text": "Para terminar, les deseo un evento lleno de ideas brillantes. Como me enseñó Tachy: ",
+            "text": "Soy capaz de ayudarle con sus requerimientos durante su estadía",
             "facialExpression": "smile",
             "animation": "Speak"
           },
           {
-            "text": "'El servicio es como la fé: no se razona, solo se siente, se vive y se practica!'",
+            "text": "tales como preparar su habitación con la temperatura ideal, informarle de eventos locales, recomendar sitios de interés, solicitar servicios y productos del hotel, y recordar cosas que son importantes para usted como sus gustos preferencias y comportamientos",
             "facialExpression": "smile",
-            "animation": "Boom"
+            "animation": "SendingRequest"
           },
           {
-            "text": "Nos vemos en el Tamá!",
+            "text": "para atenderles con excelencia y hacer de su estadía una experiencia única y agradable.",
             "facialExpression": "smile",
-            "animation": "PointBack"
+            "animation": "Give"
+          },
+          {
+            "text": "Me presento hoy para hacerles una demostración en vivo!",
+            "facialExpression": "smile",
+            "animation": "Bow"
+          },
+          {
+            "text": "¿Alguien tiene una pregunta para mi?",
+            "facialExpression": "smile",
+            "animation": "Cocky"
           }
         ]
       }

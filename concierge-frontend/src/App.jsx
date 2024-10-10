@@ -42,7 +42,7 @@ function App() {
       <Canvas shadows dpr={[1, 2]} camera={{ position: [0, 0, 3], fov: 45 }}>
         <XR >
           <Box position={[0, -1, -1]} />
-          <group position={[0, .05, -.2]} rotation={[.15, 0, 0]}>
+          <group position={[0, .05, -.2]} rotation={[0, 0, 0]}>
             <Experience />
           </group>
         </XR>

@@ -208,13 +208,18 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
       setAnimation('Bow');
     } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim() === 'Servirles es nuestro compromiso') {
       setAnimation('ThoughtsYes');
+    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim().includes('GuestHub')) {
+      setAnimation('Presentation');
+      onArmGesture();
     }
     else {
       setAnimation(message.animation);
     }
-    if (message.animation === "Presentation") {
+
+    /*if (message.animation === "Presentation") {
+      console.log("Presentation animation detected, calling onArmGesture");
       onArmGesture();
-    }
+    }*/
     setFacialExpression(message.facialExpression);
     setLipsync(message.lipsync);
     const audio = new Audio("data:audio/mp3;base64," + message.audio);

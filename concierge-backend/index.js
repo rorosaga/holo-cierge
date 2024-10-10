@@ -301,6 +301,10 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
                 description: `Muy directa y clara solicitud de lo que se necesita. Ejemplo:
               El cliente pide una toalla extra en la habitación. requestText: "Toalla extra"`,
               },
+              roomNumber: {
+                type: "string",
+                description: "Lugar a donde se entrega el servicio (opcional).",
+              },
             },
             required: ["requestText"],
           },
@@ -324,7 +328,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
               },
             },
             required: [],
-          },
+          }
         }
       }
     ];

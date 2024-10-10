@@ -41,8 +41,8 @@ export const Experience = () => {
 
   const cameraControls = useRef();
   const { cameraZoomed, thinking } = useChat();
-  const [showQR, setShowQR] = useState(false);
-  const qrData = "http://linktr.ee/DLMSolucionesInmobiliarias"; //QR Link
+  const [showQR, setShowQR] = useState(true);
+  const qrData = "https://reservations.app.guesthub.io/#/properties/154"; //QR Link
   const texture = useTexture('../public/image.jpg'); //Image Link
 
   const AnimatedGroup = animated.group;
@@ -68,9 +68,8 @@ export const Experience = () => {
     setShowQR(true);
     setTimeout(() => {
       setShowQR(false);
-    }, 60000); // Hide QR code after 60 seconds
+    }, 40000); // Hide QR code after 60 seconds
   }, []);
-
   return (
     <>
       <CameraControls ref={cameraControls} />
@@ -79,20 +78,24 @@ export const Experience = () => {
       <Suspense>
         <Dots position-y={1.75} position-x={-0.07} />
       </Suspense>
-      <Avatar thinking={thinking} onArmGesture={handleArmGesture} />
+      <Avatar thinking={thinking} onArmGesture={handleArmGesture} rotation={[.15, 0, 0]} />
       {showQR && (
-        <AnimatedGroup position={[-0.8, 1.8, -0.4]} scale={springProps.scale} opacity={springProps.opacity}>
-          <RoundedBox args={[0.70, 0.70, 0.01]} radius={0.02} smoothness={4}>
+        <AnimatedGroup rotation={[0, 0, 0]} position={[-0.8, 1.8, -0.4]} scale={springProps.scale} opacity={springProps.opacity}>
+          <RoundedBox args={[0.60, 0.60, 0.01]} radius={0.02} smoothness={4}>
             <meshBasicMaterial color="white" />
           </RoundedBox>
-          <mesh position={[0, 0, 0.01]}>
-            <planeGeometry args={[0.72, 0.72]} />
+          <mesh position={[0, 0, 0.02]}>
+            <planeGeometry args={[0.60, 0.60]} />
             <meshBasicMaterial color="white" transparent opacity={springProps.opacity} />
-            <meshBasicMaterial map={texture} opacity={springProps.opacity} />
           </mesh>
+          <ThreeQRCode
+            value={qrData}
+            size={0.55}
+            position={[-0.8, 1.85, -0.579]}
+            renderOrder={1}
+          />
         </AnimatedGroup>
       )}
     </>
   );
 };
-//<ThreeQRCode value={qrData} size={0.4} position={[-0.8, 1.8, -0.39]} />

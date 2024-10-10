@@ -240,8 +240,12 @@ export async function contactanosEmail(sender, user_email, subject, body) {
     }
 };
 
-export async function ticket_hotel_tama(requestText) {
+export async function ticket_hotel_tama(requestText, roomNumber) {
     const url = 'https://reservations-api.properties.guesthub.io/properties/89/request';
+
+    if (!roomNumber)
+        roomNumber = 'Front Desk';
+
     const queryParams = {
         'Guesthub-Context': '{"properties":["propertyId"]}'
     };
@@ -250,14 +254,14 @@ export async function ticket_hotel_tama(requestText) {
         reservationId: null,
         browserIdentify: '1718991233075',
         serviceId: null,
-        guestName: 'GuestHolo',
-        roomNumber: '999',
+        guestName: 'Leo Digital Concierge',
+        roomNumber: roomNumber,
         requestText: requestText
     };
     try {
         const response = await axios.post(url, requestBody, { params: queryParams });
         console.log('Request was successful:', response.data);
-        return JSON.stringify({ message: 'El ticket ha sido creado con éxito' });
+        return JSON.stringify({ message: 'Notifica al huesped que has creado un ticket a traves de GuestHub.' });
     } catch (error) {
         console.error('Error making request:', error);
         return JSON.stringify({ message: 'Hubo un error al crear el ticket. Por favor, inténtelo de nuevo más tarde.' });
