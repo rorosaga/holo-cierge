@@ -32,9 +32,9 @@ const TypingEffect = (props) => {
   if (!thinking) return null;
 
   return (
-    <Text fontSize={0.14} anchorX="left" anchorY="bottom" {...props}>
+    <Text fontSize={0.08} position={[0, 2, 0]} {...props}>
       {displayText}
-      <meshBasicMaterial attach="material" color="black" />
+      <meshBasicMaterial attach="material" color="white" />
     </Text>
   );
 };
