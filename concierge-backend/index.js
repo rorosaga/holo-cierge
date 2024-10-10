@@ -12,6 +12,7 @@ import { spawn } from "child_process";
 import nodemailer from "nodemailer";
 import { fileURLToPath } from 'url';
 import { contactanosEmail, ticket_hotel_tama, info_san_cristobal, getCurrentWeather, getHotelData, info_hotel } from './functions.js';
+import { type } from "os";
 
 dotenv.config();
 
@@ -193,6 +194,9 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   if (!userMessage) {
     hardcodedAudioName = "EmptyPrompt";
     hardcodedMessages = avatarData.avatars.digitalConcierge.hardcodedMessages.test;
+  } else if (userMessage.replace(/^[¡!]|[.!]|[ ]$/g, '').trim().includes('presenta')) {
+    hardcodedAudioName = "Intro";
+    hardcodedMessages = avatarData.avatars.digitalConcierge.hardcodedMessages.intro;
   }
 
 
@@ -305,6 +309,11 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
                 type: "string",
                 description: "Lugar a donde se entrega el servicio (opcional).",
               },
+              guestName: {
+                type: "string",
+                description: `El nombre completo del huésped si lo conocemos por la conversación, o si es explícitamente mencionado, seguido de (LEO) entre paréntesis para indicar que la solicitud es creada por este asistente virtual. Si no conocemos el nombre del huésped, especificamos Leo Digital Concierge para indicar que la solicitud fue creada por este Concierge Digital. Ejemplos:
+                Armando Belloso (LEO), Pedro Perez (LEO), Leo Digital Concierge`
+              }
             },
             required: ["requestText"],
           },

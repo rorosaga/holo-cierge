@@ -41,7 +41,7 @@ export const Experience = () => {
 
   const cameraControls = useRef();
   const { cameraZoomed, thinking } = useChat();
-  const [showQR, setShowQR] = useState(true);
+  const [showQR, setShowQR] = useState(false);
   const qrData = "https://reservations.app.guesthub.io/#/properties/154"; //QR Link
   const texture = useTexture('../public/image.jpg'); //Image Link
 
