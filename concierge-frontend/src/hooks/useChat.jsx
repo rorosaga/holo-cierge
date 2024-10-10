@@ -54,7 +54,6 @@ export const ChatProvider = ({ children }) => {
         if (boundary !== -1) {
           let completeMessages = tempMessages.slice(0, boundary + 1);
           tempMessages = tempMessages.slice(boundary + 1);
-
           try {
             const parsedData = JSON.parse(completeMessages);
             if (parsedData.messages) {

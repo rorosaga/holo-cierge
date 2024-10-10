@@ -317,10 +317,24 @@ export function info_hotel() {
         text:
             `
             Restaurantes y Bares:
-            El Bosque que se especializa en sus desayunos y brunch, con barra libre de 6-30 a 10 de la mañana. Oliva (el restaurante oficial del hotel) abierto de 6 de la mañana a 11 de la noche, reconocido por sus sabrosa entrada de 'Berenjena Crispy Miel' y sus platos principales como los 'Medallones de Lomito Tamá', la 'Suprema de Pollo', y el 'Risotto de Camarones', tambien sirven hamburguesas y pastas personalizadas. Lola, un bar donde sirven comida gourmet y española, es un buen lugar donde se aprecia el espacio abierto y el buen ambiente social. Aqua es una fuente de soda que abre los fines de semana al lado de la piscina. La chocolatería en el area comercial tambien ofrece algunos postres artesanales.
+            El Bosque que se especializa en sus desayunos y brunch, con barra libre de seis y media a diez de la mañana. Oliva (el restaurante oficial del hotel) abierto de seis de la mañana a once de la noche, reconocido por sus sabrosa entrada de 'Berenjena Crispy Miel' y sus platos principales como los 'Medallones de Lomito Tamá', la 'Suprema de Pollo', y el 'Risotto de Camarones', tambien sirven hamburguesas y pastas personalizadas. Lola (by Miura), un bar donde se aprecia el espacio abierto y el buen ambiente social, se destaca por sus cortes premium de carnes. Acqua es una fuente de soda que abre los fines de semana al lado de la piscina. La chocolatería en el area comercial tambien ofrece algunos postres artesanales.
+
+            Galeria comercial:
+            Los primeros dos pisos frente al lobby del hotel se encuentran locales comerciales, entre ellos Trapiche Cacao: la chocolatería artesanal, Joyas D'Alexandra: una joyería, Fragancias: una perfumería, Agua Linda: una tienda de trajes de baño, Coarca: un centro ferretero y de proyectos,  Tarbay: articulos para damas, Michael Moreno: un decorador. Hay aún espacios por abrir y emprender. 
             
             Recreacion y deporte:
             Se dispone de una área deportiva compuesta por una cancha de tenis y dos canchas de pádel, con espacios de servicios desarrollado en 2 plantas, la primera alberga sanitarios, fuente de soda, mini tienda y la segunda una terraza con visuales hacia las 3 canchas. En el área recreativa se ubica el parque infantil, adyacente a la piscina (que permanece abierta diariamente de 9am a 7pm) y a la terraza de la fuente de soda, y adicional en la zona de bosque contamos con caminerías ecológicas y áreas de picnic, descanso y contemplación de la vegetación y fauna del mismo. El casino, ubicado al lado de las canchas de padel y tenis, esta abierto 24-7 y cuenta con servicio personalizada.
+
+            Habitaciones: 
+            El hotel Tamá dispone de 69 habitaciones 'Deluxe King' con una cama King, 29 'Deluxe Doble' con dos camas Queen, 4 habitaciones 'Junior Suite' que incluyen un area social, 4 habitaciones 'Suite' con mas espacio, y la gloriosa 'Suite Presidencial': la joya del Tamá, con 3 habitaciones incluidas y espacios para disfrutar todo tipo de eventos.
+
+            Salones:
+            Lo salones se encuentran en el segundo piso. Son areas alfombradas reservadas para eventos especiales. Los dos salones mayores: 'Salon San Cristobal Uno' y 'Dos', tienen una capacidad maxima de 500 personas si se combinan. Los demas salones tienen una capacidad de 24 personas, exceptuando el 'Salon Barrio Obrero' que se dedica a eventos pequeños de maximo 10 personas.
+
+            Contacto:
+            Direccion: Avenida 19 de Abril, San Cristobal, Venezuela
+            Telefono: dos siete seis, tres doce, trece, cero cero.
+            Correo electronico: sancristobal arroba hotel euro punto com.
       `
     });
 };

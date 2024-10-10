@@ -211,6 +211,8 @@ const Avatar = forwardRef(({ thinking = false, onArmGesture, ...props }, ref) =>
     } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim().includes('GuestHub')) {
       setAnimation('Presentation');
       onArmGesture();
+    } else if (message.text.replace(/^[¡!]|[.!]$/g, '').trim().includes('Deportivo Táchira')) {
+      setAnimation('FistPump');
     }
     else {
       setAnimation(message.animation);

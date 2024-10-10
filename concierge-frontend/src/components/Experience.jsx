@@ -7,34 +7,36 @@ import { TextureLoader } from "three";
 import { useLoader } from "@react-three/fiber";
 import { useSpring, animated } from '@react-spring/three';
 
-//This code initially had 3 black dots display on top of the avatar while thinking.
-const Dots = (props) => {
+const TypingEffect = (props) => {
   const { thinking } = useChat();
-  const [loadingText, setLoadingText] = useState("");
+  const [displayText, setDisplayText] = useState("");
+  const fullText = "Estoy procesando su solicitud";
+
   useEffect(() => {
     if (thinking) {
-      const interval = setInterval(() => {
-        setLoadingText((loadingText) => {
-          if (loadingText.length > 2) {
-            return ".";
-          }
-          return loadingText + ".";
-        });
-      }, 800);
-      return () => clearInterval(interval);
+      let currentIndex = 0;
+      const typeNextLetter = () => {
+        if (currentIndex < fullText.length) {
+          setDisplayText(fullText.slice(0, currentIndex + 1));
+          currentIndex++;
+          const randomDelay = Math.floor(Math.random() * (300 - 50) + 50);
+          setTimeout(typeNextLetter, randomDelay);
+        }
+      };
+      typeNextLetter();
     } else {
-      setLoadingText("");
+      setDisplayText("");
     }
   }, [thinking]);
+
   if (!thinking) return null;
-  /*return (
-    <group {...props} position={[0, 1, 0]}>
-      <Text fontSize={0.14} anchorX={"left"} anchorY={"bottom"}>
-        {loadingText}
-        <meshBasicMaterial attach="material" color="black" />
-      </Text>
-    </group>
-  );*/
+
+  return (
+    <Text fontSize={0.14} anchorX="left" anchorY="bottom" {...props}>
+      {displayText}
+      <meshBasicMaterial attach="material" color="black" />
+    </Text>
+  );
 };
 
 export const Experience = () => {
@@ -74,11 +76,11 @@ export const Experience = () => {
     <>
       <CameraControls ref={cameraControls} />
       <Environment preset="sunset" />
-      {/* Wrapping Dots into Suspense to prevent Blink when Troika/Font is loaded */}
-      <Suspense>
-        <Dots position-y={1.75} position-x={-0.07} />
+      <Suspense fallback={null}>
+        <TypingEffect position={[-0.8, 1.75, 0]} />
       </Suspense>
       <Avatar thinking={thinking} onArmGesture={handleArmGesture} rotation={[.15, 0, 0]} />
+
       {showQR && (
         <AnimatedGroup rotation={[0, 0, 0]} position={[-0.8, 1.8, -0.4]} scale={springProps.scale} opacity={springProps.opacity}>
           <RoundedBox args={[0.60, 0.60, 0.01]} radius={0.02} smoothness={4}>

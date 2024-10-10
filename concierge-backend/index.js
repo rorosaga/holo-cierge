@@ -274,7 +274,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
         type: "function",
         function: {
           name: "info_hotel",
-          description: "Esta función proporciona información sobre el hotel Tamá incluyendo areas recreativas, bares y restaurantes, y salas donde se pueden realizar eventos.",
+          description: "Esta función proporciona información sobre el hotel Tamá incluyendo detalles de las habitaciones, areas recreativas, locales, bares y restaurantes, y salas donde se pueden realizar eventos.",
           parameters: {
             type: "object",
             properties: {},
