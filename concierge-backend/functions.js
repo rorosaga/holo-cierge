@@ -1,4 +1,3 @@
-import { request, text } from "express"
 import dotenv from "dotenv";
 import axios from 'axios';
 import nodemailer from "nodemailer";
@@ -240,11 +239,19 @@ export async function contactanosEmail(sender, user_email, subject, body) {
     }
 };
 
-export async function ticket_hotel_tama(requestText, roomNumber = 'Front Desk', guestName = 'Leo Digital Concierge') {
-    const url = 'https://reservations-api.properties.guesthub.io/properties/154/request';
+export async function ticket_hotel_tama(requestText, roomNumber, guestName) {
+    const url = 'https://reservations-api.properties.guesthub.io/properties/154/request'; //154 = Hotel Triops, 89 Hotel Dubai
     const queryParams = {
         'Guesthub-Context': '{"properties":["propertyId"]}'
     };
+    if (!roomNumber)
+        roomNumber = 'Front Desk';
+
+    if (!guestName)
+        guestName = 'Leo Digital Concierge';
+    else
+        guestName = guestName + ' (LEO)';
+
     const requestBody = {
         isLogin: false,
         reservationId: null,

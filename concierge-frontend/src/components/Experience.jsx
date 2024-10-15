@@ -10,7 +10,7 @@ import { useSpring, animated } from '@react-spring/three';
 const TypingEffect = (props) => {
   const { thinking } = useChat();
   const [displayText, setDisplayText] = useState("");
-  const fullText = "Estoy procesando su solicitud";
+  const fullText = "Procesando...";
 
   useEffect(() => {
     if (thinking) {
@@ -32,7 +32,7 @@ const TypingEffect = (props) => {
   if (!thinking) return null;
 
   return (
-    <Text fontSize={0.08} position={[0, 2, 0]} {...props}>
+    <Text fontSize={0.07} anchorX="left" anchorY="top" {...props}>
       {displayText}
       <meshBasicMaterial attach="material" color="white" />
     </Text>
@@ -79,7 +79,7 @@ export const Experience = () => {
       <Suspense fallback={null}>
         <TypingEffect position={[-0.8, 1.75, 0]} />
       </Suspense>
-      <Avatar thinking={thinking} onArmGesture={handleArmGesture} rotation={[.15, 0, 0]} />
+      <Avatar thinking={thinking} onArmGesture={handleArmGesture} rotation={[.15, 0, 0]} scale={[1.4, 1.4, 1.4]} position={[0, -0.8, 0]} />
 
       {showQR && (
         <AnimatedGroup rotation={[0, 0, 0]} position={[-0.8, 1.8, -0.4]} scale={springProps.scale} opacity={springProps.opacity}>

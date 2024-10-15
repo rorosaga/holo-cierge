@@ -133,6 +133,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
             dataString += data.toString();
             console.log(`Python stdout: ${dataString}`);
             const partialTranscription = JSON.stringify({ partialTranscription: dataString });
+            console.log(partialTranscription.text);
             res.write(partialTranscription + '\n');
           });
 
@@ -239,10 +240,12 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
   }
 
   if (hardcodedMessages) {
+    console.log('Harcoded Playback');
     res.write(JSON.stringify({ messages: hardcodedMessages }) + '\n');
     res.end();
     return;
   }
+  console.log('Hardcoded 2?');
   res.write(JSON.stringify({ messages: hardcodedMessages }) + '\n');
   if (!userMessage) {
     res.end();
@@ -311,8 +314,8 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
               },
               guestName: {
                 type: "string",
-                description: `El nombre completo del huésped si lo conocemos por la conversación, o si es explícitamente mencionado, seguido de (LEO) entre paréntesis para indicar que la solicitud es creada por este asistente virtual. Si no conocemos el nombre del huésped, especificamos Leo Digital Concierge para indicar que la solicitud fue creada por este Concierge Digital. Ejemplos:
-                Armando Belloso (LEO), Pedro Perez (LEO), Leo Digital Concierge`
+                description: `El nombre completo del huésped si lo conocemos por la conversación, o si es explícitamente mencionado.
+                `
               }
             },
             required: ["requestText"],
@@ -478,6 +481,7 @@ app.post("/chat", upload.single('audioInput'), async (req, res) => {
       console.log('Sentence(', i, ',', j, '):', sentenceMessage.text);
 
       // Send each sentence as soon as it's ready
+      console.log('Message sent.');
       res.write(JSON.stringify({ messages: [sentenceMessage] }) + '\n');
     }
   }
