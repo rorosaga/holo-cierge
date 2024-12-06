@@ -141,6 +141,8 @@ Massive thanks to [Wawa Sensei](https://www.youtube.com/@WawaSensei) for his ama
 
 - Wawa Sensei backend repo [here](https://github.com/wass08/r3f-virtual-girlfriend-backend)
 
+> **Note:** This project is a fork of the original project by Wawa Sensei. We have added new features, integrations, and improvements to the existing project. Wawa Sensei doesn't have this licensed, but their work is deeply appreciated!
+
 ## Resources 🧾
 
 - [Rhubarb Library](https://github.com/DanielSWolf/rhubarb-lip-sync) - Lip sync library
